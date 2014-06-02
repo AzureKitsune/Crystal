@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30324.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crystal2", "src\Crystal2\Crystal2.csproj", "{FFEAB44C-1D1E-4D13-B00B-C71237C01448}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crystal2.Universal8", "src\Crystal2.Universal8\Crystal2.Universal8.csproj", "{8CA54B37-1DF7-4800-B3BF-C1D6E00F9F76}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FFEAB44C-1D1E-4D13-B00B-C71237C01448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFEAB44C-1D1E-4D13-B00B-C71237C01448}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFEAB44C-1D1E-4D13-B00B-C71237C01448}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFEAB44C-1D1E-4D13-B00B-C71237C01448}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CA54B37-1DF7-4800-B3BF-C1D6E00F9F76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CA54B37-1DF7-4800-B3BF-C1D6E00F9F76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CA54B37-1DF7-4800-B3BF-C1D6E00F9F76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CA54B37-1DF7-4800-B3BF-C1D6E00F9F76}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
