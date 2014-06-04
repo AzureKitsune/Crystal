@@ -25,6 +25,8 @@ namespace Crystal2.Navigation
         /// <param name="provider">The directory provider to give us some possible choices.</param>
         void Navigate(NavigationInformation information, INavigationDirectoryProvider provider);
 
+        object NavigationObject { get; }
+
         event EventHandler<CrystalNavigationEventArgs> Navigating;
         event EventHandler<CrystalNavigationEventArgs> Navigated;
     }

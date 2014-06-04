@@ -141,5 +141,11 @@ namespace Crystal2.Navigation
         public event EventHandler<CrystalNavigationEventArgs> Navigating;
 
         public event EventHandler<CrystalNavigationEventArgs> Navigated;
+
+
+        public object NavigationObject
+        {
+            get { return navigationFrame; }
+        }
     }
 }

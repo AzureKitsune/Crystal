@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Crystal2.Navigation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace Crystal2.Model
 {
@@ -65,6 +68,30 @@ namespace Crystal2.Model
         {
             get { return GetPropertyValue<string>(IsBusyStatusTextKey); }
             protected set { SetPropertyValue<string>(IsBusyStatusTextKey, value); }
+        }
+
+        protected Task WaitForViewLoadAsync()
+        {
+            INavigationProvider provider = IOC.IoCManager.Resolve<Crystal2.Navigation.INavigationProvider>();
+
+            Frame navigationFrame = provider.NavigationObject as Frame;
+            Page currentPage = navigationFrame.Content as Page;
+
+            if ((bool)currentPage.GetType().GetTypeInfo().GetDeclaredField("_contentLoaded").GetValue(currentPage))
+                return Task.FromResult<object>(null);
+
+            TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
+
+            RoutedEventHandler eh = null;
+            eh = new RoutedEventHandler((obj, e) =>
+            {
+                currentPage.Loaded -= eh;
+
+                taskCompletionSource.SetResult(null);
+            });
+            currentPage.Loaded += eh;
+
+            return taskCompletionSource.Task;
         }
     }
 }
