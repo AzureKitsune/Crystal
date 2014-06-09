@@ -36,6 +36,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\CrystalRelayCommand.cs" />
     <Compile Include="ICrystalApplication.cs" />
     <Compile Include="Navigation\CrystalNavigationDirection.cs" />
     <Compile Include="IOC\IIoCObject.cs" />

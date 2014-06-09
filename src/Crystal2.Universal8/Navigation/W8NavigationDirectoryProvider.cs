@@ -50,5 +50,13 @@ namespace Crystal2.Navigation
 
             return lazyMap.Value;
         }
+
+        internal void AddToMap(ViewModelBase viewModel, Uri uri)
+        {
+            if (viewModel == null) throw new ArgumentNullException("viewModel");
+            if (uri == null) throw new ArgumentNullException("uri");
+
+            lazyMap.Value.Add(viewModel.GetType(), uri);
+        }
     }
 }

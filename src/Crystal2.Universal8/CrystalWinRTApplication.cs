@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation.Metadata;
 using Windows.UI.Xaml;
@@ -25,9 +26,33 @@ namespace Crystal2
         public CrystalWinRTApplication()
             : base()
         {
+            var initializeComponent = this.GetType().GetTypeInfo().GetDeclaredMethod("InitializeComponent");
+            if (initializeComponent != null)
+                initializeComponent.Invoke(this, new object[] {  });
+
+            this.Suspending += this.OnSuspending;
+
             OnInitialize();
 
             DetectPlatform();
+        }
+
+        /// <summary>
+        /// Invoked when application execution is being suspended.  Application state is saved
+        /// without knowing whether the application will be terminated or resumed with the contents
+        /// of memory still intact.
+        /// </summary>
+        /// <param name="sender">The source of the suspend request.</param>
+        /// <param name="e">Details about the suspend request.</param>
+        private async void OnSuspending(object sender, SuspendingEventArgs e)
+        {
+            var deferral = e.SuspendingOperation.GetDeferral();
+
+            // TODO: Save application state and stop any background activity
+
+            await OnSuspendingAsync();
+
+            deferral.Complete();
         }
 
         /// <summary>
@@ -163,5 +188,7 @@ namespace Crystal2
         /// An abstract method called when the application is ready to navigate.
         /// </summary>
         protected abstract void OnNavigationReady();
+
+        protected abstract Task OnSuspendingAsync();
     }
 }
