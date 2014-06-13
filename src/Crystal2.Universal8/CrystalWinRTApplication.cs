@@ -142,11 +142,16 @@ namespace Crystal2
                 //{
                 //    throw new Exception("Failed to create initial page");
                 //}
-                OnNavigationReady();
+                OnNormalLaunchNavigationReady(e);
             }
 
             // Ensure the current window is active
             Window.Current.Activate();
+        }
+
+        protected override void OnActivated(IActivatedEventArgs args)
+        {
+            base.OnActivated(args);
         }
 
         /// <summary>
@@ -187,7 +192,7 @@ namespace Crystal2
         /// <summary>
         /// An abstract method called when the application is ready to navigate.
         /// </summary>
-        protected abstract void OnNavigationReady();
+        protected abstract void OnNormalLaunchNavigationReady(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs args);
 
         protected abstract Task OnSuspendingAsync();
     }

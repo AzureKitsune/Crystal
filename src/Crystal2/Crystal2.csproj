@@ -37,6 +37,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\CrystalRelayCommand.cs" />
+    <Compile Include="Actions\IUITrigger.cs" />
+    <Compile Include="Actions\UITriggerCollection.cs" />
     <Compile Include="ICrystalApplication.cs" />
     <Compile Include="Navigation\CrystalNavigationDirection.cs" />
     <Compile Include="IOC\IIoCObject.cs" />

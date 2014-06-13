@@ -45,6 +45,8 @@
     <TargetPlatform Include="Windows, Version=8.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\UIEventTrigger.cs" />
+    <Compile Include="Actions\WinRTInteractionMonitor.cs" />
     <Compile Include="CrystalWinRTApplication.cs" />
     <Compile Include="Model\WinRTBusyViewModelBase.cs" />
     <Compile Include="Navigation\CrystalWinRTNavigationEventArgs.cs" />
