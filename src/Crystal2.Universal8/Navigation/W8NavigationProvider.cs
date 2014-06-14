@@ -13,7 +13,7 @@ namespace Crystal2.Navigation
     internal class W8NavigationProvider : INavigationProvider
     {
         Frame navigationFrame = null;
-        Dictionary<Type, Uri> navigablePages = null;
+        //Dictionary<Type, Uri> navigablePages = null;
         public void Setup(object navigationObject)
         {
             navigationFrame = (Frame)navigationObject;

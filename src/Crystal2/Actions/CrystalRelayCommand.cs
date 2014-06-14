@@ -37,5 +37,11 @@ namespace Crystal2.Actions
         {
             executeFunction(parameter);
         }
+
+        public void RaiseCanExecuteChanged()
+        {
+            if (CanExecuteChanged != null)
+                CanExecuteChanged(this, EventArgs.Empty);
+        }
     }
 }
