@@ -121,9 +121,21 @@ namespace Crystal2
             }
         }
 
+        protected override void OnSearchActivated(SearchActivatedEventArgs args)
+        {
+            base.OnSearchActivated(args);
+        }
         protected override void OnLaunched(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
         {
+            if (e.PreviousExecutionState != ApplicationExecutionState.Running)
+            {
+                HandleInitialNavigation(e);
+                OnNormalLaunchNavigationReady(e);
+            }
+        }
 
+        private void HandleInitialNavigation(IActivatedEventArgs e)
+        {
             RootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
@@ -177,7 +189,8 @@ namespace Crystal2
                 //{
                 //    throw new Exception("Failed to create initial page");
                 //}
-                OnNormalLaunchNavigationReady(e);
+
+                //OnNormalLaunchNavigationReady(e);
             }
 
             // Ensure the current window is active
@@ -186,7 +199,7 @@ namespace Crystal2
 
         protected override void OnActivated(IActivatedEventArgs args)
         {
-            base.OnActivated(args);
+            OnActivationNavigationReady((IActivatedEventArgs)args);
         }
 
         /// <summary>
@@ -227,7 +240,10 @@ namespace Crystal2
         /// <summary>
         /// An abstract method called when the application is ready to navigate.
         /// </summary>
-        protected abstract void OnNormalLaunchNavigationReady(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs args);
+        protected abstract void OnNormalLaunchNavigationReady(Windows.ApplicationModel.Activation.IActivatedEventArgs args);
+
+        protected virtual void OnActivationNavigationReady(Windows.ApplicationModel.Activation.IActivatedEventArgs args)
+        { }
 
         protected virtual Task OnSuspendingAsync()
         {
