@@ -38,7 +38,7 @@ namespace Crystal2.Navigation
         {
             if (navigationFrame.Content != null)
                 if (((Page)navigationFrame.Content).DataContext != null)
-                    ((ViewModelBase)((Page)navigationFrame.Content).DataContext).OnNavigatingFrom();
+                    e.Cancel = ((ViewModelBase)((Page)navigationFrame.Content).DataContext).OnNavigatingFrom();
 
             if (Navigating != null)
             {
@@ -147,5 +147,27 @@ namespace Crystal2.Navigation
         {
             get { return navigationFrame; }
         }
+
+
+        public bool CanGoBackward
+        {
+            get { return ((Frame)NavigationObject).CanGoBack; }
+        }
+
+        public bool CanGoForward
+        {
+            get { return ((Frame)NavigationObject).CanGoForward; }
+        }
+
+
+        public void GoBackward()
+        {
+            ((Frame)NavigationObject).GoBack();
+        }
+        public void GoForward()
+        {
+            ((Frame)NavigationObject).GoForward();
+        }
+
     }
 }

@@ -2,6 +2,7 @@
 using Crystal2.Navigation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -28,13 +29,13 @@ namespace Crystal2
         {
             var initializeComponent = this.GetType().GetTypeInfo().GetDeclaredMethod("InitializeComponent");
             if (initializeComponent != null)
-                initializeComponent.Invoke(this, new object[] {  });
+                initializeComponent.Invoke(this, new object[] { });
 
             this.Suspending += this.OnSuspending;
 
-            OnInitialize();
-
             DetectPlatform();
+
+            OnInitialize();
         }
 
         /// <summary>
@@ -44,13 +45,19 @@ namespace Crystal2
         /// </summary>
         /// <param name="sender">The source of the suspend request.</param>
         /// <param name="e">Details about the suspend request.</param>
+        /// 
+        [DebuggerNonUserCode]
         private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
             // TODO: Save application state and stop any background activity
 
-            await OnSuspendingAsync();
+            try
+            {
+                await OnSuspendingAsync();
+            }
+            catch (Exception) { throw; }
 
             deferral.Complete();
         }
@@ -78,12 +85,40 @@ namespace Crystal2
             }
         }
 
-        public void OnInitialize()
+        public async void OnInitialize()
         {
             //set up navigation
             IoCManager.Register<INavigationDirectoryProvider>(new W8NavigationDirectoryProvider(this.GetType().GetTypeInfo().Assembly));
             var navigationProvider = new W8NavigationProvider();
             IoCManager.Register<INavigationProvider>(navigationProvider);
+
+            if (IsPhone())
+            {
+                //If running on the phone, dynamically load the referenced Crystal2.Universal8.Phone.dll for Back button functionality.
+
+                var files = await Package.Current.InstalledLocation.GetFilesAsync();
+                var refFile = files.Where(x => x.FileType == ".dll" && x.Name == "Crystal2.Universal8.Phone.dll").FirstOrDefault();
+
+                if (refFile == null) return;
+
+                var name = refFile.DisplayName;
+
+                var assemblyName = new AssemblyName(name);
+
+                try
+                {
+                    var assembly = Assembly.Load(assemblyName);
+
+                    var phoneBackButtonHandler = (IBackButtonNavigationProvider)Activator.CreateInstance(assembly.ExportedTypes.First(
+                        x => x.GetTypeInfo().ImplementedInterfaces.Any(y => y == (typeof(IBackButtonNavigationProvider)))));
+
+                    IoCManager.Register<IBackButtonNavigationProvider>(phoneBackButtonHandler);
+
+                    IoCManager.Resolve<IBackButtonNavigationProvider>().Attach(this);
+                }
+                catch (Exception)
+                { }
+            }
         }
 
         protected override void OnLaunched(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
@@ -194,6 +229,10 @@ namespace Crystal2
         /// </summary>
         protected abstract void OnNormalLaunchNavigationReady(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs args);
 
-        protected abstract Task OnSuspendingAsync();
+        protected virtual Task OnSuspendingAsync()
+        {
+            return Task.Delay(1);
+        }
+
     }
 }

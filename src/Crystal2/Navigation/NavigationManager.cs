@@ -51,5 +51,12 @@ namespace Crystal2.Navigation
             //grabs the navigation provider from the IoC container and navigates using it.
             IoCManager.Resolve<INavigationProvider>().Navigate(navigationInformation, directoryProvider);
         }
+
+        public static bool CanGoBack { get { return IoCManager.Resolve<INavigationProvider>().CanGoBackward; } }
+
+        public static void GoBackward()
+        {
+            IoCManager.Resolve<INavigationProvider>().GoBackward();
+        }
     }
 }

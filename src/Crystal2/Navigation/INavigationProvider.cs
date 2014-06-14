@@ -29,5 +29,11 @@ namespace Crystal2.Navigation
 
         event EventHandler<CrystalNavigationEventArgs> Navigating;
         event EventHandler<CrystalNavigationEventArgs> Navigated;
+
+        bool CanGoBackward { get; }
+        bool CanGoForward { get; }
+
+        void GoBackward();
+        void GoForward();
     }
 }
