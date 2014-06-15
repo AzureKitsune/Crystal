@@ -107,7 +107,7 @@ namespace Crystal2
 
                 try
                 {
-                    var assembly = Assembly.Load(assemblyName);
+                    var assembly = await Task.Run<Assembly>(() => Assembly.Load(assemblyName));
 
                     var phoneBackButtonHandler = (IBackButtonNavigationProvider)Activator.CreateInstance(assembly.ExportedTypes.First(
                         x => x.GetTypeInfo().ImplementedInterfaces.Any(y => y == (typeof(IBackButtonNavigationProvider)))));
