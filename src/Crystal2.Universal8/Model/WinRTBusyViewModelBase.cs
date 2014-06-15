@@ -70,7 +70,7 @@ namespace Crystal2.Model
             protected set { SetPropertyValue<string>(IsBusyStatusTextKey, value); }
         }
 
-        protected Task WaitForViewLoadAsync()
+        protected Task WaitForViewLoadAsync(int paddedWaitTimeInMilliseconds = 500)
         {
             INavigationProvider provider = IOC.IoCManager.Resolve<Crystal2.Navigation.INavigationProvider>();
 
@@ -83,9 +83,11 @@ namespace Crystal2.Model
             TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
 
             RoutedEventHandler eh = null;
-            eh = new RoutedEventHandler((obj, e) =>
+            eh = new RoutedEventHandler(async (obj, e) =>
             {
                 currentPage.Loaded -= eh;
+
+                await Task.Delay(paddedWaitTimeInMilliseconds);
 
                 taskCompletionSource.SetResult(null);
             });
