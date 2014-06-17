@@ -1,4 +1,5 @@
-﻿using Crystal2.IOC;
+﻿using Crystal2.Core;
+using Crystal2.IOC;
 using Crystal2.Navigation;
 using System;
 using System.Collections.Generic;
@@ -87,6 +88,9 @@ namespace Crystal2
 
         public async void OnInitialize()
         {
+            //set up the dispatcher
+            IoCManager.Register<IUIDispatcher>(new WinRTDispatcher());
+
             //set up navigation
             IoCManager.Register<INavigationDirectoryProvider>(new W8NavigationDirectoryProvider(this.GetType().GetTypeInfo().Assembly));
             var navigationProvider = new W8NavigationProvider();
@@ -163,7 +167,6 @@ namespace Crystal2
 
             if (RootFrame.Content == null)
             {
-                //TODO Figure this out
                 if (IsPhone())
                 {
                     //#if WINDOWS_PHONE_APP

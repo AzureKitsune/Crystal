@@ -34,7 +34,8 @@ namespace Crystal2.Navigation
 
         ~NavigationCommands()
         {
-            navigationProvider.Navigated -= navigationProvider_Navigated;
+            if (navigationProvider != null)
+                navigationProvider.Navigated -= navigationProvider_Navigated;
         }
 
         void navigationProvider_Navigated(object sender, CrystalNavigationEventArgs e)

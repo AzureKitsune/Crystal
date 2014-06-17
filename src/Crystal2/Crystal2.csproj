@@ -39,6 +39,7 @@
     <Compile Include="Actions\CrystalRelayCommand.cs" />
     <Compile Include="Actions\IUITrigger.cs" />
     <Compile Include="Actions\UITriggerCollection.cs" />
+    <Compile Include="Core\IUIDispatcher.cs" />
     <Compile Include="ICrystalApplication.cs" />
     <Compile Include="Navigation\CrystalNavigationDirection.cs" />
     <Compile Include="IOC\IIoCObject.cs" />
