@@ -1,4 +1,5 @@
 ﻿using Crystal2.IOC;
+using Crystal2.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,5 +36,7 @@ namespace Crystal2.Navigation
 
         void GoBackward();
         void GoForward();
+
+        ViewModelBase GetCurrentViewModel();
     }
 }

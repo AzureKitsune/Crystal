@@ -57,19 +57,23 @@ namespace Crystal2.Navigation
             if (navigationFrame.BackStack.Count > 0)
                 ((NavigationInformation)navigationFrame.BackStack.First().Parameter).TargetViewModel.OnNavigatedFrom();
 
+            Uri uri = GetNavigationUri(e);
+
             if (navigationFrame.Content != null)
             {
                 NavigationInformation information = (NavigationInformation)e.Parameter;
 
                 ((Page)navigationFrame.Content).DataContext = information.TargetViewModel;
 
-                information.TargetViewModel.OnNavigatedTo(information.Parameter);
+                information.TargetViewModel.OnNavigatedTo(information.Parameter, new CrystalWinRTNavigationEventArgs(e.Parameter)
+                {
+                    TargetUri = uri,
+                    Direction = ConvertToCrystalNavigation(e.NavigationMode),
+                });
             }
 
             if (Navigated != null)
             {
-                Uri uri = GetNavigationUri(e);
-
                 Navigated(this, new CrystalWinRTNavigationEventArgs(e.Parameter)
                 {
                     TargetUri = uri,
@@ -169,5 +173,9 @@ namespace Crystal2.Navigation
             ((Frame)NavigationObject).GoForward();
         }
 
+        public ViewModelBase GetCurrentViewModel()
+        {
+            return ((Page)((Frame)NavigationObject).Content).DataContext as ViewModelBase;
+        }
     }
 }

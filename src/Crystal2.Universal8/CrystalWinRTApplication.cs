@@ -56,6 +56,13 @@ namespace Crystal2
 
             try
             {
+                if (IsPhone())
+                {
+                    //Windows Phone 8.1 doesn't call OnNavigatedFrom when Suspending.
+                    //This simulates it.
+                    NavigationManager.CurrentViewModel.OnNavigatedFrom();
+                }
+
                 await OnSuspendingAsync();
             }
             catch (Exception) { throw; }
@@ -127,6 +134,7 @@ namespace Crystal2
 
         protected override void OnSearchActivated(SearchActivatedEventArgs args)
         {
+            OnActivationNavigationReady(args);
             base.OnSearchActivated(args);
         }
         protected override void OnLaunched(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
@@ -136,6 +144,8 @@ namespace Crystal2
                 HandleInitialNavigation(e);
                 OnNormalLaunchNavigationReady(e);
             }
+            else
+                OnActivationNavigationReady(e);
         }
 
         private void HandleInitialNavigation(IActivatedEventArgs e)

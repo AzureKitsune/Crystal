@@ -25,12 +25,12 @@ namespace Crystal2.Navigation
 
         static void navigationProvider_Navigated(object sender, CrystalNavigationEventArgs e)
         {
-            
+
         }
 
         static void navigationProvider_Navigating(object sender, CrystalNavigationEventArgs e)
         {
-            
+
         }
 
         /// <summary>
@@ -50,6 +50,11 @@ namespace Crystal2.Navigation
 
             //grabs the navigation provider from the IoC container and navigates using it.
             IoCManager.Resolve<INavigationProvider>().Navigate(navigationInformation, directoryProvider);
+        }
+
+        public static ViewModelBase CurrentViewModel
+        {
+            get { return IoCManager.Resolve<INavigationProvider>().GetCurrentViewModel(); }
         }
 
         public static bool CanGoBack { get { return IoCManager.Resolve<INavigationProvider>().CanGoBackward; } }

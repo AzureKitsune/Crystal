@@ -9,7 +9,7 @@ namespace Crystal2.Navigation
     internal interface INavigatingViewModel
     {
         void OnNavigatingTo();
-        void OnNavigatedTo(object paramater);
+        void OnNavigatedTo(object paramater, CrystalNavigationEventArgs args);
 
         bool OnNavigatingFrom();
         void OnNavigatedFrom();
