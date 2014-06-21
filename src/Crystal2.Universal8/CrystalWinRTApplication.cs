@@ -33,10 +33,17 @@ namespace Crystal2
                 initializeComponent.Invoke(this, new object[] { });
 
             this.Suspending += this.OnSuspending;
+            this.Resuming += this.OnResuming;
 
             DetectPlatform();
 
             OnInitialize();
+        }
+
+        [DebuggerNonUserCode]
+        private async void OnResuming(object sender, object e)
+        {
+            await OnResumingAsync();
         }
 
         /// <summary>
@@ -259,6 +266,11 @@ namespace Crystal2
         { }
 
         protected virtual Task OnSuspendingAsync()
+        {
+            return Task.Delay(1);
+        }
+
+        protected virtual Task OnResumingAsync()
         {
             return Task.Delay(1);
         }
