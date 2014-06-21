@@ -63,5 +63,10 @@ namespace Crystal2.Navigation
         {
             IoCManager.Resolve<INavigationProvider>().GoBackward();
         }
+
+        public static void ClearBackStack()
+        {
+            IoCManager.Resolve<INavigationProvider>().ClearBackStack();
+        }
     }
 }

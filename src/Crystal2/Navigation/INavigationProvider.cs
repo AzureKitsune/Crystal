@@ -38,5 +38,7 @@ namespace Crystal2.Navigation
         void GoForward();
 
         ViewModelBase GetCurrentViewModel();
+
+        void ClearBackStack();
     }
 }

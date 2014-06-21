@@ -177,5 +177,10 @@ namespace Crystal2.Navigation
         {
             return ((Page)((Frame)NavigationObject).Content).DataContext as ViewModelBase;
         }
+
+        public void ClearBackStack()
+        {
+            ((Frame)NavigationObject).BackStack.Clear();
+        }
     }
 }
