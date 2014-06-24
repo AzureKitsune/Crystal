@@ -20,6 +20,7 @@ namespace Crystal2.Model
             //Sets the property keys for IsBusy and IsBusyStatusText
             IsBusyPropertyKey = GetProperty("IsBusy");
             IsBusyStatusTextKey = GetProperty("IsBusyStatusText");
+            IsBusyProgressValueKey = GetProperty("IsBusyProgressValue");
         }
 
         /// <summary>
@@ -27,6 +28,7 @@ namespace Crystal2.Model
         /// </summary>
         protected ViewModelPropertyKey IsBusyPropertyKey = null;
         protected ViewModelPropertyKey IsBusyStatusTextKey = null;
+        protected ViewModelPropertyKey IsBusyProgressValueKey = null;
 
         public bool IsBusy
         {
@@ -34,40 +36,17 @@ namespace Crystal2.Model
             protected set
             {
                 SetPropertyValue<bool>(IsBusyPropertyKey, value);
-
-                //if (CrystalWinRTApplication.IsPhone())
-                //{
-                //    var statusBar = Type.GetType("Windows.UI.ViewManagement.StatusBar")
-                //        .GetTypeInfo()
-                //        .GetDeclaredMethod("GetForCurrentView")
-                //        .Invoke(null, new object[] { null });
-
-                //    var statusBarIndicator = statusBar.GetType()
-                //        .GetTypeInfo()
-                //        .GetDeclaredField("ProgressIndicator")
-                //        .GetValue(statusBar);
-
-                //    if (value)
-                //    {
-                //        statusBar.GetType()
-                //            .GetTypeInfo()
-                //            .GetDeclaredMethod("ShowAsync")
-                //            .Invoke(statusBar, new object[] { null });
-                //    }
-                //    else
-                //    {
-                //        statusBar.GetType()
-                //            .GetTypeInfo()
-                //            .GetDeclaredMethod("HideAsync")
-                //            .Invoke(statusBar, new object[] { null });
-                //    }
-                //}
             }
         }
         public string IsBusyStatusText
         {
             get { return GetPropertyValue<string>(IsBusyStatusTextKey); }
             protected set { SetPropertyValue<string>(IsBusyStatusTextKey, value); }
+        }
+        public double? IsBusyProgressValue
+        {
+            get { return GetPropertyValue<double?>(IsBusyProgressValueKey); }
+            protected set { SetPropertyValue<double?>(IsBusyProgressValueKey, value); }
         }
 
         protected Task WaitForViewLoadAsync(int paddedWaitTimeInMilliseconds = 500)
