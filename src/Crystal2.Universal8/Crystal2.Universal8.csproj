@@ -57,9 +57,20 @@
     <Compile Include="Navigation\W8NavigationDirectoryProvider.cs" />
     <Compile Include="Navigation\W8NavigationProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\SplashScreen\DefaultSplashScreenProvider.cs" />
+    <Compile Include="UI\SplashScreen\DefaultWinRTSplashScreen.xaml.cs">
+      <DependentUpon>DefaultWinRTSplashScreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\SplashScreen\IWinRTSplashScreenProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Lifecycle\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="UI\SplashScreen\DefaultWinRTSplashScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

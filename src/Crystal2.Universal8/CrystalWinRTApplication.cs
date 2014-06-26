@@ -1,6 +1,7 @@
 ﻿using Crystal2.Core;
 using Crystal2.IOC;
 using Crystal2.Navigation;
+using Crystal2.UI.SplashScreen;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation.Metadata;
@@ -110,6 +112,11 @@ namespace Crystal2
             var navigationProvider = new W8NavigationProvider();
             IoCManager.Register<INavigationProvider>(navigationProvider);
 
+            if (ShouldHandleSplashScreen)
+            {
+                IoCManager.Register<IWinRTSplashScreenProvider>(new DefaultSplashScreenProvider());
+            }
+
             if (IsPhone())
             {
                 //If running on the phone, dynamically load the referenced Crystal2.Universal8.Phone.dll for Back button functionality.
@@ -139,23 +146,45 @@ namespace Crystal2
             }
         }
 
+        private Tuple<string, string> GetSplashScreenPath()
+        {
+            //originally from http://tonychampion.net/blog/index.php/2013/01/examining-the-windows-store-apps-appxmanifest-at-runtime/
+            //thanks to Tony
+            //modified by Amrykid
+
+            var doc = XDocument.Load("AppxManifest.xml", LoadOptions.None);
+
+            // Define the default namespace to be used
+            var xname = XNamespace.Get("http://schemas.microsoft.com/appx/2014/manifest"); //XNamespace.Get("http://schemas.microsoft.com/appx/2010/manifest");
+
+            // Get the SplashScreen node located at Package/Applications/Application/VisualElements/SplashScreen
+            var splashScreenElement = doc.Descendants(xname + "SplashScreen").First();
+
+            // The Image attribute holds the local path to the Splash Screen image for the application
+            var splashScreenPath = splashScreenElement.Attribute("Image").Value;
+
+            string splashBackgroundColor = splashScreenElement.Attribute("BackgroundColor").Value;
+
+            return new Tuple<string, string>(splashBackgroundColor, splashScreenPath);
+        }
+
         protected override void OnSearchActivated(SearchActivatedEventArgs args)
         {
             OnActivationNavigationReady(args);
             base.OnSearchActivated(args);
         }
-        protected override void OnLaunched(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
         {
             if (e.PreviousExecutionState != ApplicationExecutionState.Running)
             {
-                HandleInitialNavigation(e);
+                await HandleInitialNavigation(e);
                 OnNormalLaunchNavigationReady(e);
             }
             else
                 OnActivationNavigationReady(e);
         }
 
-        private void HandleInitialNavigation(IActivatedEventArgs e)
+        private async Task HandleInitialNavigation(IActivatedEventArgs e)
         {
             RootFrame = Window.Current.Content as Frame;
 
@@ -215,6 +244,18 @@ namespace Crystal2
 
             // Ensure the current window is active
             Window.Current.Activate();
+
+            if (ShouldHandleSplashScreen)
+            {
+                //handle the splashscreen
+                var splashData = GetSplashScreenPath();
+                var splashBackground = splashData.Item1;
+                var splashImagePath = splashData.Item2;
+
+                IoCManager.Resolve<IWinRTSplashScreenProvider>().Setup(e, splashBackground, splashImagePath);
+                await IoCManager.Resolve<IWinRTSplashScreenProvider>().ActivateAsync();
+                await OnSplashScreenShownAsync();
+            }
         }
 
         protected override void OnActivated(IActivatedEventArgs args)
@@ -275,5 +316,11 @@ namespace Crystal2
             return Task.Delay(1);
         }
 
+        protected virtual Task OnSplashScreenShownAsync()
+        {
+            return Task.Delay(1);
+        }
+
+        public virtual bool ShouldHandleSplashScreen { get { return false; } }
     }
 }

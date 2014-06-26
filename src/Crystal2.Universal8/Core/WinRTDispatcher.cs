@@ -9,28 +9,24 @@ namespace Crystal2.Core
 {
     public sealed class WinRTDispatcher : IUIDispatcher
     {
-        private CoreDispatcher dispatcherObject = null;
+        private Lazy<CoreDispatcher> dispatcherObject = null;
         internal WinRTDispatcher()
         {
-            SetDispatcher();
-        }
-
-        private void SetDispatcher()
-        {
-            try
+            dispatcherObject = new Lazy<CoreDispatcher>(() =>
             {
-                dispatcherObject = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
-            }
-            catch (InvalidOperationException) { }
+                try
+                {
+                    return Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
+                }
+                catch (InvalidOperationException) { return null; }
+            });
         }
 
         public Task RunAsync(Action callback)
         {
             if (callback == null) throw new ArgumentNullException("callback");
 
-            if (dispatcherObject == null) SetDispatcher();
-
-            return dispatcherObject.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() => callback())).AsTask();
+            return dispatcherObject.Value.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() => callback())).AsTask();
         }
     }
 }
