@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace Crystal2.UI.SplashScreen
 {
@@ -12,10 +13,18 @@ namespace Crystal2.UI.SplashScreen
     {
         private bool isVisible;
         private DefaultWinRTSplashScreen splashScreen = null;
-        public virtual void Setup(Windows.ApplicationModel.Activation.IActivatedEventArgs args, string splashBackgroundColor, string splashScreenImagePath)
+        private string backgroundColor = "";
+        private string imagePath = "";
+        public virtual void Setup(string splashBackgroundColor, string splashScreenImagePath)
+        {
+            backgroundColor = splashBackgroundColor;
+            imagePath = splashScreenImagePath;
+        }
+
+        public void PreActivationHook(Windows.ApplicationModel.Activation.IActivatedEventArgs args)
         {
             args.SplashScreen.Dismissed += SplashScreen_Dismissed;
-            splashScreen = new DefaultWinRTSplashScreen(splashBackgroundColor, splashScreenImagePath);
+            splashScreen = new DefaultWinRTSplashScreen(args.SplashScreen, backgroundColor, imagePath);
         }
 
         void SplashScreen_Dismissed(Windows.ApplicationModel.Activation.SplashScreen sender, object args)
@@ -27,6 +36,9 @@ namespace Crystal2.UI.SplashScreen
         public Task ActivateAsync()
         {
             isVisible = true;
+
+            if (!Crystal2.CrystalWinRTApplication.IsPhone())
+                ((Frame)Window.Current.Content).Background = new SolidColorBrush(Crystal2.Utilities.ColorHelper.ParseHex(backgroundColor));
 
             ((Frame)Window.Current.Content).Content = splashScreen;
 

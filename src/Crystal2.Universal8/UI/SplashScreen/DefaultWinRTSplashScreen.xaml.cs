@@ -25,41 +25,39 @@ namespace Crystal2.UI.SplashScreen
     /// </summary>
     internal sealed partial class DefaultWinRTSplashScreen : Page
     {
-        public DefaultWinRTSplashScreen(string splashBackgroundColor, string splashScreenImagePath)
+        public DefaultWinRTSplashScreen(Windows.ApplicationModel.Activation.SplashScreen splash, string splashBackgroundColor, string splashScreenImagePath)
         {
             this.InitializeComponent();
 
 
-            this.Background = new SolidColorBrush(ParseHex(splashBackgroundColor));
+            this.Background = new SolidColorBrush(Crystal2.Utilities.ColorHelper.ParseHex(splashBackgroundColor));
 
             var bitmapImage = new BitmapImage();
             bitmapImage.UriSource = new Uri("ms-appx:///" + splashScreenImagePath);
-            layoutRoot.Background = new ImageBrush()
-            {
-                ImageSource = bitmapImage
-            };
-        }
-        private Color ParseHex(string hexCode)
-        {
-            //http://stackoverflow.com/a/16815300/2263199
-            //modified by Amrykid
+            appSplashImage.Source = bitmapImage;
 
-            int index = hexCode.StartsWith("#") ? -2 : -3;
-
-            var color = new Color();
-            if (hexCode.Length >= 9)
+            if (CrystalWinRTApplication.IsPhone())
             {
-                color.A = byte.Parse(hexCode.Substring(1, 2), NumberStyles.AllowHexSpecifier);
-                index = hexCode.StartsWith("#") ? -1 : 0;
+                imageCanvas.Margin = new Thickness(0, -25, 0, 0); //account for the statusbar.
+                imageCanvas.Width = Window.Current.Bounds.Width;
+                imageCanvas.Height = Window.Current.Bounds.Height;
+
+                appSplashImage.Width = imageCanvas.Width;
+                appSplashImage.Height = imageCanvas.Height;
+                //appSplashImage.Stretch = Stretch.Fill;
+
+                appSplashImage.SetValue(Canvas.LeftProperty, 0);
+                appSplashImage.SetValue(Canvas.TopProperty, 0);
             }
             else
-                color.A = 255;
+            {
+                appSplashImage.Height = splash.ImageLocation.Height;
+                appSplashImage.Width = splash.ImageLocation.Width;
 
-            color.R = byte.Parse(hexCode.Substring(index + 3, 2), NumberStyles.AllowHexSpecifier);
-            color.G = byte.Parse(hexCode.Substring(index + 5, 2), NumberStyles.AllowHexSpecifier);
-            color.B = byte.Parse(hexCode.Substring(index + 7, 2), NumberStyles.AllowHexSpecifier);
+                appSplashImage.SetValue(Canvas.LeftProperty, splash.ImageLocation.Left);
+                appSplashImage.SetValue(Canvas.TopProperty, splash.ImageLocation.Top);
+            }
 
-            return color;
         }
     }
 }

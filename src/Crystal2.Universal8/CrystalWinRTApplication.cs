@@ -115,6 +115,13 @@ namespace Crystal2
             if (ShouldHandleSplashScreen)
             {
                 IoCManager.Register<IWinRTSplashScreenProvider>(new DefaultSplashScreenProvider());
+
+                //handle the splashscreen
+                var splashData = GetSplashScreenPath();
+                var splashBackground = splashData.Item1;
+                var splashImagePath = splashData.Item2;
+
+                IoCManager.Resolve<IWinRTSplashScreenProvider>().Setup(splashBackground, splashImagePath);
             }
 
             if (IsPhone())
@@ -154,16 +161,46 @@ namespace Crystal2
 
             var doc = XDocument.Load("AppxManifest.xml", LoadOptions.None);
 
-            // Define the default namespace to be used
-            var xname = XNamespace.Get("http://schemas.microsoft.com/appx/2014/manifest"); //XNamespace.Get("http://schemas.microsoft.com/appx/2010/manifest");
+            var namespaces = doc.Root.Attributes();
+            var m2 = XNamespace.Get(namespaces.First(x => x.IsNamespaceDeclaration && x.Name.LocalName == "m2").Value);
+
+            XNamespace m3 = null;
+            var m3Attr = namespaces.FirstOrDefault(x => x.IsNamespaceDeclaration && x.Name.LocalName == "m3");
+            if (m3Attr != null)
+                m3 = XNamespace.Get(m3Attr.Value);
+
 
             // Get the SplashScreen node located at Package/Applications/Application/VisualElements/SplashScreen
-            var splashScreenElement = doc.Descendants(xname + "SplashScreen").First();
+            var splashScreenElement = doc.Descendants(m2 + "SplashScreen").FirstOrDefault();
 
             // The Image attribute holds the local path to the Splash Screen image for the application
-            var splashScreenPath = splashScreenElement.Attribute("Image").Value;
+            var splashScreenPath = string.Empty;
 
-            string splashBackgroundColor = splashScreenElement.Attribute("BackgroundColor").Value;
+            var splashBackgroundColor = string.Empty;
+
+            if (splashScreenElement != null)
+            {
+                splashScreenPath = splashScreenElement.Attribute("Image").Value;
+
+                if (splashScreenElement.Attributes().Any(x => x.Name == "BackgroundColor"))
+                    splashBackgroundColor = splashScreenElement.Attribute("BackgroundColor").Value;
+                else
+                {
+                    var visualElementsElement = doc.Descendants(m2 + "VisualElements").First();
+
+                    splashBackgroundColor = visualElementsElement.Attribute("BackgroundColor").Value;
+                }
+            }
+            else
+            {
+                splashScreenElement = doc.Descendants(m3 + "SplashScreen").First();
+
+                splashScreenPath = splashScreenElement.Attribute("Image").Value;
+
+                var visualElementsElement = doc.Descendants(m3 + "VisualElements").First();
+
+                splashBackgroundColor = visualElementsElement.Attribute("BackgroundColor").Value;
+            }
 
             return new Tuple<string, string>(splashBackgroundColor, splashScreenPath);
         }
@@ -234,28 +271,23 @@ namespace Crystal2
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
                 // parameter
-                //if (!RootFrame.Navigate(typeof(MainPage), e.Arguments))
-                //{
-                //    throw new Exception("Failed to create initial page");
-                //}
+            }
 
-                //OnNormalLaunchNavigationReady(e);
+            //the following code is me jumping through hoops to make sure the splash screen is showing while the callback is firing.
+
+            Task splashScreenWorkTask = null;
+            if (ShouldHandleSplashScreen)
+            {
+                var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
+                splashProvider.PreActivationHook(e);
+                await splashProvider.ActivateAsync();
+                splashScreenWorkTask = OnSplashScreenShownAsync();
             }
 
             // Ensure the current window is active
             Window.Current.Activate();
 
-            if (ShouldHandleSplashScreen)
-            {
-                //handle the splashscreen
-                var splashData = GetSplashScreenPath();
-                var splashBackground = splashData.Item1;
-                var splashImagePath = splashData.Item2;
-
-                IoCManager.Resolve<IWinRTSplashScreenProvider>().Setup(e, splashBackground, splashImagePath);
-                await IoCManager.Resolve<IWinRTSplashScreenProvider>().ActivateAsync();
-                await OnSplashScreenShownAsync();
-            }
+            if (splashScreenWorkTask != null) await splashScreenWorkTask;
         }
 
         protected override void OnActivated(IActivatedEventArgs args)

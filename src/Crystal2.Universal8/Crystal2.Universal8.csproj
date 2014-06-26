@@ -62,6 +62,7 @@
       <DependentUpon>DefaultWinRTSplashScreen.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\SplashScreen\IWinRTSplashScreenProvider.cs" />
+    <Compile Include="Utilities\ColorHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Lifecycle\" />
