@@ -23,10 +23,10 @@ namespace Crystal2.IOC
         /// </summary>
         /// <typeparam name="T">The type of object (an Interface that implements <see cref="IIoCObject">IIoCObject</see>).)</typeparam>
         /// <param name="objectToRegister">The actual object to be registered.</param>
-        public static void Register<T>(T objectToRegister) where T: IIoCObject
+        public static void Register<T>(T objectToRegister) where T : IIoCObject
         {
             //Makes sure the type parameter is an IIoCObject.
-            if (typeof(T) == typeof(IIoCObject)) 
+            if (typeof(T) == typeof(IIoCObject))
                 throw new ArgumentException("Generic argument cannot be IIoCObject.");
 
             if (!(objectToRegister is T))
@@ -39,9 +39,19 @@ namespace Crystal2.IOC
         /// </summary>
         /// <typeparam name="T">The type parameter to resolve against.</typeparam>
         /// <returns></returns>
-        public static T Resolve<T>() where T: IIoCObject
+        public static T Resolve<T>() where T : IIoCObject
         {
             return (T)itemsDictionary.First(x => x.Key == typeof(T)).Value;
+        }
+
+        public static IEnumerable<T> ResolveAll<T>() where T : IIoCObject
+        {
+            return (IEnumerable<T>)itemsDictionary.Where(x => x.Key == typeof(T)).Select(x => x.Value);
+        }
+
+        public static bool IsRegistered<T>() where T : IIoCObject
+        {
+            return itemsDictionary.Any(x => x.Key == typeof(T));
         }
     }
 }

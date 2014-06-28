@@ -13,7 +13,7 @@ namespace Crystal2.Model
     /// <summary>
     /// A ViewModelBase that implements IsBusy and IsBusyStatusText for WinRT platforms.
     /// </summary>
-    public abstract class WinRTBusyViewModelBase : ViewModelBase
+    public abstract class WinRTBusyViewModelBase : WinRTViewModelBase
     {
         public WinRTBusyViewModelBase()
         {

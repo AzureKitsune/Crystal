@@ -1,6 +1,7 @@
 ﻿using Crystal2.Core;
 using Crystal2.IOC;
 using Crystal2.Navigation;
+using Crystal2.State;
 using Crystal2.UI.SplashScreen;
 using System;
 using System.Collections.Generic;
@@ -63,6 +64,23 @@ namespace Crystal2
 
             // TODO: Save application state and stop any background activity
 
+            if (IoCManager.IsRegistered<IStateProvider>())
+            {
+                var state = IoCManager.Resolve<IStateProvider>().State;
+
+
+                if (state.NavigationState != null)
+                {
+                    state.StateObjects = new Dictionary<string, object>();
+
+                    //state.NavigationState = IoCManager.Resolve<INavigationProvider>().GetNavigationContext() as string;
+
+                    var viewModel = IoCManager.Resolve<INavigationProvider>().GetCurrentViewModel();
+                    if (viewModel is IStateHandlingViewModel)
+                        ((IStateHandlingViewModel)viewModel).OnSuspend(state.StateObjects);
+                }
+            }
+
             try
             {
                 if (IsPhone())
@@ -73,6 +91,13 @@ namespace Crystal2
                 }
 
                 await OnSuspendingAsync();
+
+                if (IoCManager.IsRegistered<IStateProvider>())
+                {
+                    var stateProvider = IoCManager.Resolve<IStateProvider>();
+                    if (stateProvider.State.NavigationState != null)
+                        await stateProvider.SaveStateAsync();
+                }
             }
             catch (Exception) { throw; }
 
@@ -114,7 +139,8 @@ namespace Crystal2
 
             if (ShouldHandleSplashScreen)
             {
-                IoCManager.Register<IWinRTSplashScreenProvider>(new DefaultSplashScreenProvider());
+                if (!IoCManager.IsRegistered<IWinRTSplashScreenProvider>())
+                    IoCManager.Register<IWinRTSplashScreenProvider>(new DefaultSplashScreenProvider());
 
                 //handle the splashscreen
                 var splashData = GetSplashScreenPath();
@@ -123,6 +149,10 @@ namespace Crystal2
 
                 IoCManager.Resolve<IWinRTSplashScreenProvider>().Setup(splashBackground, splashImagePath);
             }
+
+            //set up state management
+            //if (!IoCManager.IsRegistered<IStateProvider>())
+            //    IoCManager.Register<IStateProvider>(new DefaultStateProvider());
 
             if (IsPhone())
             {
@@ -235,17 +265,31 @@ namespace Crystal2
                 // TODO: change this value to a cache size that is appropriate for your application
                 RootFrame.CacheSize = 1;
 
+                //Now that we have a frame, initialize the INavigationProvider.
+                IoCManager.Resolve<INavigationProvider>()
+                    .Setup(RootFrame);
+
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
-                    // TODO: Load state from previously suspended application
+                    if (IoCManager.IsRegistered<IStateProvider>())
+                    {
+                        await IoCManager.Resolve<IStateProvider>().LoadStateAsync();
+
+                        var state = IoCManager.Resolve<IStateProvider>().State;
+
+                        if (state.NavigationState != null)
+                        {
+                            IoCManager.Resolve<INavigationProvider>().SetNavigationContext(state.NavigationState);
+
+                            var viewModel = IoCManager.Resolve<INavigationProvider>().GetCurrentViewModel();
+                            if (viewModel is IStateHandlingViewModel)
+                                ((IStateHandlingViewModel)viewModel).OnResume(state.StateObjects);
+                        }
+                    }
                 }
 
                 // Place the frame in the current Window
                 Window.Current.Content = RootFrame;
-
-                //Now that we have a frame, initialize the INavigationProvider.
-                IoCManager.Resolve<INavigationProvider>()
-                    .Setup(RootFrame);
             }
 
             if (RootFrame.Content == null)

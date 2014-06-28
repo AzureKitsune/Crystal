@@ -40,5 +40,8 @@ namespace Crystal2.Navigation
         ViewModelBase GetCurrentViewModel();
 
         void ClearBackStack();
+
+        void SetNavigationContext(object context);
+        object GetNavigationContext();
     }
 }

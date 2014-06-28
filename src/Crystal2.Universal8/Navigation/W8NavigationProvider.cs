@@ -182,5 +182,16 @@ namespace Crystal2.Navigation
         {
             ((Frame)NavigationObject).BackStack.Clear();
         }
+
+
+        public void SetNavigationContext(object context)
+        {
+            ((Frame)navigationFrame).SetNavigationState((string)context);
+        }
+
+        public object GetNavigationContext()
+        {
+            return ((Frame)navigationFrame).GetNavigationState();
+        }
     }
 }
