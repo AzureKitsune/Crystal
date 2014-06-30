@@ -235,20 +235,24 @@ namespace Crystal2
             return new Tuple<string, string>(splashBackgroundColor, splashScreenPath);
         }
 
-        protected override void OnSearchActivated(SearchActivatedEventArgs args)
-        {
-            OnActivationNavigationReady(args);
-            base.OnSearchActivated(args);
-        }
         protected override async void OnLaunched(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
         {
-            if (e.PreviousExecutionState != ApplicationExecutionState.Running)
+            if (IsPhone())
+            {
+                //phone calls OnLaunched each time it is launched from the start tile/app list. make sure it is only called once.
+                if (e.PreviousExecutionState != ApplicationExecutionState.Running)
+                {
+                    await HandleInitialNavigation(e);
+                    OnNormalLaunchNavigationReady(e);
+                }
+            }
+            else
             {
                 await HandleInitialNavigation(e);
                 OnNormalLaunchNavigationReady(e);
             }
-            else
-                OnActivationNavigationReady(e);
+
+            Window.Current.Activate();
         }
 
         private async Task HandleInitialNavigation(IActivatedEventArgs e)
@@ -320,7 +324,7 @@ namespace Crystal2
             //the following code is me jumping through hoops to make sure the splash screen is showing while the callback is firing.
 
             Task splashScreenWorkTask = null;
-            if (ShouldHandleSplashScreen)
+            if (ShouldHandleSplashScreen && e.PreviousExecutionState != ApplicationExecutionState.Running)
             {
                 var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
                 splashProvider.PreActivationHook(e);
@@ -334,10 +338,23 @@ namespace Crystal2
             if (splashScreenWorkTask != null) await splashScreenWorkTask;
         }
 
+
+        #region Activation handling
         protected override void OnActivated(IActivatedEventArgs args)
         {
             OnActivationNavigationReady((IActivatedEventArgs)args);
         }
+        protected override void OnSearchActivated(SearchActivatedEventArgs args)
+        {
+            OnActivationNavigationReady(args);
+            base.OnSearchActivated(args);
+        }
+        protected override void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
+        {
+            OnActivationNavigationReady(args);
+            base.OnShareTargetActivated(args);
+        }
+        #endregion
 
         /// <summary>
         /// Returns if the application is running on Windows Phone.
@@ -345,10 +362,6 @@ namespace Crystal2
         /// <returns></returns>
         public static bool IsPhone()
         {
-            //var val = Type.GetType("Windows.Phone.UI.Input.HardwareButtons", false);
-            //var val = Type.GetType("Windows.Networking.BackgroundTransfer.ContentPrefetcher", false);
-            //return val == null;
-
             return ((CrystalWinRTApplication)Current).CurrentPlatform == Platform.WindowsPhone;
         }
 
