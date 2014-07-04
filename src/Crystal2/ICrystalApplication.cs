@@ -11,8 +11,7 @@ namespace Crystal2
     /// </summary>
     public interface ICrystalApplication
     {
-        bool ShouldHandleSplashScreen { get; }
-
+        void OnPreinitialize(CrystalConfiguration options);
         void OnInitialize();
     }
 }

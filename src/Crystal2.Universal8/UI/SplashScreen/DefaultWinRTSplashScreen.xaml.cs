@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -58,6 +59,25 @@ namespace Crystal2.UI.SplashScreen
                 appSplashImage.SetValue(Canvas.TopProperty, splash.ImageLocation.Top);
             }
 
+
+            this.Loaded += DefaultWinRTSplashScreen_Loaded;
+            this.Unloaded += DefaultWinRTSplashScreen_Unloaded;
+        }
+
+        private DisplayOrientations oldOrientation = DisplayOrientations.None;
+        void DefaultWinRTSplashScreen_Unloaded(object sender, RoutedEventArgs e)
+        {
+            this.Loaded -= DefaultWinRTSplashScreen_Loaded;
+            this.Unloaded -= DefaultWinRTSplashScreen_Unloaded;
+
+            DisplayInformation.AutoRotationPreferences = oldOrientation;
+        }
+
+        void DefaultWinRTSplashScreen_Loaded(object sender, RoutedEventArgs e)
+        {
+            oldOrientation = DisplayInformation.AutoRotationPreferences;
+
+            DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait;
         }
     }
 }

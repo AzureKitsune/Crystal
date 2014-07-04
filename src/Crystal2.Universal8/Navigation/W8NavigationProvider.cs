@@ -120,7 +120,8 @@ namespace Crystal2.Navigation
         {
             var map = provider.ProvideMap();
 
-            Tuple<Type, Uri> selectedPage = (Tuple<Type, Uri>)map.First(x => information.TargetViewModel.GetType() == x.Key).Value;
+            Tuple<Type, Uri> selectedPage = (Tuple<Type, Uri>)map.First(x =>
+                information.TargetViewModel.GetType() == x.Key).Value;
             //information.TargetUri = selectedPage.Item2;
 
             NavigatingCancelEventHandler nceh = null;

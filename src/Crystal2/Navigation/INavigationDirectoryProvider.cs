@@ -1,6 +1,7 @@
 ﻿using Crystal2.IOC;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -17,6 +18,6 @@ namespace Crystal2.Navigation
         /// Returns a dictionary of ViewModel type and an object that corresponds to a view.
         /// </summary>
         /// <returns></returns>
-        Dictionary<Type, object> ProvideMap();
+        ReadOnlyDictionary<Type, object> ProvideMap();
     }
 }

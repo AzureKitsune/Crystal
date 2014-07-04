@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace Crystal2.Navigation
 {
@@ -13,14 +14,14 @@ namespace Crystal2.Navigation
     /// </summary>
     public static class NavigationManager
     {
-        private static Dictionary<Type, object> navigablePages = null;
+        private static ReadOnlyDictionary<Type, object> navigablePages = null;
         static NavigationManager()
         {
             var navigationProvider = IoCManager.Resolve<INavigationProvider>();
             navigationProvider.Navigating += navigationProvider_Navigating;
             navigationProvider.Navigated += navigationProvider_Navigated;
 
-            navigablePages = IoCManager.Resolve<INavigationDirectoryProvider>().ProvideMap();
+            //navigablePages = IoCManager.Resolve<INavigationDirectoryProvider>().ProvideMap();
         }
 
         static void navigationProvider_Navigated(object sender, CrystalNavigationEventArgs e)

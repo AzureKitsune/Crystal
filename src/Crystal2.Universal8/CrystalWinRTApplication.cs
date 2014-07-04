@@ -27,13 +27,21 @@ namespace Crystal2
     public abstract class CrystalWinRTApplication : Application, ICrystalApplication
     {
         private TransitionCollection transitions;
+        private CrystalWinRTConfiguration applicationConfiguration = null;
 
         public CrystalWinRTApplication()
             : base()
         {
-            var initializeComponent = this.GetType().GetTypeInfo().GetDeclaredMethod("InitializeComponent");
-            if (initializeComponent != null)
-                initializeComponent.Invoke(this, new object[] { });
+            applicationConfiguration = new CrystalWinRTConfiguration();
+
+            OnPreinitialize(applicationConfiguration);
+
+            if (applicationConfiguration.AutomaticallyCallInitializeComponent)
+            {
+                var initializeComponent = this.GetType().GetTypeInfo().GetDeclaredMethod("InitializeComponent");
+                if (initializeComponent != null)
+                    initializeComponent.Invoke(this, new object[] { });
+            }
 
             this.Suspending += this.OnSuspending;
             this.Resuming += this.OnResuming;
@@ -64,20 +72,23 @@ namespace Crystal2
 
             // TODO: Save application state and stop any background activity
 
-            if (IoCManager.IsRegistered<IStateProvider>())
+            if (applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
             {
-                var state = IoCManager.Resolve<IStateProvider>().State;
-
-
-                if (state.NavigationState != null)
+                if (IoCManager.IsRegistered<IStateProvider>())
                 {
-                    state.StateObjects = new Dictionary<string, object>();
+                    var state = IoCManager.Resolve<IStateProvider>().State;
 
-                    //state.NavigationState = IoCManager.Resolve<INavigationProvider>().GetNavigationContext() as string;
 
-                    var viewModel = IoCManager.Resolve<INavigationProvider>().GetCurrentViewModel();
-                    if (viewModel is IStateHandlingViewModel)
-                        ((IStateHandlingViewModel)viewModel).OnSuspend(state.StateObjects);
+                    if (state.NavigationState != null)
+                    {
+                        state.StateObjects = new Dictionary<string, object>();
+
+                        //state.NavigationState = IoCManager.Resolve<INavigationProvider>().GetNavigationContext() as string;
+
+                        var viewModel = IoCManager.Resolve<INavigationProvider>().GetCurrentViewModel();
+                        if (viewModel is IStateHandlingViewModel)
+                            ((IStateHandlingViewModel)viewModel).OnSuspend(state.StateObjects);
+                    }
                 }
             }
 
@@ -133,11 +144,16 @@ namespace Crystal2
             IoCManager.Register<IUIDispatcher>(new WinRTDispatcher());
 
             //set up navigation
-            IoCManager.Register<INavigationDirectoryProvider>(new W8NavigationDirectoryProvider(this.GetType().GetTypeInfo().Assembly));
+            IoCManager.Register<INavigationDirectoryProvider>(new W8NavigationDirectoryProvider(this.GetType().GetTypeInfo().Assembly, applicationConfiguration.AutomaticallyDiscoverViewModelPairs));
+            if (!applicationConfiguration.AutomaticallyDiscoverViewModelPairs)
+            {
+                OnNavigationInitializeOverride(IoCManager.Resolve<INavigationDirectoryProvider>() as Crystal2.Navigation.W8NavigationDirectoryProvider);
+            }
+
             var navigationProvider = new W8NavigationProvider();
             IoCManager.Register<INavigationProvider>(navigationProvider);
 
-            if (ShouldHandleSplashScreen)
+            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
             {
                 if (!IoCManager.IsRegistered<IWinRTSplashScreenProvider>())
                     IoCManager.Register<IWinRTSplashScreenProvider>(new DefaultSplashScreenProvider());
@@ -275,19 +291,22 @@ namespace Crystal2
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
-                    if (IoCManager.IsRegistered<IStateProvider>())
+                    if (applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
                     {
-                        await IoCManager.Resolve<IStateProvider>().LoadStateAsync();
-
-                        var state = IoCManager.Resolve<IStateProvider>().State;
-
-                        if (state.NavigationState != null)
+                        if (IoCManager.IsRegistered<IStateProvider>())
                         {
-                            IoCManager.Resolve<INavigationProvider>().SetNavigationContext(state.NavigationState);
+                            await IoCManager.Resolve<IStateProvider>().LoadStateAsync();
 
-                            var viewModel = IoCManager.Resolve<INavigationProvider>().GetCurrentViewModel();
-                            if (viewModel is IStateHandlingViewModel)
-                                ((IStateHandlingViewModel)viewModel).OnResume(state.StateObjects);
+                            var state = IoCManager.Resolve<IStateProvider>().State;
+
+                            if (state.NavigationState != null)
+                            {
+                                IoCManager.Resolve<INavigationProvider>().SetNavigationContext(state.NavigationState);
+
+                                var viewModel = IoCManager.Resolve<INavigationProvider>().GetCurrentViewModel();
+                                if (viewModel is IStateHandlingViewModel)
+                                    ((IStateHandlingViewModel)viewModel).OnResume(state.StateObjects);
+                            }
                         }
                     }
                 }
@@ -322,20 +341,26 @@ namespace Crystal2
             }
 
             //the following code is me jumping through hoops to make sure the splash screen is showing while the callback is firing.
-
             Task splashScreenWorkTask = null;
-            if (ShouldHandleSplashScreen && e.PreviousExecutionState != ApplicationExecutionState.Running)
+
+            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
             {
-                var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
-                splashProvider.PreActivationHook(e);
-                await splashProvider.ActivateAsync();
-                splashScreenWorkTask = OnSplashScreenShownAsync();
+                if (e.PreviousExecutionState != ApplicationExecutionState.Running)
+                {
+                    var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
+                    splashProvider.PreActivationHook(e);
+                    await splashProvider.ActivateAsync();
+                    splashScreenWorkTask = OnSplashScreenShownAsync();
+                }
             }
 
             // Ensure the current window is active
             Window.Current.Activate();
 
-            if (splashScreenWorkTask != null) await splashScreenWorkTask;
+            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
+            {
+                if (splashScreenWorkTask != null) await splashScreenWorkTask;
+            }
         }
 
 
@@ -395,6 +420,12 @@ namespace Crystal2
         protected virtual void OnActivationNavigationReady(Windows.ApplicationModel.Activation.IActivatedEventArgs args)
         { }
 
+        protected virtual void OnNavigationInitializeOverride(Crystal2.Navigation.W8NavigationDirectoryProvider directoryProvider)
+        {
+            if (!applicationConfiguration.AutomaticallyDiscoverViewModelPairs)
+                throw new Exception("This function was be overriden if AutomaticallyDiscoverViewModelPairs is false.");
+        }
+
         protected virtual Task OnSuspendingAsync()
         {
             return Task.Delay(1);
@@ -410,6 +441,14 @@ namespace Crystal2
             return Task.Delay(1);
         }
 
-        public virtual bool ShouldHandleSplashScreen { get { return false; } }
+        public virtual void OnPreinitialize(CrystalConfiguration _options)
+        {
+            CrystalWinRTConfiguration options = (CrystalWinRTConfiguration)_options;
+
+            options.AutoDetectSplashScreenImage = false;
+            options.AutomaticallyShowExtendedSplashScreen = false;
+            options.AutomaticallyDiscoverViewModelPairs = true;
+            options.AutomaticallyCallInitializeComponent = true;
+        }
     }
 }
