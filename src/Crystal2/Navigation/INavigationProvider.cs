@@ -43,5 +43,7 @@ namespace Crystal2.Navigation
 
         void SetNavigationContext(object context);
         object GetNavigationContext();
+
+        Uri GetUrl();
     }
 }

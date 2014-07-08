@@ -63,7 +63,7 @@ namespace Crystal2.Navigation
             return uri;
         }
 
-        public void AddViewModelUriPair(Type viewModel, Type pageType)
+        public void AddViewModelViewPair(Type viewModel, Type pageType)
         {
             if (viewModel == null) throw new ArgumentNullException("viewModel");
             if (pageType == null) throw new ArgumentNullException("pageType");

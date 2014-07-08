@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Crystal2.State
 {
+    [DataContract]
     public class StateObject
     {
-        public string NavigationState { get; internal set; }
-        public Dictionary<string, object> StateObjects { get; internal set; }
+        [DataMember]
+        public string NavigationState { get; set; }
+        [DataMember]
+        public Collection<object[]> StateObjects { get; set; }
     }
 }

@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -31,7 +33,7 @@ namespace Crystal2.State
             bool exists = false;
             try
             {
-                await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync("_state.xml");
+                await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync("_state.json");
 
                 exists = true;
             }
@@ -40,7 +42,7 @@ namespace Crystal2.State
             }
 
             if (!exists)
-                await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync("_state.xml");
+                await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync("_state.json");
         }
 
         void DefaultStateProvider_Navigated(object sender, Navigation.CrystalNavigationEventArgs e)
@@ -59,42 +61,45 @@ namespace Crystal2.State
 
         public async Task LoadStateAsync()
         {
+            var file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync("_state.json");
             try
             {
-                var file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync("_state.xml");
+                
                 var fileStr = await file.OpenAsync(FileAccessMode.ReadWrite);
 
-                using (var str = fileStr.AsStreamForWrite())
+                using (var str = fileStr.AsStreamForRead())
                 {
-                    var serializer = new XmlSerializer(typeof(StateObject));
+                    var serializer = new DataContractJsonSerializer(typeof(StateObject));
 
-                    _state = (StateObject)await Task.Run<StateObject>(() =>
-                        (StateObject)serializer.Deserialize(str));
+                    _state = (StateObject)serializer.ReadObject(str);
                 }
             }
             catch (Exception)
             {
             }
+
+            await file.DeleteAsync();
         }
 
         public async Task SaveStateAsync()
         {
             if (State == null) return;
 
-            var file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync("_state.xml");
+            StorageFile file = null;
+            try { file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync("_state.json"); }
+            catch (Exception) { }
+            if (file == null) file = await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync("_state.json");
+
             var fileStr = await file.OpenAsync(FileAccessMode.ReadWrite);
 
             using (var str = fileStr.AsStreamForWrite())
             {
-                var serializer = new XmlSerializer(typeof(StateObject));
+                var serializer = new DataContractJsonSerializer(typeof(StateObject));
 
-                await Task.Run(() =>
-                    serializer.Serialize(str, State));
+                serializer.WriteObject(str, State);
+
+                await str.FlushAsync();
             }
-
-            await fileStr.FlushAsync();
-
-            fileStr.Dispose();
         }
 
         public StateObject State

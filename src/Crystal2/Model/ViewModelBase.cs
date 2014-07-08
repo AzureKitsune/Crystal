@@ -128,5 +128,7 @@ namespace Crystal2.Model
         public virtual void OnNavigatedFrom() { }
 
         public virtual void OnRefresh() { }
+
+        internal NavigationInformation NavigationalData { get; set; }
     }
 }

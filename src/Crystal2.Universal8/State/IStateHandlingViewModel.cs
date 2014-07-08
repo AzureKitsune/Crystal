@@ -8,7 +8,7 @@ namespace Crystal2.State
 {
     internal interface IStateHandlingViewModel
     {
-        void OnResume(IDictionary<string, object> data);
-        void OnSuspend(IDictionary<string, object> data);
+        void OnRestore(IDictionary<string, object> data);
+        void OnPreserve(IDictionary<string, object> data);
     }
 }

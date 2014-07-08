@@ -16,5 +16,7 @@ namespace Crystal2.Navigation
         public ViewModelBase TargetViewModel { get; internal set; }
         public Uri TargetUri { get; internal set; }
         public object Parameter { get; internal set; }
+
+        public Type TargetViewModelType { get; internal set; }
     }
 }

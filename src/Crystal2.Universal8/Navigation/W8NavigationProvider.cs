@@ -36,13 +36,57 @@ namespace Crystal2.Navigation
 
         void navigationFrame_Navigating(object sender, Windows.UI.Xaml.Navigation.NavigatingCancelEventArgs e)
         {
+            ViewModelBase oldViewModel = null;
+
             if (navigationFrame.Content != null)
+            {
                 if (((Page)navigationFrame.Content).DataContext != null)
-                    e.Cancel = ((ViewModelBase)((Page)navigationFrame.Content).DataContext).OnNavigatingFrom();
+                {
+                    oldViewModel = ((ViewModelBase)((Page)navigationFrame.Content).DataContext);
+
+                    e.Cancel = oldViewModel.OnNavigatingFrom();
+                }
+            }
+
+            NavigatedEventHandler navigatedHandler = null;
+            navigatedHandler = new NavigatedEventHandler((o, e2) =>
+            {
+                Uri uri = GetNavigationUriFromArgs(e2);
+
+                var provider = IOC.IoCManager.Resolve<INavigationDirectoryProvider>();
+
+                var map = provider.ProvideMap();
+
+                Type selectedPageViewModel = (Type)map.First(x =>
+                    uri == ((Tuple<Type, Uri>)x.Value).Item2).Key;
+
+                ViewModelBase newViewModel = (ViewModelBase)Activator.CreateInstance(selectedPageViewModel);//((ViewModelBase)((Page)e2.Content).DataContext);
+
+                if (((navigationFrame.BackStack.Count > 0 && e2.NavigationMode == NavigationMode.Forward) ||
+                    (navigationFrame.ForwardStack.Count > 0 && e2.NavigationMode == NavigationMode.Back))
+                    && oldViewModel != null)
+                    oldViewModel.OnNavigatedFrom();
+
+                if (navigationFrame.Content != null)
+                {
+                    if (e.NavigationMode == NavigationMode.New)
+                        ((Page)navigationFrame.Content).DataContext = newViewModel;
+
+                    newViewModel.OnNavigatedTo(e2.Parameter, new CrystalWinRTNavigationEventArgs(e2.Parameter)
+                    {
+                        TargetUri = uri,
+                        Direction = ConvertToCrystalNavigation(e.NavigationMode),
+                    });
+                }
+
+                navigationFrame.Navigated -= navigatedHandler;
+            });
+
+            navigationFrame.Navigated += navigatedHandler;
 
             if (Navigating != null)
             {
-                Uri uri = GetNavigationUri(e);
+                Uri uri = GetNavigationUriFromArgs(e);
 
                 Navigating(this, new CrystalWinRTNavigationEventArgs(e.Parameter)
                 {
@@ -54,26 +98,10 @@ namespace Crystal2.Navigation
 
         void navigationFrame_Navigated(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
         {
-            if (navigationFrame.BackStack.Count > 0)
-                ((NavigationInformation)navigationFrame.BackStack.First().Parameter).TargetViewModel.OnNavigatedFrom();
-
-            Uri uri = GetNavigationUri(e);
-
-            if (navigationFrame.Content != null)
-            {
-                NavigationInformation information = (NavigationInformation)e.Parameter;
-
-                ((Page)navigationFrame.Content).DataContext = information.TargetViewModel;
-
-                information.TargetViewModel.OnNavigatedTo(information.Parameter, new CrystalWinRTNavigationEventArgs(e.Parameter)
-                {
-                    TargetUri = uri,
-                    Direction = ConvertToCrystalNavigation(e.NavigationMode),
-                });
-            }
-
             if (Navigated != null)
             {
+                Uri uri = GetNavigationUriFromArgs(e);
+
                 Navigated(this, new CrystalWinRTNavigationEventArgs(e.Parameter)
                 {
                     TargetUri = uri,
@@ -82,7 +110,7 @@ namespace Crystal2.Navigation
             }
         }
 
-        private static Uri GetNavigationUri(object e)
+        private static Uri GetNavigationUriFromArgs(object e)
         {
             Type sourcePageType = null;
             if (e is NavigatingCancelEventArgs)
@@ -90,6 +118,10 @@ namespace Crystal2.Navigation
             else if (e is NavigationEventArgs)
                 sourcePageType = ((NavigationEventArgs)e).SourcePageType;
 
+            return GetNavigationUri(sourcePageType);
+        }
+        private static Uri GetNavigationUri(Type sourcePageType)
+        {
             var provider = IOC.IoCManager.Resolve<INavigationDirectoryProvider>();
 
             var map = provider.ProvideMap();
@@ -121,21 +153,24 @@ namespace Crystal2.Navigation
             var map = provider.ProvideMap();
 
             Tuple<Type, Uri> selectedPage = (Tuple<Type, Uri>)map.First(x =>
-                information.TargetViewModel.GetType() == x.Key).Value;
+                information.TargetViewModelType == x.Key).Value;
             //information.TargetUri = selectedPage.Item2;
 
-            NavigatingCancelEventHandler nceh = null;
+            //NavigatingCancelEventHandler nceh = null;
 
-            nceh = new NavigatingCancelEventHandler((obj, e) =>
-            {
-                information.TargetViewModel.OnNavigatingTo();
+            //nceh = new NavigatingCancelEventHandler((obj, e) =>
+            //{
+            //    information.TargetViewModel.OnNavigatingTo();
 
-                navigationFrame.Navigating -= nceh;
-            });
+            //    navigationFrame.Navigating -= nceh;
+            //});
 
-            navigationFrame.Navigating += nceh;
+            //navigationFrame.Navigating += nceh;
 
-            navigationFrame.Navigate(selectedPage.Item1, information);
+            if (information.Parameter == null)
+                navigationFrame.Navigate(selectedPage.Item1);
+            else
+                navigationFrame.Navigate(selectedPage.Item1, information.Parameter);
 
             //((Page)navigationFrame.Content).DataContext = information.TargetViewModel;
 
@@ -193,6 +228,12 @@ namespace Crystal2.Navigation
         public object GetNavigationContext()
         {
             return ((Frame)navigationFrame).GetNavigationState();
+        }
+
+
+        public Uri GetUrl()
+        {
+            return GetNavigationUri(((Page)((Frame)NavigationObject).Content).GetType());
         }
     }
 }

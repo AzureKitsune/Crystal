@@ -46,8 +46,8 @@ namespace Crystal2.Navigation
 
             //constructs a navigation information object for navigation.
             var navigationInformation = new NavigationInformation();
-            navigationInformation.TargetViewModel = (ViewModelBase)Activator.CreateInstance(typeof(T));
             navigationInformation.Parameter = parameter;
+            navigationInformation.TargetViewModelType = typeof(T);
 
             //grabs the navigation provider from the IoC container and navigates using it.
             IoCManager.Resolve<INavigationProvider>().Navigate(navigationInformation, directoryProvider);

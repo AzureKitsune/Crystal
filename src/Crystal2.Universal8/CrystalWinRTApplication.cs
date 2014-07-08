@@ -1,10 +1,12 @@
 ﻿using Crystal2.Core;
 using Crystal2.IOC;
+using Crystal2.Model;
 using Crystal2.Navigation;
 using Crystal2.State;
 using Crystal2.UI.SplashScreen;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -78,16 +80,22 @@ namespace Crystal2
                 {
                     var state = IoCManager.Resolve<IStateProvider>().State;
 
-
                     if (state.NavigationState != null)
                     {
-                        state.StateObjects = new Dictionary<string, object>();
+                        var navProvider = IoCManager.Resolve<INavigationProvider>();
 
-                        //state.NavigationState = IoCManager.Resolve<INavigationProvider>().GetNavigationContext() as string;
+                        state.NavigationState = navProvider.GetNavigationContext() as string;
 
-                        var viewModel = IoCManager.Resolve<INavigationProvider>().GetCurrentViewModel();
+                        var viewModel = navProvider.GetCurrentViewModel();
                         if (viewModel is IStateHandlingViewModel)
-                            ((IStateHandlingViewModel)viewModel).OnSuspend(state.StateObjects);
+                        {
+                            var stateObjs = new Dictionary<string, object>();
+                            ((IStateHandlingViewModel)viewModel).OnPreserve(stateObjs);
+
+                            state.StateObjects = new Collection<object[]>(stateObjs.Select(x => new object[] { x.Key, x.Value }).ToArray());
+                        }
+                        else
+                            state.StateObjects = new Collection<object[]>();
                     }
                 }
             }
@@ -167,8 +175,11 @@ namespace Crystal2
             }
 
             //set up state management
-            //if (!IoCManager.IsRegistered<IStateProvider>())
-            //    IoCManager.Register<IStateProvider>(new DefaultStateProvider());
+            if (applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
+            {
+                if (!IoCManager.IsRegistered<IStateProvider>())
+                    IoCManager.Register<IStateProvider>(new DefaultStateProvider());
+            }
 
             if (IsPhone())
             {
@@ -259,13 +270,19 @@ namespace Crystal2
                 if (e.PreviousExecutionState != ApplicationExecutionState.Running)
                 {
                     await HandleInitialNavigation(e);
-                    OnNormalLaunchNavigationReady(e);
+
+                    if ((e.PreviousExecutionState != ApplicationExecutionState.Terminated && applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
+                        || !applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
+                        OnNormalLaunchNavigationReady(e);
                 }
             }
             else
             {
                 await HandleInitialNavigation(e);
-                OnNormalLaunchNavigationReady(e);
+
+                if ((e.PreviousExecutionState != ApplicationExecutionState.Terminated && applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
+                        || !applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
+                    OnNormalLaunchNavigationReady(e);
             }
 
             Window.Current.Activate();
@@ -273,6 +290,8 @@ namespace Crystal2
 
         private async Task HandleInitialNavigation(IActivatedEventArgs e)
         {
+            bool restoredState = false;
+
             RootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
@@ -295,18 +314,36 @@ namespace Crystal2
                     {
                         if (IoCManager.IsRegistered<IStateProvider>())
                         {
-                            await IoCManager.Resolve<IStateProvider>().LoadStateAsync();
-
-                            var state = IoCManager.Resolve<IStateProvider>().State;
-
-                            if (state.NavigationState != null)
+                            try
                             {
-                                IoCManager.Resolve<INavigationProvider>().SetNavigationContext(state.NavigationState);
+                                await IoCManager.Resolve<IStateProvider>().LoadStateAsync();
 
-                                var viewModel = IoCManager.Resolve<INavigationProvider>().GetCurrentViewModel();
-                                if (viewModel is IStateHandlingViewModel)
-                                    ((IStateHandlingViewModel)viewModel).OnResume(state.StateObjects);
+                                var state = IoCManager.Resolve<IStateProvider>().State;
+
+                                if (state.NavigationState != null)
+                                {
+                                    IoCManager.Resolve<INavigationProvider>().SetNavigationContext(state.NavigationState);
+
+                                    var provider = IOC.IoCManager.Resolve<INavigationDirectoryProvider>();
+
+                                    var map = provider.ProvideMap();
+
+                                    Type selectedPageViewModel = (Type)map.First(x =>
+                                       IoCManager.Resolve<INavigationProvider>().GetUrl() == ((Tuple<Type, Uri>)x.Value).Item2).Key;
+
+                                    ViewModelBase viewModel = (ViewModelBase)Activator.CreateInstance(selectedPageViewModel);
+
+                                    ((Page)((Frame)IoCManager.Resolve<INavigationProvider>().NavigationObject).Content).DataContext = viewModel;
+
+                                    viewModel.OnNavigatedTo(null, new CrystalWinRTNavigationEventArgs(null) { Direction = CrystalNavigationDirection.Forward });
+
+                                    if (viewModel is IStateHandlingViewModel)
+                                        ((IStateHandlingViewModel)viewModel).OnRestore(state.StateObjects.ToDictionary(x => (string)x[0], y => y[1]));
+
+                                    restoredState = true;
+                                }
                             }
+                            catch (Exception) { }
                         }
                     }
                 }
@@ -343,23 +380,29 @@ namespace Crystal2
             //the following code is me jumping through hoops to make sure the splash screen is showing while the callback is firing.
             Task splashScreenWorkTask = null;
 
-            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
+            if (!restoredState)
             {
-                if (e.PreviousExecutionState != ApplicationExecutionState.Running)
+                if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
                 {
-                    var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
-                    splashProvider.PreActivationHook(e);
-                    await splashProvider.ActivateAsync();
-                    splashScreenWorkTask = OnSplashScreenShownAsync();
+                    if (e.PreviousExecutionState != ApplicationExecutionState.Running)
+                    {
+                        var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
+                        splashProvider.PreActivationHook(e);
+                        await splashProvider.ActivateAsync();
+                        splashScreenWorkTask = OnSplashScreenShownAsync();
+                    }
                 }
             }
 
             // Ensure the current window is active
             Window.Current.Activate();
 
-            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
+            if (!restoredState)
             {
-                if (splashScreenWorkTask != null) await splashScreenWorkTask;
+                if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
+                {
+                    if (splashScreenWorkTask != null) await splashScreenWorkTask;
+                }
             }
         }
 

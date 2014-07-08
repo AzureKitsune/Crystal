@@ -9,12 +9,12 @@ namespace Crystal2.Model
 {
     public abstract class WinRTViewModelBase: ViewModelBase, IStateHandlingViewModel
     {
-        public virtual void OnResume(IDictionary<string, object> data)
+        public virtual void OnRestore(IDictionary<string, object> data)
         {
             return;
         }
 
-        public virtual void OnSuspend(IDictionary<string, object> data)
+        public virtual void OnPreserve(IDictionary<string, object> data)
         {
             return;
         }
