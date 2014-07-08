@@ -69,7 +69,7 @@ namespace Crystal2.Navigation
 
                 if (navigationFrame.Content != null)
                 {
-                    if (e.NavigationMode == NavigationMode.New)
+                    if (((Page)navigationFrame.Content).DataContext == null)
                         ((Page)navigationFrame.Content).DataContext = newViewModel;
 
                     newViewModel.OnNavigatedTo(e2.Parameter, new CrystalWinRTNavigationEventArgs(e2.Parameter)
