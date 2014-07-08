@@ -60,8 +60,6 @@ namespace Crystal2.Navigation
                 Type selectedPageViewModel = (Type)map.First(x =>
                     uri == ((Tuple<Type, Uri>)x.Value).Item2).Key;
 
-                ViewModelBase newViewModel = (ViewModelBase)Activator.CreateInstance(selectedPageViewModel);//((ViewModelBase)((Page)e2.Content).DataContext);
-
                 if (((navigationFrame.BackStack.Count > 0 && e2.NavigationMode == NavigationMode.Forward) ||
                     (navigationFrame.ForwardStack.Count > 0 && e2.NavigationMode == NavigationMode.Back))
                     && oldViewModel != null)
@@ -70,13 +68,25 @@ namespace Crystal2.Navigation
                 if (navigationFrame.Content != null)
                 {
                     if (((Page)navigationFrame.Content).DataContext == null)
+                    {
+                        ViewModelBase newViewModel = (ViewModelBase)Activator.CreateInstance(selectedPageViewModel);//((ViewModelBase)((Page)e2.Content).DataContext);
+
                         ((Page)navigationFrame.Content).DataContext = newViewModel;
 
-                    newViewModel.OnNavigatedTo(e2.Parameter, new CrystalWinRTNavigationEventArgs(e2.Parameter)
+                        newViewModel.OnNavigatedTo(e2.Parameter, new CrystalWinRTNavigationEventArgs(e2.Parameter)
+                        {
+                            TargetUri = uri,
+                            Direction = ConvertToCrystalNavigation(e.NavigationMode),
+                        });
+                    }
+                    else
                     {
-                        TargetUri = uri,
-                        Direction = ConvertToCrystalNavigation(e.NavigationMode),
-                    });
+                        ((ViewModelBase)((Page)navigationFrame.Content).DataContext).OnNavigatedTo(e2.Parameter, new CrystalWinRTNavigationEventArgs(e2.Parameter)
+                        {
+                            TargetUri = uri,
+                            Direction = ConvertToCrystalNavigation(e.NavigationMode),
+                        });
+                    }
                 }
 
                 navigationFrame.Navigated -= navigatedHandler;

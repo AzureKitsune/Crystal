@@ -80,7 +80,7 @@ namespace Crystal2
                 {
                     var state = IoCManager.Resolve<IStateProvider>().State;
 
-                    if (state.NavigationState != null)
+                    if (state != null)
                     {
                         var navProvider = IoCManager.Resolve<INavigationProvider>();
 
