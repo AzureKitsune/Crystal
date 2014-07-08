@@ -20,8 +20,6 @@ namespace Crystal2.State
 
         public DefaultStateProvider()
         {
-            IoCManager.Resolve<Navigation.INavigationProvider>().Navigated += DefaultStateProvider_Navigated;
-
             HandleFileState();
 
             if (_state == null)
@@ -43,20 +41,6 @@ namespace Crystal2.State
 
             if (!exists)
                 await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync("_state.json");
-        }
-
-        void DefaultStateProvider_Navigated(object sender, Navigation.CrystalNavigationEventArgs e)
-        {
-            //TODO find workaround for the exception which is thrown because Frames do not support getting the navigational state string for pages that are navigated to with a parameter.
-            //Currently, EVERY page is navigated to with a parameter in Crystal
-            try
-            {
-                _state.NavigationState = IoCManager.Resolve<INavigationProvider>().GetNavigationContext() as string;
-            }
-            catch (Exception)
-            {
-
-            }
         }
 
         public async Task LoadStateAsync()
