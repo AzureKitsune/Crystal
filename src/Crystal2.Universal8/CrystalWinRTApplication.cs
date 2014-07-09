@@ -285,6 +285,7 @@ namespace Crystal2
                     OnNormalLaunchNavigationReady(e);
             }
 
+            // Ensure the current window is active
             Window.Current.Activate();
         }
 
@@ -390,9 +391,6 @@ namespace Crystal2
                     }
                 }
             }
-
-            // Ensure the current window is active
-            Window.Current.Activate();
 
             if (!restoredState)
             {
