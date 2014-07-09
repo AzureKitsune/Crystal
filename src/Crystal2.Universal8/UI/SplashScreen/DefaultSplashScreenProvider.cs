@@ -15,42 +15,62 @@ namespace Crystal2.UI.SplashScreen
         private DefaultWinRTSplashScreen splashScreen = null;
         private string backgroundColor = "";
         private string imagePath = "";
+        private Task callbackTask = null;
+        private TaskCompletionSource<object> completionTaskBackend = null;
+        private Frame rootFrame = null;
         public virtual void Setup(string splashBackgroundColor, string splashScreenImagePath)
         {
             backgroundColor = splashBackgroundColor;
             imagePath = splashScreenImagePath;
+            splashScreen = new DefaultWinRTSplashScreen(backgroundColor, imagePath);
+            completionTaskBackend = new TaskCompletionSource<object>();
         }
 
-        public void PreActivationHook(Windows.ApplicationModel.Activation.IActivatedEventArgs args)
+        public void PreActivationHook(Windows.ApplicationModel.Activation.IActivatedEventArgs args, Frame _rootFrame, Task workTask)
         {
             args.SplashScreen.Dismissed += SplashScreen_Dismissed;
-            splashScreen = new DefaultWinRTSplashScreen(args.SplashScreen, backgroundColor, imagePath);
+            splashScreen.HandleSplashActivation(args.SplashScreen);
+            rootFrame = _rootFrame;
+            callbackTask = workTask;
         }
 
-        void SplashScreen_Dismissed(Windows.ApplicationModel.Activation.SplashScreen sender, object args)
+        async void SplashScreen_Dismissed(Windows.ApplicationModel.Activation.SplashScreen sender, object args)
         {
             sender.Dismissed -= SplashScreen_Dismissed;
-            DeactivateAsync();
+            await ActivateAsync();
+            if (callbackTask != null)
+                await callbackTask;
+            completionTaskBackend.SetResult(null);
         }
 
-        public Task ActivateAsync()
+        public async Task ActivateAsync()
         {
             isVisible = true;
 
             if (!Crystal2.CrystalWinRTApplication.IsPhone())
-                ((Frame)Window.Current.Content).Background = new SolidColorBrush(Crystal2.Utilities.ColorHelper.ParseHex(backgroundColor));
+            {
+                await IOC.IoCManager.Resolve<Crystal2.Core.IUIDispatcher>().RunAsync(() =>
+                {
+                    rootFrame.Background = new SolidColorBrush(Crystal2.Utilities.ColorHelper.ParseHex(backgroundColor));
+                });
+            }
 
-            ((Frame)Window.Current.Content).Content = splashScreen;
+            //((Frame)Window.Current.Content).Content = splashScreen;
 
-            return Task.FromResult<object>(null);
+            await IOC.IoCManager.Resolve<Crystal2.Core.IUIDispatcher>().RunAsync(() =>
+            {
+                rootFrame.Content = splashScreen;
+            });
         }
 
         public Task DeactivateAsync()
         {
+            if (!isVisible) return Task.FromResult<object>(null);
+
             isVisible = false;
 
             if (Window.Current != null)
-                Window.Current.Content = null;
+                Window.Current.Content = new Grid();
 
             return Task.FromResult<object>(null);
         }
@@ -59,6 +79,12 @@ namespace Crystal2.UI.SplashScreen
         public bool IsSplashScreenVisible
         {
             get { return isVisible; }
+        }
+
+
+        public Task CompletionTask
+        {
+            get { return completionTaskBackend.Task; }
         }
     }
 }

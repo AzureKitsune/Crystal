@@ -378,8 +378,6 @@ namespace Crystal2
             }
 
             //the following code is me jumping through hoops to make sure the splash screen is showing while the callback is firing.
-            Task splashScreenWorkTask = null;
-
             if (!restoredState)
             {
                 if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
@@ -387,9 +385,8 @@ namespace Crystal2
                     if (e.PreviousExecutionState != ApplicationExecutionState.Running)
                     {
                         var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
-                        splashProvider.PreActivationHook(e);
-                        await splashProvider.ActivateAsync();
-                        splashScreenWorkTask = OnSplashScreenShownAsync();
+
+                        splashProvider.PreActivationHook(e, RootFrame, OnSplashScreenShownAsync());
                     }
                 }
             }
@@ -401,9 +398,11 @@ namespace Crystal2
             {
                 if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
                 {
-                    if (splashScreenWorkTask != null) await splashScreenWorkTask;
+                    var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
+                    await splashProvider.CompletionTask;
                 }
             }
+
         }
 
 

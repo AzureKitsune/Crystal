@@ -26,17 +26,22 @@ namespace Crystal2.UI.SplashScreen
     /// </summary>
     internal sealed partial class DefaultWinRTSplashScreen : Page
     {
-        public DefaultWinRTSplashScreen(Windows.ApplicationModel.Activation.SplashScreen splash, string splashBackgroundColor, string splashScreenImagePath)
+        public DefaultWinRTSplashScreen(string splashBackgroundColor, string splashScreenImagePath)
         {
             this.InitializeComponent();
-
 
             this.Background = new SolidColorBrush(Crystal2.Utilities.ColorHelper.ParseHex(splashBackgroundColor));
 
             var bitmapImage = new BitmapImage();
-            bitmapImage.UriSource = new Uri("ms-appx:///" + splashScreenImagePath);
+            bitmapImage.UriSource = new Uri("ms-appx:///" + splashScreenImagePath.Replace("\\","/"));
             appSplashImage.Source = bitmapImage;
 
+            this.Loaded += DefaultWinRTSplashScreen_Loaded;
+            this.Unloaded += DefaultWinRTSplashScreen_Unloaded;
+        }
+
+        internal void HandleSplashActivation(Windows.ApplicationModel.Activation.SplashScreen splash)
+        {
             if (CrystalWinRTApplication.IsPhone())
             {
                 imageCanvas.Margin = new Thickness(0, -25, 0, 0); //account for the statusbar.
@@ -58,10 +63,6 @@ namespace Crystal2.UI.SplashScreen
                 appSplashImage.SetValue(Canvas.LeftProperty, splash.ImageLocation.Left);
                 appSplashImage.SetValue(Canvas.TopProperty, splash.ImageLocation.Top);
             }
-
-
-            this.Loaded += DefaultWinRTSplashScreen_Loaded;
-            this.Unloaded += DefaultWinRTSplashScreen_Unloaded;
         }
 
         private DisplayOrientations oldOrientation = DisplayOrientations.None;
