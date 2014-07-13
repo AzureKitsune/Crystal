@@ -414,9 +414,14 @@ namespace Crystal2
             OnActivationNavigationReady(args);
             base.OnSearchActivated(args);
         }
-        protected override void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
+        protected override async void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
         {
+            await HandleInitialNavigation(args);
+
             OnActivationNavigationReady(args);
+
+            // Ensure the current window is active
+            Window.Current.Activate();
             base.OnShareTargetActivated(args);
         }
         #endregion
