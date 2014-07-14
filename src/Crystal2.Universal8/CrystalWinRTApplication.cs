@@ -289,7 +289,7 @@ namespace Crystal2
             Window.Current.Activate();
         }
 
-        private async Task HandleInitialNavigation(IActivatedEventArgs e)
+        private async Task HandleInitialNavigation(IActivatedEventArgs e, bool noRestore = false)
         {
             bool restoredState = false;
 
@@ -311,7 +311,7 @@ namespace Crystal2
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
-                    if (applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
+                    if (applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState && !noRestore)
                     {
                         if (IoCManager.IsRegistered<IStateProvider>())
                         {
@@ -416,7 +416,7 @@ namespace Crystal2
         }
         protected override async void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
         {
-            await HandleInitialNavigation(args);
+            await HandleInitialNavigation(args, noRestore: true);
 
             OnActivationNavigationReady(args);
 
