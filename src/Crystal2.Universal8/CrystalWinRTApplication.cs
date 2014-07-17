@@ -3,6 +3,7 @@ using Crystal2.IOC;
 using Crystal2.Model;
 using Crystal2.Navigation;
 using Crystal2.State;
+using Crystal2.UI.MessageDialog;
 using Crystal2.UI.SplashScreen;
 using System;
 using System.Collections.Generic;
@@ -150,6 +151,9 @@ namespace Crystal2
         {
             //set up the dispatcher
             IoCManager.Register<IUIDispatcher>(new WinRTDispatcher());
+
+            //set up the message dialog stuff
+            IoCManager.Register<IMessageDialogProvider>(new DefaultMessageDialogProvider());
 
             //set up navigation
             IoCManager.Register<INavigationDirectoryProvider>(new W8NavigationDirectoryProvider(this.GetType().GetTypeInfo().Assembly, applicationConfiguration.AutomaticallyDiscoverViewModelPairs));
