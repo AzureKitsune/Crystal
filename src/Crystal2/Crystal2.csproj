@@ -42,6 +42,7 @@
     <Compile Include="Core\IUIDispatcher.cs" />
     <Compile Include="CrystalConfiguration.cs" />
     <Compile Include="ICrystalApplication.cs" />
+    <Compile Include="Model\ModelBase.cs" />
     <Compile Include="Navigation\CrystalNavigationDirection.cs" />
     <Compile Include="IOC\IIoCObject.cs" />
     <Compile Include="IOC\IoCManager.cs" />

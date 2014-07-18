@@ -319,36 +319,33 @@ namespace Crystal2
                     {
                         if (IoCManager.IsRegistered<IStateProvider>())
                         {
-                            try
+                            await IoCManager.Resolve<IStateProvider>().LoadStateAsync();
+
+                            var state = IoCManager.Resolve<IStateProvider>().State;
+
+                            if (state.NavigationState != null)
                             {
-                                await IoCManager.Resolve<IStateProvider>().LoadStateAsync();
+                                IoCManager.Resolve<INavigationProvider>().SetNavigationContext(state.NavigationState);
 
-                                var state = IoCManager.Resolve<IStateProvider>().State;
+                                var provider = IOC.IoCManager.Resolve<INavigationDirectoryProvider>();
 
-                                if (state.NavigationState != null)
-                                {
-                                    IoCManager.Resolve<INavigationProvider>().SetNavigationContext(state.NavigationState);
+                                var map = provider.ProvideMap();
 
-                                    var provider = IOC.IoCManager.Resolve<INavigationDirectoryProvider>();
+                                Type selectedPageViewModel = (Type)map.First(x =>
+                                   IoCManager.Resolve<INavigationProvider>().GetUrl() == ((Tuple<Type, Uri>)x.Value).Item2).Key;
 
-                                    var map = provider.ProvideMap();
+                                ViewModelBase viewModel = (ViewModelBase)Activator.CreateInstance(selectedPageViewModel);
 
-                                    Type selectedPageViewModel = (Type)map.First(x =>
-                                       IoCManager.Resolve<INavigationProvider>().GetUrl() == ((Tuple<Type, Uri>)x.Value).Item2).Key;
+                                ((Page)((Frame)IoCManager.Resolve<INavigationProvider>().NavigationObject).Content).DataContext = viewModel;
 
-                                    ViewModelBase viewModel = (ViewModelBase)Activator.CreateInstance(selectedPageViewModel);
+                                viewModel.OnNavigatedTo(null, new CrystalWinRTNavigationEventArgs(null) { Direction = CrystalNavigationDirection.Forward });
 
-                                    ((Page)((Frame)IoCManager.Resolve<INavigationProvider>().NavigationObject).Content).DataContext = viewModel;
+                                if (viewModel is IStateHandlingViewModel)
+                                    ((IStateHandlingViewModel)viewModel).OnRestore(state.StateObjects.ToDictionary(x => (string)x[0], y => y[1]));
 
-                                    viewModel.OnNavigatedTo(null, new CrystalWinRTNavigationEventArgs(null) { Direction = CrystalNavigationDirection.Forward });
-
-                                    if (viewModel is IStateHandlingViewModel)
-                                        ((IStateHandlingViewModel)viewModel).OnRestore(state.StateObjects.ToDictionary(x => (string)x[0], y => y[1]));
-
-                                    restoredState = true;
-                                }
+                                restoredState = true;
                             }
-                            catch (Exception) { }
+
                         }
                     }
                 }
