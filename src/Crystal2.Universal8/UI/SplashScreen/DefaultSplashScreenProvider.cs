@@ -54,7 +54,7 @@ namespace Crystal2.UI.SplashScreen
 
         async void SplashScreen_Dismissed(Windows.ApplicationModel.Activation.SplashScreen sender, object args)
         {
-            sender.Dismissed -= SplashScreen_Dismissed;)
+            sender.Dismissed -= SplashScreen_Dismissed;
             await ActivateAsync();
             if (callbackTask != null)
             {
