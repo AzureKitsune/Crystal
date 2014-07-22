@@ -165,19 +165,6 @@ namespace Crystal2
             var navigationProvider = new W8NavigationProvider();
             IoCManager.Register<INavigationProvider>(navigationProvider);
 
-            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
-            {
-                if (!IoCManager.IsRegistered<IWinRTSplashScreenProvider>())
-                    IoCManager.Register<IWinRTSplashScreenProvider>(new DefaultSplashScreenProvider());
-
-                //handle the splashscreen
-                var splashData = GetSplashScreenPath();
-                var splashBackground = splashData.Item1;
-                var splashImagePath = splashData.Item2;
-
-                IoCManager.Resolve<IWinRTSplashScreenProvider>().Setup(splashBackground, splashImagePath);
-            }
-
             //set up state management
             if (applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
             {
@@ -268,36 +255,67 @@ namespace Crystal2
 
         protected override async void OnLaunched(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
         {
+            
+            bool restored = false;
             if (IsPhone())
             {
                 //phone calls OnLaunched each time it is launched from the start tile/app list. make sure it is only called once.
                 if (e.PreviousExecutionState != ApplicationExecutionState.Running)
                 {
-                    await HandleInitialNavigation(e);
-
-                    if ((e.PreviousExecutionState != ApplicationExecutionState.Terminated && applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
-                        || !applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
-                        OnNormalLaunchNavigationReady(e);
+                    restored = await HandleInitialNavigation(e).ConfigureAwait(false);
                 }
             }
             else
             {
-                await HandleInitialNavigation(e);
-
-                if ((e.PreviousExecutionState != ApplicationExecutionState.Terminated && applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
-                        || !applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
-                    OnNormalLaunchNavigationReady(e);
+                restored = await HandleInitialNavigation(e).ConfigureAwait(false);
             }
+
+            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen && !restored)
+            {
+                if (e.PreviousExecutionState != ApplicationExecutionState.Running)
+                {
+                    var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
+
+                    await splashProvider.CompletionTask;
+                    IoCManager.Resolve<IUIDispatcher>().RunAsync(() =>
+                    {
+                        ContinueLaunching(e);
+                    });
+                }
+            }
+            else
+                ContinueLaunching(e);
+        }
+
+        private void ContinueLaunching(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
+        {
+            if ((e.PreviousExecutionState != ApplicationExecutionState.Terminated && applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
+                || !applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
+                OnNormalLaunchNavigationReady(e);
+
 
             // Ensure the current window is active
             Window.Current.Activate();
         }
 
-        private async Task HandleInitialNavigation(IActivatedEventArgs e, bool noRestore = false)
+        private async Task<bool> HandleInitialNavigation(IActivatedEventArgs e, bool noRestore = false)
         {
             bool restoredState = false;
 
             RootFrame = Window.Current.Content as Frame;
+
+            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
+            {
+                if (!IoCManager.IsRegistered<IWinRTSplashScreenProvider>())
+                    IoCManager.Register<IWinRTSplashScreenProvider>(new DefaultSplashScreenProvider());
+
+                //handle the splashscreen
+                var splashData = GetSplashScreenPath();
+                var splashBackground = splashData.Item1;
+                var splashImagePath = splashData.Item2;
+
+                IoCManager.Resolve<IWinRTSplashScreenProvider>().Setup(splashBackground, splashImagePath);
+            }
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
@@ -315,68 +333,70 @@ namespace Crystal2
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
+                    #region restoring state
                     if (applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState && !noRestore)
                     {
                         if (IoCManager.IsRegistered<IStateProvider>())
                         {
-                            await IoCManager.Resolve<IStateProvider>().LoadStateAsync();
+                            var stateProvider = IoCManager.Resolve<IStateProvider>();
 
-                            var state = IoCManager.Resolve<IStateProvider>().State;
-
-                            if (state.NavigationState != null)
+                            if (stateProvider.CanStateBeStored)
                             {
-                                IoCManager.Resolve<INavigationProvider>().SetNavigationContext(state.NavigationState);
+                                await stateProvider.LoadStateAsync();
 
-                                var provider = IOC.IoCManager.Resolve<INavigationDirectoryProvider>();
+                                var state = stateProvider.State;
 
-                                var map = provider.ProvideMap();
+                                if (state.NavigationState != null)
+                                {
+                                    IoCManager.Resolve<INavigationProvider>().SetNavigationContext(state.NavigationState);
 
-                                Type selectedPageViewModel = (Type)map.First(x =>
-                                   IoCManager.Resolve<INavigationProvider>().GetUrl() == ((Tuple<Type, Uri>)x.Value).Item2).Key;
+                                    var provider = IOC.IoCManager.Resolve<INavigationDirectoryProvider>();
 
-                                ViewModelBase viewModel = (ViewModelBase)Activator.CreateInstance(selectedPageViewModel);
+                                    var map = provider.ProvideMap();
 
-                                ((Page)((Frame)IoCManager.Resolve<INavigationProvider>().NavigationObject).Content).DataContext = viewModel;
+                                    Type selectedPageViewModel = (Type)map.First(x =>
+                                       IoCManager.Resolve<INavigationProvider>().GetUrl() == ((Tuple<Type, Uri>)x.Value).Item2).Key;
 
-                                viewModel.OnNavigatedTo(null, new CrystalWinRTNavigationEventArgs(null) { Direction = CrystalNavigationDirection.Forward });
+                                    ViewModelBase viewModel = (ViewModelBase)Activator.CreateInstance(selectedPageViewModel);
 
-                                if (viewModel is IStateHandlingViewModel)
-                                    ((IStateHandlingViewModel)viewModel).OnRestore(state.StateObjects.ToDictionary(x => (string)x[0], y => y[1]));
+                                    ((Page)((Frame)IoCManager.Resolve<INavigationProvider>().NavigationObject).Content).DataContext = viewModel;
 
-                                restoredState = true;
+                                    viewModel.OnNavigatedTo(null, new CrystalWinRTNavigationEventArgs(null) { Direction = CrystalNavigationDirection.Forward });
+
+                                    if (viewModel is IStateHandlingViewModel)
+                                        ((IStateHandlingViewModel)viewModel).OnRestore(state.StateObjects.ToDictionary(x => (string)x[0], y => y[1]));
+
+                                    restoredState = true;
+                                }
                             }
-
                         }
                     }
+                    #endregion
                 }
 
                 // Place the frame in the current Window
                 Window.Current.Content = RootFrame;
-            }
 
-            if (RootFrame.Content == null)
-            {
-                if (IsPhone())
+                if (RootFrame.Content == null)
                 {
-                    //#if WINDOWS_PHONE_APP
-                    // Removes the turnstile navigation for startup.
-                    if (RootFrame.ContentTransitions != null)
+                    if (IsPhone())
                     {
-                        this.transitions = new TransitionCollection();
-                        foreach (var c in RootFrame.ContentTransitions)
+                        //#if WINDOWS_PHONE_APP
+                        // Removes the turnstile navigation for startup.
+                        if (RootFrame.ContentTransitions != null)
                         {
-                            this.transitions.Add(c);
+                            this.transitions = new TransitionCollection();
+                            foreach (var c in RootFrame.ContentTransitions)
+                            {
+                                this.transitions.Add(c);
+                            }
                         }
+
+                        RootFrame.ContentTransitions = null;
+                        RootFrame.Navigated += this.RootFrame_FirstNavigated;
+                        //#endif
                     }
-
-                    RootFrame.ContentTransitions = null;
-                    RootFrame.Navigated += this.RootFrame_FirstNavigated;
-                    //#endif
                 }
-
-                // When the navigation stack isn't restored navigate to the first page,
-                // configuring the new page by passing required information as a navigation
-                // parameter
             }
 
             //the following code is me jumping through hoops to make sure the splash screen is showing while the callback is firing.
@@ -388,20 +408,13 @@ namespace Crystal2
                     {
                         var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
 
-                        splashProvider.PreActivationHook(e, RootFrame, OnSplashScreenShownAsync());
+                        var splashTask = new Task<Task>(() => OnSplashScreenShownAsync());
+                        splashProvider.PreActivationHook(e, splashTask);
                     }
                 }
             }
 
-            if (!restoredState)
-            {
-                if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
-                {
-                    var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
-                    await splashProvider.CompletionTask;
-                }
-            }
-
+            return restoredState;
         }
 
 
@@ -456,7 +469,7 @@ namespace Crystal2
         /// <summary>
         /// The root frame created by Crystal.
         /// </summary>
-        protected Frame RootFrame { get; private set; }
+        protected internal Frame RootFrame { get; private set; }
 
         /// <summary>
         /// An abstract method called when the application is ready to navigate.
@@ -496,5 +509,7 @@ namespace Crystal2
             options.AutomaticallyDiscoverViewModelPairs = true;
             options.AutomaticallyCallInitializeComponent = true;
         }
+
+        public static new CrystalWinRTApplication Current { get { return Application.Current as CrystalWinRTApplication; } }
     }
 }

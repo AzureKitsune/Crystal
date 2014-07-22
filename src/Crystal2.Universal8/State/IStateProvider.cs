@@ -11,6 +11,7 @@ namespace Crystal2.State
     {
         Task LoadStateAsync();
         Task SaveStateAsync();
+        bool CanStateBeStored { get; }
 
         StateObject State { get; }
     }

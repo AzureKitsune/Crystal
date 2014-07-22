@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -15,31 +16,52 @@ namespace Crystal2.UI.SplashScreen
         private DefaultWinRTSplashScreen splashScreen = null;
         private string backgroundColor = "";
         private string imagePath = "";
-        private Task callbackTask = null;
+        private Task<Task> callbackTask = null;
         private TaskCompletionSource<object> completionTaskBackend = null;
+        private Task completionTask = null;
         private Frame rootFrame = null;
         public virtual void Setup(string splashBackgroundColor, string splashScreenImagePath)
         {
             backgroundColor = splashBackgroundColor;
             imagePath = splashScreenImagePath;
             splashScreen = new DefaultWinRTSplashScreen(backgroundColor, imagePath);
+
             completionTaskBackend = new TaskCompletionSource<object>();
+            completionTask = completionTaskBackend.Task;
         }
 
-        public void PreActivationHook(Windows.ApplicationModel.Activation.IActivatedEventArgs args, Frame _rootFrame, Task workTask)
+        public async void PreActivationHook(Windows.ApplicationModel.Activation.IActivatedEventArgs args, Task<Task> workTask)
         {
-            args.SplashScreen.Dismissed += SplashScreen_Dismissed;
-            splashScreen.HandleSplashActivation(args.SplashScreen);
-            rootFrame = _rootFrame;
-            callbackTask = workTask;
+            if (workTask.Status == TaskStatus.RanToCompletion)
+            {
+                completionTaskBackend.TrySetResult(null);
+            }
+            else
+            {
+                try
+                {
+                    Window.Current.Activate();
+
+                    args.SplashScreen.Dismissed += SplashScreen_Dismissed;
+
+                    splashScreen.HandleSplashActivation(args.SplashScreen);
+                    rootFrame = CrystalWinRTApplication.Current.RootFrame;
+                    callbackTask = workTask;
+                }
+                catch (Exception) { }
+            }
         }
 
         async void SplashScreen_Dismissed(Windows.ApplicationModel.Activation.SplashScreen sender, object args)
         {
-            sender.Dismissed -= SplashScreen_Dismissed;
+            sender.Dismissed -= SplashScreen_Dismissed;)
             await ActivateAsync();
             if (callbackTask != null)
-                await callbackTask;
+            {
+                callbackTask.Start();
+                await (await callbackTask);
+            }
+            await DeactivateAsync();
             completionTaskBackend.SetResult(null);
         }
 
@@ -84,7 +106,15 @@ namespace Crystal2.UI.SplashScreen
 
         public Task CompletionTask
         {
-            get { return completionTaskBackend.Task; }
+            get { return completionTask; }
         }
+
+
+        public void SetActivationArguments(Windows.ApplicationModel.Activation.IActivatedEventArgs e)
+        {
+            ActivatedEventArgs = e;
+        }
+
+        public IActivatedEventArgs ActivatedEventArgs { get; private set; }
     }
 }

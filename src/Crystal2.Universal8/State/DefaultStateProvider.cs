@@ -20,13 +20,19 @@ namespace Crystal2.State
 
         public DefaultStateProvider()
         {
-            HandleFileState();
-
             if (_state == null)
                 _state = new StateObject();
         }
 
         private static async void HandleFileState()
+        {
+            bool exists = await CheckIfFileExists();
+
+            if (!exists)
+                await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync("_state.json");
+        }
+
+        private static async Task<bool> CheckIfFileExists()
         {
             bool exists = false;
             try
@@ -38,9 +44,7 @@ namespace Crystal2.State
             catch (Exception)
             {
             }
-
-            if (!exists)
-                await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync("_state.json");
+            return exists;
         }
 
         public async Task LoadStateAsync()
@@ -89,6 +93,12 @@ namespace Crystal2.State
         public StateObject State
         {
             get { return _state; }
+        }
+
+
+        public bool CanStateBeStored
+        {
+            get { return CheckIfFileExists().Result; }
         }
     }
 }
