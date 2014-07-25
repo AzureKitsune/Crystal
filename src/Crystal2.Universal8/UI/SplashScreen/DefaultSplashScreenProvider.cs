@@ -40,13 +40,16 @@ namespace Crystal2.UI.SplashScreen
             {
                 try
                 {
-                    Window.Current.Activate();
-
                     args.SplashScreen.Dismissed += SplashScreen_Dismissed;
 
                     splashScreen.HandleSplashActivation(args.SplashScreen);
                     rootFrame = CrystalWinRTApplication.Current.RootFrame;
                     callbackTask = workTask;
+
+                    await ActivateAsync();
+
+                    if (!Window.Current.Visible)
+                        Window.Current.Activate();
                 }
                 catch (Exception) { }
             }
@@ -55,7 +58,7 @@ namespace Crystal2.UI.SplashScreen
         async void SplashScreen_Dismissed(Windows.ApplicationModel.Activation.SplashScreen sender, object args)
         {
             sender.Dismissed -= SplashScreen_Dismissed;
-            await ActivateAsync();
+            //await ActivateAsync();
             if (callbackTask != null)
             {
                 callbackTask.Start();

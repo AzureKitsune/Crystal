@@ -172,6 +172,20 @@ namespace Crystal2
                     IoCManager.Register<IStateProvider>(new DefaultStateProvider());
             }
 
+            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
+            {
+                if (!IoCManager.IsRegistered<IWinRTSplashScreenProvider>())
+                    IoCManager.Register<IWinRTSplashScreenProvider>(new DefaultSplashScreenProvider());
+
+                //handle the splashscreen
+                var splashData = GetSplashScreenPath();
+                var splashBackground = splashData.Item1;
+                var splashImagePath = splashData.Item2;
+
+                IoCManager.Resolve<IWinRTSplashScreenProvider>().Setup(splashBackground, splashImagePath);
+            }
+
+
             if (IsPhone())
             {
                 //If running on the phone, dynamically load the referenced Crystal2.Universal8.Phone.dll for Back button functionality.
@@ -255,7 +269,6 @@ namespace Crystal2
 
         protected override async void OnLaunched(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
         {
-            
             bool restored = false;
             if (IsPhone())
             {
@@ -282,6 +295,11 @@ namespace Crystal2
                         ContinueLaunching(e);
                     });
                 }
+                else
+                {
+                    //toast activation?
+                    OnActivated(e);
+                }
             }
             else
                 ContinueLaunching(e);
@@ -303,19 +321,6 @@ namespace Crystal2
             bool restoredState = false;
 
             RootFrame = Window.Current.Content as Frame;
-
-            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
-            {
-                if (!IoCManager.IsRegistered<IWinRTSplashScreenProvider>())
-                    IoCManager.Register<IWinRTSplashScreenProvider>(new DefaultSplashScreenProvider());
-
-                //handle the splashscreen
-                var splashData = GetSplashScreenPath();
-                var splashBackground = splashData.Item1;
-                var splashImagePath = splashData.Item2;
-
-                IoCManager.Resolve<IWinRTSplashScreenProvider>().Setup(splashBackground, splashImagePath);
-            }
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
