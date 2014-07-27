@@ -8,9 +8,9 @@ using Windows.UI;
 
 namespace Crystal2.Utilities
 {
-    internal class ColorHelper
+    public class ColorHelper
     {
-        internal static Color ParseHex(string hexCode)
+        public static Color ParseHex(string hexCode)
         {
             //http://stackoverflow.com/a/16815300/2263199
             //modified by Amrykid

@@ -269,6 +269,8 @@ namespace Crystal2
 
         protected override async void OnLaunched(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
         {
+            if (e.PreviousExecutionState == ApplicationExecutionState.Suspended) return; //since theapp is resuming, we don't need to do anything.
+
             bool restored = false;
             if (IsPhone())
             {
@@ -283,26 +285,35 @@ namespace Crystal2
                 restored = await HandleInitialNavigation(e).ConfigureAwait(false);
             }
 
-            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen && !restored)
-            {
-                if (e.PreviousExecutionState != ApplicationExecutionState.Running)
-                {
-                    var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
 
-                    await splashProvider.CompletionTask;
-                    IoCManager.Resolve<IUIDispatcher>().RunAsync(() =>
-                    {
-                        ContinueLaunching(e);
-                    });
-                }
-                else
+            if (e.PreviousExecutionState != ApplicationExecutionState.Running)
+            {
+                await _CheckAndWaitForSplashScreenDismissal(restored); //handles if the extended splash screen is enabled, awaiting for it to complete if it is.
+                await IoCManager.Resolve<IUIDispatcher>().RunAsync(() =>
+                {
+                    ContinueLaunching(e);
+                });
+            }
+            else
+            {
+                await _CheckAndWaitForSplashScreenDismissal(restored); //handles if the extended splash screen is enabled, awaiting for it to complete if it is.
+                await IoCManager.Resolve<IUIDispatcher>().RunAsync(() =>
                 {
                     //toast activation?
                     OnActivated(e);
-                }
+                });
             }
-            else
-                ContinueLaunching(e);
+
+        }
+
+        private async Task _CheckAndWaitForSplashScreenDismissal(bool restored)
+        {
+            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen && !restored)
+            {
+                var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
+
+                await splashProvider.CompletionTask;
+            }
         }
 
         private void ContinueLaunching(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
@@ -424,13 +435,24 @@ namespace Crystal2
 
 
         #region Activation handling
-        protected override void OnActivated(IActivatedEventArgs args)
+        protected override async void OnActivated(IActivatedEventArgs args)
         {
+            await HandleInitialNavigation(args, noRestore: true);
+
             OnActivationNavigationReady((IActivatedEventArgs)args);
+
+            // Ensure the current window is active
+            Window.Current.Activate();
+            base.OnActivated(args);
         }
-        protected override void OnSearchActivated(SearchActivatedEventArgs args)
+        protected override async void OnSearchActivated(SearchActivatedEventArgs args)
         {
+            await HandleInitialNavigation(args, noRestore: true);
+
             OnActivationNavigationReady(args);
+
+            // Ensure the current window is active
+            Window.Current.Activate();
             base.OnSearchActivated(args);
         }
         protected override async void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
