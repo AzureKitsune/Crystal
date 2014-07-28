@@ -38,9 +38,29 @@ namespace Crystal2.UI.SplashScreen
 
             this.Loaded += DefaultWinRTSplashScreen_Loaded;
             this.Unloaded += DefaultWinRTSplashScreen_Unloaded;
+            this.SizeChanged += DefaultWinRTSplashScreen_SizeChanged;
         }
 
+        void DefaultWinRTSplashScreen_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            HandleResize();
+        }
+
+        private Windows.ApplicationModel.Activation.SplashScreen splashScreen = null;
         internal void HandleSplashActivation(Windows.ApplicationModel.Activation.SplashScreen splash)
+        {
+            splashScreen = splash;
+
+            HandleResize();
+
+            if (!CrystalWinRTApplication.IsPhone())
+            {
+                appSplashImage.SetValue(Canvas.LeftProperty, splash.ImageLocation.Left);
+                appSplashImage.SetValue(Canvas.TopProperty, splash.ImageLocation.Top);
+            }
+        }
+
+        private void HandleResize()
         {
             if (CrystalWinRTApplication.IsPhone())
             {
@@ -57,17 +77,15 @@ namespace Crystal2.UI.SplashScreen
             }
             else
             {
-                appSplashImage.Height = splash.ImageLocation.Height;
-                appSplashImage.Width = splash.ImageLocation.Width;
-
-                appSplashImage.SetValue(Canvas.LeftProperty, splash.ImageLocation.Left);
-                appSplashImage.SetValue(Canvas.TopProperty, splash.ImageLocation.Top);
+                appSplashImage.Height = splashScreen.ImageLocation.Height;
+                appSplashImage.Width = splashScreen.ImageLocation.Width;
             }
         }
 
         private DisplayOrientations oldOrientation = DisplayOrientations.None;
         void DefaultWinRTSplashScreen_Unloaded(object sender, RoutedEventArgs e)
         {
+            this.SizeChanged -= DefaultWinRTSplashScreen_SizeChanged;
             this.Loaded -= DefaultWinRTSplashScreen_Loaded;
             this.Unloaded -= DefaultWinRTSplashScreen_Unloaded;
 
