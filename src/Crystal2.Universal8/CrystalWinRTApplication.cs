@@ -437,7 +437,8 @@ namespace Crystal2
         #region Activation handling
         protected override async void OnActivated(IActivatedEventArgs args)
         {
-            await HandleInitialNavigation(args, noRestore: true);
+            if (args.PreviousExecutionState != ApplicationExecutionState.Running)
+                await HandleInitialNavigation(args, noRestore: true);
 
             OnActivationNavigationReady((IActivatedEventArgs)args);
 
