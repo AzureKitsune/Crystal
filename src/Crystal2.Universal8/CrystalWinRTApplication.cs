@@ -269,20 +269,19 @@ namespace Crystal2
 
         protected override async void OnLaunched(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
         {
-            if (e.PreviousExecutionState == ApplicationExecutionState.Suspended) return; //since theapp is resuming, we don't need to do anything.
-
             bool restored = false;
             if (IsPhone())
             {
                 //phone calls OnLaunched each time it is launched from the start tile/app list. make sure it is only called once.
-                if (e.PreviousExecutionState != ApplicationExecutionState.Running)
+                if (e.PreviousExecutionState != ApplicationExecutionState.Running && e.PreviousExecutionState != ApplicationExecutionState.Suspended)
                 {
                     restored = await HandleInitialNavigation(e).ConfigureAwait(false);
                 }
             }
             else
             {
-                restored = await HandleInitialNavigation(e).ConfigureAwait(false);
+                if (e.PreviousExecutionState != ApplicationExecutionState.Suspended)
+                    restored = await HandleInitialNavigation(e).ConfigureAwait(false);
             }
 
 
@@ -294,8 +293,9 @@ namespace Crystal2
                     ContinueLaunching(e);
                 });
             }
-            else
+            else if (CheckIfToastActivation(e))
             {
+                //toast notification?
                 await _CheckAndWaitForSplashScreenDismissal(restored); //handles if the extended splash screen is enabled, awaiting for it to complete if it is.
                 await IoCManager.Resolve<IUIDispatcher>().RunAsync(() =>
                 {
@@ -304,6 +304,12 @@ namespace Crystal2
                 });
             }
 
+        }
+
+        private static bool CheckIfToastActivation(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
+        {
+            if (e == null) return false;
+            return e.Kind == ActivationKind.Launch && !string.IsNullOrWhiteSpace(e.Arguments);
         }
 
         private async Task _CheckAndWaitForSplashScreenDismissal(bool restored)
@@ -439,7 +445,10 @@ namespace Crystal2
         {
             await HandleInitialNavigation(args, noRestore: true);
 
-            OnActivationNavigationReady((IActivatedEventArgs)args);
+            if (CheckIfToastActivation(args as LaunchActivatedEventArgs))
+                OnToastActivationNavigationReady(args);
+            else
+                OnActivationNavigationReady((IActivatedEventArgs)args);
 
             // Ensure the current window is active
             Window.Current.Activate();
@@ -505,6 +514,8 @@ namespace Crystal2
 
         protected virtual void OnActivationNavigationReady(Windows.ApplicationModel.Activation.IActivatedEventArgs args)
         { }
+
+        protected virtual void OnToastActivationNavigationReady(Windows.ApplicationModel.Activation.IActivatedEventArgs args) { }
 
         protected virtual void OnNavigationInitializeOverride(Crystal2.Navigation.W8NavigationDirectoryProvider directoryProvider)
         {
