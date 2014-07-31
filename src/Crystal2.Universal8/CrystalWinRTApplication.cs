@@ -283,7 +283,7 @@ namespace Crystal2
 
             if (e.TileId == "App") //primary tile activation or toast activation.
             {
-                if (e.PreviousExecutionState != ApplicationExecutionState.Running && initialStart)
+                if (initialStart && !CheckIfToastActivation(e))
                 {
                     await _CheckAndWaitForSplashScreenDismissal(restored); //handles if the extended splash screen is enabled, awaiting for it to complete if it is.
                     await IoCManager.Resolve<IUIDispatcher>().RunAsync(() =>
@@ -311,6 +311,7 @@ namespace Crystal2
 
         private static bool CheckIfToastActivation(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
         {
+            //todo find other ways to check
             if (e == null) return false;
             return e.Kind == ActivationKind.Launch && !string.IsNullOrWhiteSpace(e.Arguments);
         }

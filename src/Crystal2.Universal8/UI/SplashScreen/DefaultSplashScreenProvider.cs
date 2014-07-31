@@ -61,11 +61,15 @@ namespace Crystal2.UI.SplashScreen
             //await ActivateAsync();
             if (callbackTask != null)
             {
-                callbackTask.Start();
+                try
+                {
+                    callbackTask.Start();
+                }
+                catch (Exception) { }
                 await (await callbackTask);
             }
             await DeactivateAsync();
-            completionTaskBackend.SetResult(null);
+            completionTaskBackend.TrySetResult(null);
         }
 
         public async Task ActivateAsync()
@@ -82,7 +86,7 @@ namespace Crystal2.UI.SplashScreen
 
             //((Frame)Window.Current.Content).Content = splashScreen;
 
-            await IOC.IoCManager.Resolve<Crystal2.Core.IUIDispatcher>().RunAsync(() =>
+            await IOC.IoCManager.Resolve<Crystal2.Core.IUIDispatcher>().RunAsync(Core.IUIDispatcherPriority.High, () =>
             {
                 rootFrame.Content = splashScreen;
             });

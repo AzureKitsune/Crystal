@@ -28,5 +28,19 @@ namespace Crystal2.Core
 
             return dispatcherObject.Value.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() => callback())).AsTask();
         }
+
+
+        public Task RunAsync(IUIDispatcherPriority priority, Action callback)
+        {
+            if (callback == null) throw new ArgumentNullException("callback");
+
+            return dispatcherObject.Value.RunAsync(ConvertToCoreDispatcherPriority(priority), new DispatchedHandler(() => callback())).AsTask();
+        }
+
+        private CoreDispatcherPriority ConvertToCoreDispatcherPriority(IUIDispatcherPriority priority)
+        {
+            var name = Enum.GetName(typeof(IUIDispatcherPriority), priority);
+            return (CoreDispatcherPriority)Enum.Parse(typeof(CoreDispatcherPriority), name);
+        }
     }
 }
