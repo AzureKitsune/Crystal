@@ -19,5 +19,6 @@ namespace Crystal2.Navigation
             ViewModel = viewModel;
         }
         public Type ViewModel { get; set; }
+        public bool IsHome { get; set; }
     }
 }

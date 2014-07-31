@@ -270,38 +270,41 @@ namespace Crystal2
         protected override async void OnLaunched(Windows.ApplicationModel.Activation.LaunchActivatedEventArgs e)
         {
             bool restored = false;
-            if (IsPhone())
+            bool initialStart = false;
+
+            if (e.PreviousExecutionState == ApplicationExecutionState.NotRunning || e.PreviousExecutionState == ApplicationExecutionState.ClosedByUser)
             {
-                //phone calls OnLaunched each time it is launched from the start tile/app list. make sure it is only called once.
-                if (e.PreviousExecutionState != ApplicationExecutionState.Running && e.PreviousExecutionState != ApplicationExecutionState.Suspended)
+                //see: http://msdn.microsoft.com/en-us/library/windows/apps/windows.applicationmodel.activation.applicationexecutionstate.aspx
+
+                restored = await HandleInitialNavigation(e);
+                initialStart = true;
+            }
+
+
+            if (e.TileId == "App") //primary tile activation or toast activation.
+            {
+                if (e.PreviousExecutionState != ApplicationExecutionState.Running && initialStart)
                 {
-                    restored = await HandleInitialNavigation(e).ConfigureAwait(false);
+                    await _CheckAndWaitForSplashScreenDismissal(restored); //handles if the extended splash screen is enabled, awaiting for it to complete if it is.
+                    await IoCManager.Resolve<IUIDispatcher>().RunAsync(() =>
+                    {
+                        ContinueLaunching(e);
+                    });
+                }
+                else if (CheckIfToastActivation(e))
+                {
+                    //toast notification?
+                    await _CheckAndWaitForSplashScreenDismissal(restored); //handles if the extended splash screen is enabled, awaiting for it to complete if it is.
+                    await IoCManager.Resolve<IUIDispatcher>().RunAsync(() =>
+                    {
+                        //toast activation?
+                        OnActivated(e);
+                    });
                 }
             }
             else
             {
-                if (e.PreviousExecutionState != ApplicationExecutionState.Suspended)
-                    restored = await HandleInitialNavigation(e).ConfigureAwait(false);
-            }
-
-
-            if (e.PreviousExecutionState != ApplicationExecutionState.Running)
-            {
-                await _CheckAndWaitForSplashScreenDismissal(restored); //handles if the extended splash screen is enabled, awaiting for it to complete if it is.
-                await IoCManager.Resolve<IUIDispatcher>().RunAsync(() =>
-                {
-                    ContinueLaunching(e);
-                });
-            }
-            else if (CheckIfToastActivation(e))
-            {
-                //toast notification?
-                await _CheckAndWaitForSplashScreenDismissal(restored); //handles if the extended splash screen is enabled, awaiting for it to complete if it is.
-                await IoCManager.Resolve<IUIDispatcher>().RunAsync(() =>
-                {
-                    //toast activation?
-                    OnActivated(e);
-                });
+                //secondary tile activation
             }
 
         }
@@ -443,7 +446,8 @@ namespace Crystal2
         #region Activation handling
         protected override async void OnActivated(IActivatedEventArgs args)
         {
-            await HandleInitialNavigation(args, noRestore: true);
+            if (args.PreviousExecutionState != ApplicationExecutionState.Running)
+                await HandleInitialNavigation(args, noRestore: true);
 
             if (CheckIfToastActivation(args as LaunchActivatedEventArgs))
                 OnToastActivationNavigationReady(args);
@@ -517,10 +521,11 @@ namespace Crystal2
 
         protected virtual void OnToastActivationNavigationReady(Windows.ApplicationModel.Activation.IActivatedEventArgs args) { }
 
+        [DebuggerNonUserCode]
         protected virtual void OnNavigationInitializeOverride(Crystal2.Navigation.W8NavigationDirectoryProvider directoryProvider)
         {
             if (!applicationConfiguration.AutomaticallyDiscoverViewModelPairs)
-                throw new Exception("This function was be overriden if AutomaticallyDiscoverViewModelPairs is false.");
+                throw new Exception("This function must be overriden if AutomaticallyDiscoverViewModelPairs is false.");
         }
 
         protected virtual Task OnSuspendingAsync()
