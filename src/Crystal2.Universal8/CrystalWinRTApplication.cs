@@ -272,7 +272,8 @@ namespace Crystal2
             bool restored = false;
             bool initialStart = false;
 
-            if (e.PreviousExecutionState == ApplicationExecutionState.NotRunning || e.PreviousExecutionState == ApplicationExecutionState.ClosedByUser)
+            if (e.PreviousExecutionState == ApplicationExecutionState.NotRunning || e.PreviousExecutionState == ApplicationExecutionState.ClosedByUser
+                || e.PreviousExecutionState == ApplicationExecutionState.Terminated)
             {
                 //see: http://msdn.microsoft.com/en-us/library/windows/apps/windows.applicationmodel.activation.applicationexecutionstate.aspx
 
@@ -283,7 +284,7 @@ namespace Crystal2
 
             if (e.TileId == "App") //primary tile activation or toast activation.
             {
-                if (initialStart && !CheckIfToastActivation(e))
+                if ((initialStart && !CheckIfToastActivation(e)))
                 {
                     await _CheckAndWaitForSplashScreenDismissal(restored); //handles if the extended splash screen is enabled, awaiting for it to complete if it is.
                     await IoCManager.Resolve<IUIDispatcher>().RunAsync(() =>
@@ -299,6 +300,13 @@ namespace Crystal2
                     {
                         //toast activation?
                         OnActivated(e);
+                    });
+                }
+                else
+                {
+                    await IoCManager.Resolve<IUIDispatcher>().RunAsync(() =>
+                    {
+                        OnResetLaunchNavigationReady(e);
                     });
                 }
             }
@@ -400,8 +408,12 @@ namespace Crystal2
                     #endregion
                 }
 
-                // Place the frame in the current Window
-                Window.Current.Content = RootFrame;
+                //splash screen will set this later. only set this if the splash screen isn't enabled.
+                if (!applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
+                {
+                    // Place the frame in the current Window
+                    Window.Current.Content = RootFrame;
+                }
 
                 if (RootFrame.Content == null)
                 {
@@ -424,6 +436,10 @@ namespace Crystal2
                     }
                 }
             }
+
+            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
+                IoCManager.Resolve<IWinRTSplashScreenProvider>()
+                    .Preload();
 
             //the following code is me jumping through hoops to make sure the splash screen is showing while the callback is firing.
             if (!restoredState)
@@ -516,6 +532,16 @@ namespace Crystal2
         /// An abstract method called when the application is ready to navigate.
         /// </summary>
         protected abstract void OnNormalLaunchNavigationReady(Windows.ApplicationModel.Activation.IActivatedEventArgs args);
+
+        [DebuggerNonUserCode]
+        protected virtual void OnResetLaunchNavigationReady(Windows.ApplicationModel.Activation.IActivatedEventArgs args)
+        {
+            try
+            {
+                NavigationManager.CurrentViewModel.OnRefresh();
+            }
+            catch (Exception) { }
+        }
 
         protected virtual void OnActivationNavigationReady(Windows.ApplicationModel.Activation.IActivatedEventArgs args)
         { }

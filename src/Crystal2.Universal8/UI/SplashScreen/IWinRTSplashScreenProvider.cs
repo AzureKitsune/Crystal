@@ -10,6 +10,7 @@ namespace Crystal2.UI.SplashScreen
     public interface IWinRTSplashScreenProvider: ISplashScreenProvider
     {
         void Setup(string splashBackgroundColor, string splashScreenImagePath);
+        void Preload();
         void PreActivationHook(Windows.ApplicationModel.Activation.IActivatedEventArgs args, Task<Task> workTask);
         Task CompletionTask { get; }
 

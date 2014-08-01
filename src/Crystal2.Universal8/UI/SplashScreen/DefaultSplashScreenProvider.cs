@@ -42,12 +42,20 @@ namespace Crystal2.UI.SplashScreen
                 {
                     args.SplashScreen.Dismissed += SplashScreen_Dismissed;
 
+                    if (!CrystalWinRTApplication.IsPhone())
+                        Window.Current.Activate();
+
                     splashScreen.HandleSplashActivation(args.SplashScreen);
                     rootFrame = CrystalWinRTApplication.Current.RootFrame;
                     callbackTask = workTask;
 
-                    await ActivateAsync();
+                    System.Diagnostics.Debug.WriteLine("Activating Splash Screen...");
+                    ActivateAsync();
 
+                    System.Diagnostics.Debug.WriteLine("Wait for image load...");
+                    await splashScreen.ImageLoadingTask;
+
+                    System.Diagnostics.Debug.WriteLine("Activating window...");
                     if (!Window.Current.Visible)
                         Window.Current.Activate();
                 }
@@ -76,19 +84,16 @@ namespace Crystal2.UI.SplashScreen
         {
             isVisible = true;
 
-            if (!Crystal2.CrystalWinRTApplication.IsPhone())
-            {
-                await IOC.IoCManager.Resolve<Crystal2.Core.IUIDispatcher>().RunAsync(() =>
-                {
-                    rootFrame.Background = new SolidColorBrush(Crystal2.Utilities.ColorHelper.ParseHex(backgroundColor));
-                });
-            }
-
             //((Frame)Window.Current.Content).Content = splashScreen;
 
             await IOC.IoCManager.Resolve<Crystal2.Core.IUIDispatcher>().RunAsync(Core.IUIDispatcherPriority.High, () =>
             {
-                rootFrame.Content = splashScreen;
+                //rootFrame.Content = splashScreen;
+
+                if (!Crystal2.CrystalWinRTApplication.IsPhone())
+                {
+                    rootFrame.Background = new SolidColorBrush(Crystal2.Utilities.ColorHelper.ParseHex(backgroundColor));
+                }
             });
         }
 
@@ -123,5 +128,13 @@ namespace Crystal2.UI.SplashScreen
         }
 
         public IActivatedEventArgs ActivatedEventArgs { get; private set; }
+
+
+        public void Preload()
+        {
+            CrystalWinRTApplication.Current.RootFrame.Content = splashScreen;
+
+            Window.Current.Content = CrystalWinRTApplication.Current.RootFrame;
+        }
     }
 }
