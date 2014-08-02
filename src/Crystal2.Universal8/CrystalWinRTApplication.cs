@@ -331,6 +331,8 @@ namespace Crystal2
                 var splashProvider = IoCManager.Resolve<IWinRTSplashScreenProvider>();
 
                 await splashProvider.CompletionTask;
+
+                RootFrame.Content = null;
             }
         }
 
