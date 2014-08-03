@@ -58,7 +58,7 @@ namespace Crystal2.Navigation
                 var map = provider.ProvideMap();
 
                 Type selectedPageViewModel = (Type)map.First(x =>
-                    uri == ((Tuple<Type, Uri>)x.Value).Item2).Key;
+                    uri == ((Tuple<Type, Uri, bool>)x.Value).Item2).Key;
 
                 if (((navigationFrame.BackStack.Count > 0 && e2.NavigationMode == NavigationMode.Forward) ||
                     (navigationFrame.ForwardStack.Count > 0 && e2.NavigationMode == NavigationMode.Back))
@@ -118,6 +118,31 @@ namespace Crystal2.Navigation
                     Direction = ConvertToCrystalNavigation(e.NavigationMode)
                 });
             }
+
+            DetectIfHome();
+        }
+
+        private void DetectIfHome()
+        {
+            //detect if we're on the home page.
+            var provider = IOC.IoCManager.Resolve<INavigationDirectoryProvider>();
+
+            var map = provider.ProvideMap();
+
+            Tuple<Type, Uri, bool> selectedPage = (Tuple<Type, Uri, bool>)map.First(x => 
+                ((Tuple<Type, Uri, bool>)x.Value).Item1 == ((Page)((Frame)NavigationObject).Content).GetType()).Value;
+            IsHome = selectedPage.Item1.GetTypeInfo().GetCustomAttribute<NavigationalLinkForPageToViewModelAttribute>().IsHome;
+        }
+        private Type GetHomeViewModel()
+        {
+            var provider = IOC.IoCManager.Resolve<INavigationDirectoryProvider>();
+
+            var map = provider.ProvideMap();
+
+            var homePage = map.First(x =>
+                ((Tuple<Type, Uri, bool>)x.Value).Item3 == true);
+
+            return homePage.Key; //view models are the key.
         }
 
         private static Uri GetNavigationUriFromArgs(object e)
@@ -136,7 +161,7 @@ namespace Crystal2.Navigation
 
             var map = provider.ProvideMap();
 
-            Tuple<Type, Uri> selectedPage = (Tuple<Type, Uri>)map.First(x => ((Tuple<Type, Uri>)x.Value).Item1 == sourcePageType).Value;
+            Tuple<Type, Uri, bool> selectedPage = (Tuple<Type, Uri, bool>)map.First(x => ((Tuple<Type, Uri, bool>)x.Value).Item1 == sourcePageType).Value;
 
             return selectedPage.Item2;
         }
@@ -162,7 +187,7 @@ namespace Crystal2.Navigation
         {
             var map = provider.ProvideMap();
 
-            Tuple<Type, Uri> selectedPage = (Tuple<Type, Uri>)map.First(x =>
+            Tuple<Type, Uri, bool> selectedPage = (Tuple<Type, Uri, bool>)map.First(x =>
                 information.TargetViewModelType == x.Key).Value;
             //information.TargetUri = selectedPage.Item2;
 
@@ -244,6 +269,20 @@ namespace Crystal2.Navigation
         public Uri GetUrl()
         {
             return GetNavigationUri(((Page)((Frame)NavigationObject).Content).GetType());
+        }
+
+
+        public bool IsHome { get; private set; }
+
+        public void GoHome()
+        {
+            DetectIfHome();
+            if (!IsHome)
+            {
+                var homeViewModel = GetHomeViewModel();
+                NavigationManager.NavigateToViewModel(homeViewModel, null);
+                NavigationManager.ClearBackStack();
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -44,8 +45,12 @@ namespace Crystal2.Navigation
                                 viewModelType = (Type)linkAttribute.NamedArguments.First(x => ((Type)x.TypedValue.Value).GetTypeInfo().IsSubclassOf(typeof(ViewModelBase))).TypedValue.Value;
 
                             var uri = GetUriFromPageType(page);
+                            var isHomePage = viewModelType.GetTypeInfo().GetCustomAttribute<NavigationalLinkForPageToViewModelAttribute>().IsHome;
 
-                            navigablePages.Add((Type)(object)viewModelType, (object)new Tuple<Type, Uri>(page.AsType(), uri));
+                            if (navigablePages.Any(x => ((Tuple<Type, Uri, bool>)x.Value).Item3 == true) && isHomePage)
+                                throw new Exception("Only one home page is allowed.");
+
+                            navigablePages.Add((Type)(object)viewModelType, (object)new Tuple<Type, Uri, bool>(page.AsType(), uri, isHomePage));
                         }
                     }
 
@@ -63,14 +68,18 @@ namespace Crystal2.Navigation
             return uri;
         }
 
-        public void AddViewModelViewPair(Type viewModel, Type pageType)
+        [DebuggerNonUserCode]
+        public void AddViewModelViewPair(Type viewModel, Type pageType, bool isHomePage = false)
         {
             if (viewModel == null) throw new ArgumentNullException("viewModel");
             if (pageType == null) throw new ArgumentNullException("pageType");
 
             var uri = GetUriFromPageType(pageType.GetTypeInfo());
 
-            navigablePages.Add(viewModel, new Tuple<Type, Uri>(pageType, uri));
+            if (navigablePages.Any(x => ((Tuple<Type, Uri, bool>)x.Value).Item3 == true) && isHomePage)
+                throw new Exception("Only one home page is allowed.");
+
+            navigablePages.Add(viewModel, new Tuple<Type, Uri, bool>(pageType, uri, isHomePage));
         }
         //internal void AddViewModelUriPair(ViewModelBase viewModel, Uri uri)
         //{

@@ -41,13 +41,17 @@ namespace Crystal2.Navigation
         /// <param name="parameter">The parameter for the navigation.</param>
         public static void NavigateTo<T>(object parameter = null) where T : ViewModelBase
         {
+            NavigateToViewModel(typeof(T), parameter);
+        }
+        public static void NavigateToViewModel(Type viewModelType, object parameter = null)
+        {
             //grabs the directory provider from the IoC container.
             var directoryProvider = IoCManager.Resolve<INavigationDirectoryProvider>();
 
             //constructs a navigation information object for navigation.
             var navigationInformation = new NavigationInformation();
             navigationInformation.Parameter = parameter;
-            navigationInformation.TargetViewModelType = typeof(T);
+            navigationInformation.TargetViewModelType = viewModelType;
 
             //grabs the navigation provider from the IoC container and navigates using it.
             IoCManager.Resolve<INavigationProvider>().Navigate(navigationInformation, directoryProvider);

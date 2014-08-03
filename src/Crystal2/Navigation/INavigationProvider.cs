@@ -45,5 +45,9 @@ namespace Crystal2.Navigation
         object GetNavigationContext();
 
         Uri GetUrl();
+
+        bool IsHome { get; }
+
+        void GoHome();
     }
 }

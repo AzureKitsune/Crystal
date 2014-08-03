@@ -14,9 +14,12 @@ namespace Crystal2.Navigation
         INavigationProvider navigationProvider = null;
         CrystalRelayCommand backCommand = null;
         CrystalRelayCommand forwardCommand = null;
+        CrystalRelayCommand homeCommand = null;
 
         public NavigationCommands()
         {
+            navigationProvider = IoCManager.Resolve<INavigationProvider>();
+
             backCommand = new CrystalRelayCommand(
                 x =>
                     navigationProvider.CanGoBackward,
@@ -27,8 +30,13 @@ namespace Crystal2.Navigation
                     navigationProvider.CanGoForward,
                 x =>
                     navigationProvider.GoForward());
+            homeCommand = new CrystalRelayCommand(
+                x =>
+                    !navigationProvider.IsHome,
+                x =>
+                    navigationProvider.GoHome());
 
-            navigationProvider = IoCManager.Resolve<INavigationProvider>();
+            
             navigationProvider.Navigated += navigationProvider_Navigated;
         }
 
@@ -42,6 +50,7 @@ namespace Crystal2.Navigation
         {
             GoBackwardCommand.RaiseCanExecuteChanged();
             GoForwardCommand.RaiseCanExecuteChanged();
+            GoHomeCommand.RaiseCanExecuteChanged();
         }
 
         public CrystalRelayCommand GoBackwardCommand
@@ -52,6 +61,11 @@ namespace Crystal2.Navigation
         public CrystalRelayCommand GoForwardCommand
         {
             get { return forwardCommand; }
+        }
+
+        public CrystalRelayCommand GoHomeCommand
+        {
+            get { return homeCommand; }
         }
     }
 }
