@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -63,6 +64,7 @@ namespace Crystal2.UI.SplashScreen
             }
         }
 
+        [DebuggerNonUserCode]
         async void SplashScreen_Dismissed(Windows.ApplicationModel.Activation.SplashScreen sender, object args)
         {
             sender.Dismissed -= SplashScreen_Dismissed;
