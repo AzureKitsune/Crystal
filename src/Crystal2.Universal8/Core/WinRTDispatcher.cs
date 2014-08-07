@@ -26,7 +26,7 @@ namespace Crystal2.Core
         {
             if (callback == null) throw new ArgumentNullException("callback");
 
-            return dispatcherObject.Value.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() => callback())).AsTask();
+            return RunAsync(IUIDispatcherPriority.Normal, callback);
         }
 
 
@@ -41,6 +41,28 @@ namespace Crystal2.Core
         {
             var name = Enum.GetName(typeof(IUIDispatcherPriority), priority);
             return (CoreDispatcherPriority)Enum.Parse(typeof(CoreDispatcherPriority), name);
+        }
+
+
+        public Task<T> RunAsync<T>(Func<T> callback)
+        {
+            if (callback == null) throw new ArgumentNullException("callback");
+
+            return RunAsync<T>(IUIDispatcherPriority.Normal, callback);
+        }
+
+        public Task<T> RunAsync<T>(IUIDispatcherPriority priority, Func<T> callback)
+        {
+            if (callback == null) throw new ArgumentNullException("callback");
+
+            TaskCompletionSource<T> objectTask = new TaskCompletionSource<T>();
+
+            dispatcherObject.Value.RunAsync(ConvertToCoreDispatcherPriority(priority), new DispatchedHandler(() =>
+                {
+                    objectTask.TrySetResult(callback());
+                }));
+
+            return objectTask.Task;
         }
     }
 }

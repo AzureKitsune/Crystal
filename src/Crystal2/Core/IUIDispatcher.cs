@@ -11,6 +11,9 @@ namespace Crystal2.Core
     {
         Task RunAsync(Action callback);
         Task RunAsync(IUIDispatcherPriority priority, Action callback);
+
+        Task<T> RunAsync<T>(Func<T> callback);
+        Task<T> RunAsync<T>(IUIDispatcherPriority priority, Func<T> callback);
     }
     public enum IUIDispatcherPriority
     {
