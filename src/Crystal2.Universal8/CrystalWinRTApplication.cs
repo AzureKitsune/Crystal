@@ -132,7 +132,7 @@ namespace Crystal2
             try
             {
                 //Calls an unsupported API.
-                Windows.Networking.BackgroundTransfer.BackgroundDownloader.RequestUnconstrainedDownloadsAsync(null);
+                Windows.Networking.BackgroundTransfer.BackgroundDownloader.RequestUnconstrainedDownloadsAsync(null).GetResults();
                 CurrentPlatform = Platform.Windows;
             }
             catch (NotImplementedException)

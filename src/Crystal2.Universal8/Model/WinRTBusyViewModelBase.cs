@@ -21,6 +21,7 @@ namespace Crystal2.Model
             IsBusyPropertyKey = GetProperty("IsBusy");
             IsBusyStatusTextKey = GetProperty("IsBusyStatusText");
             IsBusyProgressValueKey = GetProperty("IsBusyProgressValue");
+            IsBusyProgressIndeterminateKey = GetProperty("IsBusyProgressIndeterminate");
         }
 
         /// <summary>
@@ -29,6 +30,7 @@ namespace Crystal2.Model
         protected ViewModelPropertyKey IsBusyPropertyKey = null;
         protected ViewModelPropertyKey IsBusyStatusTextKey = null;
         protected ViewModelPropertyKey IsBusyProgressValueKey = null;
+        protected ViewModelPropertyKey IsBusyProgressIndeterminateKey = null;
 
         public bool IsBusy
         {
@@ -48,6 +50,11 @@ namespace Crystal2.Model
             get { return GetPropertyValue<double?>(IsBusyProgressValueKey); }
             protected set { SetPropertyValue<double?>(IsBusyProgressValueKey, value); }
         }
+        public bool IsBusyProgressIndeterminate
+        {
+            get { return GetPropertyValue<bool>(IsBusyProgressIndeterminateKey); }
+            protected set { SetPropertyValue<bool>(IsBusyProgressIndeterminateKey, value); }
+        }
 
         protected Task WaitForViewLoadAsync(int paddedWaitTimeInMilliseconds = 500)
         {
@@ -56,7 +63,9 @@ namespace Crystal2.Model
             Frame navigationFrame = provider.NavigationObject as Frame;
             Page currentPage = navigationFrame.Content as Page;
 
-            if ((bool)currentPage.GetType().GetTypeInfo().GetDeclaredField("_contentLoaded").GetValue(currentPage))
+            var contentField = currentPage.GetType().GetTypeInfo().GetDeclaredField("_contentLoaded");
+
+            if ((bool)contentField.GetValue(currentPage))
                 return Task.FromResult<object>(null);
 
             TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
@@ -65,6 +74,9 @@ namespace Crystal2.Model
             eh = new RoutedEventHandler(async (obj, e) =>
             {
                 currentPage.Loaded -= eh;
+
+                while (!(bool)contentField.GetValue(currentPage))
+                    await Task.Delay(200);
 
                 await Task.Delay(paddedWaitTimeInMilliseconds);
 
