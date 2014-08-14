@@ -147,10 +147,23 @@ namespace Crystal2
             }
         }
 
-        public async void OnInitialize()
+        public void OnInitialize()
         {
             //set up the dispatcher
             IoCManager.Register<IUIDispatcher>(new WinRTDispatcher());
+
+            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
+            {
+                if (!IoCManager.IsRegistered<IWinRTSplashScreenProvider>())
+                    IoCManager.Register<IWinRTSplashScreenProvider>(new DefaultSplashScreenProvider());
+
+                //handle the splashscreen
+                var splashData = GetSplashScreenPath();
+                var splashBackground = splashData.Item1;
+                var splashImagePath = splashData.Item2;
+
+                IoCManager.Resolve<IWinRTSplashScreenProvider>().Setup(splashBackground, splashImagePath);
+            }
 
             //set up the message dialog stuff
             IoCManager.Register<IMessageDialogProvider>(new DefaultMessageDialogProvider());
@@ -172,26 +185,13 @@ namespace Crystal2
                     IoCManager.Register<IStateProvider>(new DefaultStateProvider());
             }
 
-            if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
-            {
-                if (!IoCManager.IsRegistered<IWinRTSplashScreenProvider>())
-                    IoCManager.Register<IWinRTSplashScreenProvider>(new DefaultSplashScreenProvider());
-
-                //handle the splashscreen
-                var splashData = GetSplashScreenPath();
-                var splashBackground = splashData.Item1;
-                var splashImagePath = splashData.Item2;
-
-                IoCManager.Resolve<IWinRTSplashScreenProvider>().Setup(splashBackground, splashImagePath);
-            }
-
 
             if (IsPhone())
             {
                 //If running on the phone, dynamically load the referenced Crystal2.Universal8.Phone.dll for Back button functionality.
 
-                var files = await Package.Current.InstalledLocation.GetFilesAsync();
-                var refFile = files.Where(x => x.FileType == ".dll" && x.Name == "Crystal2.Universal8.Phone.dll").FirstOrDefault();
+                var files = Package.Current.InstalledLocation.GetFilesAsync().AsTask().Result;
+                var refFile = files.FirstOrDefault(x => x.FileType == ".dll" && x.Name == "Crystal2.Universal8.Phone.dll");
 
                 if (refFile == null) return;
 
@@ -201,14 +201,14 @@ namespace Crystal2
 
                 try
                 {
-                    var assembly = await Task.Run<Assembly>(() => Assembly.Load(assemblyName));
+                    var assembly = Assembly.Load(assemblyName);
 
                     var phoneBackButtonHandler = (IBackButtonNavigationProvider)Activator.CreateInstance(assembly.ExportedTypes.First(
                         x => x.GetTypeInfo().ImplementedInterfaces.Any(y => y == (typeof(IBackButtonNavigationProvider)))));
 
-                    IoCManager.Register<IBackButtonNavigationProvider>(phoneBackButtonHandler);
+                    phoneBackButtonHandler.Attach(this);
 
-                    IoCManager.Resolve<IBackButtonNavigationProvider>().Attach(this);
+                    IoCManager.Register<IBackButtonNavigationProvider>(phoneBackButtonHandler);
                 }
                 catch (Exception)
                 { }
