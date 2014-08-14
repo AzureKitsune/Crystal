@@ -56,7 +56,7 @@ namespace Crystal2.Model
             protected set { SetPropertyValue<bool>(IsBusyProgressIndeterminateKey, value); }
         }
 
-        protected async Task<Task> WaitForViewLoadAsync(int paddedWaitTimeInMilliseconds = 500)
+        protected async Task<Task> WaitForViewLoadAsync(int paddedWaitTimeInMilliseconds = 100)
         {
             INavigationProvider provider = IOC.IoCManager.Resolve<Crystal2.Navigation.INavigationProvider>();
 
