@@ -56,7 +56,7 @@ namespace Crystal2.Model
             protected set { SetPropertyValue<bool>(IsBusyProgressIndeterminateKey, value); }
         }
 
-        protected Task WaitForViewLoadAsync(int paddedWaitTimeInMilliseconds = 500)
+        protected async Task<Task> WaitForViewLoadAsync(int paddedWaitTimeInMilliseconds = 500)
         {
             INavigationProvider provider = IOC.IoCManager.Resolve<Crystal2.Navigation.INavigationProvider>();
 
@@ -66,7 +66,10 @@ namespace Crystal2.Model
             var contentField = currentPage.GetType().GetTypeInfo().GetDeclaredField("_contentLoaded");
 
             if ((bool)contentField.GetValue(currentPage))
+            {
+                await Task.Delay(paddedWaitTimeInMilliseconds);
                 return Task.FromResult<object>(null);
+            }
 
             TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
 
@@ -76,10 +79,9 @@ namespace Crystal2.Model
                 currentPage.Loaded -= eh;
 
                 while (!(bool)contentField.GetValue(currentPage))
-                    await Task.Delay(200);
+                    await Task.Delay(100);
 
                 await Task.Delay(paddedWaitTimeInMilliseconds);
-
                 taskCompletionSource.SetResult(null);
             });
             currentPage.Loaded += eh;
