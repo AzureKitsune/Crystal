@@ -312,7 +312,13 @@ namespace Crystal2
             }
             else
             {
-                //secondary tile activation
+                await _CheckAndWaitForSplashScreenDismissal(restored); //handles if the extended splash screen is enabled, awaiting for it to complete if it is.
+                Window.Current.Activate();
+                await IoCManager.Resolve<IUIDispatcher>().RunAsync(() =>
+                    {
+                        //secondary tile activation
+                        OnSecondaryTileLaunchNavigationReady(e);
+                    });
             }
 
         }
@@ -544,6 +550,8 @@ namespace Crystal2
             }
             catch (Exception) { }
         }
+
+        protected virtual void OnSecondaryTileLaunchNavigationReady(Windows.ApplicationModel.Activation.IActivatedEventArgs args) { }
 
         protected virtual void OnActivationNavigationReady(Windows.ApplicationModel.Activation.IActivatedEventArgs args)
         { }

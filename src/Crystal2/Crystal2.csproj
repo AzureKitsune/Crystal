@@ -42,6 +42,10 @@
     <Compile Include="Core\IUIDispatcher.cs" />
     <Compile Include="CrystalConfiguration.cs" />
     <Compile Include="ICrystalApplication.cs" />
+    <Compile Include="Messaging\IMessagingTarget.cs" />
+    <Compile Include="Messaging\Message.cs" />
+    <Compile Include="Messaging\MessagingTicket.cs" />
+    <Compile Include="Messaging\Messenger.cs" />
     <Compile Include="Model\ModelBase.cs" />
     <Compile Include="Navigation\CrystalNavigationDirection.cs" />
     <Compile Include="IOC\IIoCObject.cs" />

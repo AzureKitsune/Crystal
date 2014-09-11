@@ -1,6 +1,7 @@
 ﻿using Crystal2.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -182,7 +183,7 @@ namespace Crystal2.Navigation
             return CrystalNavigationDirection.None;
         }
 
-
+        [DebuggerNonUserCode]
         public void Navigate(Crystal2.Navigation.NavigationInformation information, INavigationDirectoryProvider provider)
         {
             var map = provider.ProvideMap();

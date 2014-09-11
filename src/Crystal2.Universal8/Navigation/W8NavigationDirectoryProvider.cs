@@ -45,7 +45,11 @@ namespace Crystal2.Navigation
                                 viewModelType = (Type)linkAttribute.NamedArguments.First(x => ((Type)x.TypedValue.Value).GetTypeInfo().IsSubclassOf(typeof(ViewModelBase))).TypedValue.Value;
 
                             var uri = GetUriFromPageType(page);
-                            var isHomePage = viewModelType.GetTypeInfo().GetCustomAttribute<NavigationalLinkForPageToViewModelAttribute>().IsHome;
+                            var isHomePageInfo = linkAttribute.NamedArguments.FirstOrDefault(x => x.MemberName == "IsHome");
+                            bool isHomePage = false;
+
+                            if (isHomePageInfo.TypedValue.Value != null)
+                                isHomePage = (bool)isHomePageInfo.TypedValue.Value;
 
                             if (navigablePages.Any(x => ((Tuple<Type, Uri, bool>)x.Value).Item3 == true) && isHomePage)
                                 throw new Exception("Only one home page is allowed.");

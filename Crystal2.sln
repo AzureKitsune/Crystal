@@ -1,13 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crystal2", "src\Crystal2\Crystal2.csproj", "{FFEAB44C-1D1E-4D13-B00B-C71237C01448}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crystal2.Universal8", "src\Crystal2.Universal8\Crystal2.Universal8.csproj", "{8CA54B37-1DF7-4800-B3BF-C1D6E00F9F76}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crystal2.Universal8.Phone", "src\Crystal2.Universal8.Phone\Crystal2.Universal8.Phone.csproj", "{8A6703A0-6CC5-4D44-B538-81E1BA133960}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Apps", "Test Apps", "{65EC5BBF-3E6A-4C21-ACB1-3FF778D35DDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrystalSpeedLaunchTest", "src\Test Apps\CrystalSpeedLaunchTest\CrystalSpeedLaunchTest.csproj", "{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,8 +51,29 @@ Global
 		{8A6703A0-6CC5-4D44-B538-81E1BA133960}.Release|ARM.Build.0 = Release|ARM
 		{8A6703A0-6CC5-4D44-B538-81E1BA133960}.Release|x86.ActiveCfg = Release|x86
 		{8A6703A0-6CC5-4D44-B538-81E1BA133960}.Release|x86.Build.0 = Release|x86
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Debug|ARM.ActiveCfg = Debug|ARM
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Debug|ARM.Build.0 = Debug|ARM
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Debug|ARM.Deploy.0 = Debug|ARM
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Debug|x86.ActiveCfg = Debug|x86
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Debug|x86.Build.0 = Debug|x86
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Debug|x86.Deploy.0 = Debug|x86
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Release|ARM.ActiveCfg = Release|ARM
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Release|ARM.Build.0 = Release|ARM
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Release|ARM.Deploy.0 = Release|ARM
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Release|x86.ActiveCfg = Release|x86
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Release|x86.Build.0 = Release|x86
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C} = {65EC5BBF-3E6A-4C21-ACB1-3FF778D35DDF}
 	EndGlobalSection
 EndGlobal

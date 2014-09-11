@@ -17,5 +17,10 @@ namespace Crystal2.Navigation
         }
 
         public object Parameter { get; protected set; }
+
+        public T AsArgs<T>() where T: CrystalNavigationEventArgs
+        {
+            return (T)this;
+        }
     }
 }
