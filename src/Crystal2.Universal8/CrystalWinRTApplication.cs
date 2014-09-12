@@ -150,7 +150,8 @@ namespace Crystal2
         public void OnInitialize()
         {
             //set up the dispatcher
-            IoCManager.Register<IUIDispatcher>(new WinRTDispatcher());
+            if (!IoCManager.IsRegistered<IUIDispatcher>())
+                IoCManager.Register<IUIDispatcher>(new WinRTDispatcher());
 
             if (applicationConfiguration.AutomaticallyShowExtendedSplashScreen)
             {
@@ -158,16 +159,57 @@ namespace Crystal2
                     IoCManager.Register<IWinRTSplashScreenProvider>(new DefaultSplashScreenProvider());
 
                 //handle the splashscreen
-                var splashData = GetSplashScreenPath();
+                Tuple<string, string> splashData = applicationConfiguration.AutoDetectSplashScreenImage ? GetSplashScreenPath() : null;
                 var splashBackground = splashData.Item1;
                 var splashImagePath = splashData.Item2;
 
                 IoCManager.Resolve<IWinRTSplashScreenProvider>().Setup(splashBackground, splashImagePath);
             }
 
-            //set up the message dialog stuff
-            IoCManager.Register<IMessageDialogProvider>(new DefaultMessageDialogProvider());
+            Parallel.Invoke(InitializeNavigation, () => { if (IsPhone()) { InitializePhoneBackButton(); } });
 
+            //set up the message dialog stuff
+            if (!IoCManager.IsRegistered<IMessageDialogProvider>())
+                IoCManager.Register<IMessageDialogProvider>(new DefaultMessageDialogProvider());
+
+            //set up state management
+            if (applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
+            {
+                if (!IoCManager.IsRegistered<IStateProvider>())
+                    IoCManager.Register<IStateProvider>(new DefaultStateProvider());
+            }
+        }
+
+        private void InitializePhoneBackButton()
+        {
+            //If running on the phone, dynamically load the referenced Crystal2.Universal8.Phone.dll for Back button functionality.
+
+            var files = Package.Current.InstalledLocation.GetFilesAsync().AsTask().Result;
+            var refFile = files.FirstOrDefault(x => x.FileType == ".dll" && x.Name == "Crystal2.Universal8.Phone.dll");
+
+            if (refFile == null) return;
+
+            var name = refFile.DisplayName;
+
+            var assemblyName = new AssemblyName(name);
+
+            try
+            {
+                var assembly = Assembly.Load(assemblyName);
+
+                var phoneBackButtonHandler = (IBackButtonNavigationProvider)Activator.CreateInstance(assembly.ExportedTypes.First(
+                    x => x.GetTypeInfo().ImplementedInterfaces.Any(y => y == (typeof(IBackButtonNavigationProvider)))));
+
+                phoneBackButtonHandler.Attach(this);
+
+                IoCManager.Register<IBackButtonNavigationProvider>(phoneBackButtonHandler);
+            }
+            catch (Exception)
+            { }
+        }
+
+        private void InitializeNavigation()
+        {
             //set up navigation
             IoCManager.Register<INavigationDirectoryProvider>(new W8NavigationDirectoryProvider(this.GetType().GetTypeInfo().Assembly, applicationConfiguration.AutomaticallyDiscoverViewModelPairs));
             if (!applicationConfiguration.AutomaticallyDiscoverViewModelPairs)
@@ -177,42 +219,6 @@ namespace Crystal2
 
             var navigationProvider = new W8NavigationProvider();
             IoCManager.Register<INavigationProvider>(navigationProvider);
-
-            //set up state management
-            if (applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
-            {
-                if (!IoCManager.IsRegistered<IStateProvider>())
-                    IoCManager.Register<IStateProvider>(new DefaultStateProvider());
-            }
-
-
-            if (IsPhone())
-            {
-                //If running on the phone, dynamically load the referenced Crystal2.Universal8.Phone.dll for Back button functionality.
-
-                var files = Package.Current.InstalledLocation.GetFilesAsync().AsTask().Result;
-                var refFile = files.FirstOrDefault(x => x.FileType == ".dll" && x.Name == "Crystal2.Universal8.Phone.dll");
-
-                if (refFile == null) return;
-
-                var name = refFile.DisplayName;
-
-                var assemblyName = new AssemblyName(name);
-
-                try
-                {
-                    var assembly = Assembly.Load(assemblyName);
-
-                    var phoneBackButtonHandler = (IBackButtonNavigationProvider)Activator.CreateInstance(assembly.ExportedTypes.First(
-                        x => x.GetTypeInfo().ImplementedInterfaces.Any(y => y == (typeof(IBackButtonNavigationProvider)))));
-
-                    phoneBackButtonHandler.Attach(this);
-
-                    IoCManager.Register<IBackButtonNavigationProvider>(phoneBackButtonHandler);
-                }
-                catch (Exception)
-                { }
-            }
         }
 
         private Tuple<string, string> GetSplashScreenPath()
@@ -511,13 +517,13 @@ namespace Crystal2
         /// <returns></returns>
         public static bool IsPhone()
         {
-            return ((CrystalWinRTApplication)Current).CurrentPlatform == Platform.WindowsPhone;
+            return CurrentPlatform == Platform.WindowsPhone;
         }
 
         /// <summary>
         /// Returns the WinRT current platform.
         /// </summary>
-        public Platform CurrentPlatform { get; private set; }
+        public static Platform CurrentPlatform { get; private set; }
 
         /// <summary>
         /// Restores the content transitions after the app has launched.
@@ -590,6 +596,12 @@ namespace Crystal2
             options.AutomaticallyCallInitializeComponent = true;
         }
 
-        public static new CrystalWinRTApplication Current { get { return Application.Current as CrystalWinRTApplication; } }
+        public static new CrystalWinRTApplication Current
+        {
+            get
+            {
+                return Application.Current as CrystalWinRTApplication;
+            }
+        }
     }
 }
