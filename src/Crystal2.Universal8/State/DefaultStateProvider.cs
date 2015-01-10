@@ -66,7 +66,9 @@ namespace Crystal2.State
             {
             }
 
-            await file.DeleteAsync();
+            if (file != null)
+                await file.DeleteAsync();
+            
         }
 
         public async Task SaveStateAsync()
@@ -98,7 +100,8 @@ namespace Crystal2.State
 
         public bool CanStateBeStored
         {
-            get { return CheckIfFileExists().Result; }
+            //get { return CheckIfFileExists().Result; }
+            get { return true; }
         }
     }
 }

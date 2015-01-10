@@ -17,8 +17,10 @@ using System.Xml.Linq;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation.Metadata;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
@@ -31,6 +33,7 @@ namespace Crystal2
     {
         private TransitionCollection transitions;
         private CrystalWinRTConfiguration applicationConfiguration = null;
+        private bool isResuming = false;
 
         public CrystalWinRTApplication()
             : base()
@@ -54,9 +57,16 @@ namespace Crystal2
             OnInitialize();
         }
 
+        /// <summary>
+        /// Called when a running, non-tombstoned application resumes.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         [DebuggerNonUserCode]
         private async void OnResuming(object sender, object e)
         {
+            //isResuming = true;
+
             await OnResumingAsync();
         }
 
@@ -107,7 +117,10 @@ namespace Crystal2
                 {
                     //Windows Phone 8.1 doesn't call OnNavigatedFrom when Suspending.
                     //This simulates it.
-                    NavigationManager.CurrentViewModel.OnNavigatedFrom();
+                    NavigationManager.CurrentViewModel.OnNavigatedFrom(new CrystalWinRTNavigationEventArgs(null)
+                    {
+                        Direction = CrystalNavigationDirection.None
+                    });
                 }
 
                 await OnSuspendingAsync();
@@ -381,6 +394,8 @@ namespace Crystal2
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
+                    //Begins restoring the state of a tombstoned application. At this point, the WP OS will show "Resuming..." but this is unrelated to the Resuming event
+                    //The Resuming event is only called for non-tombstoned applications.
                     #region restoring state
                     if (applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState && !noRestore)
                     {
@@ -403,7 +418,7 @@ namespace Crystal2
                                     var map = provider.ProvideMap();
 
                                     Type selectedPageViewModel = (Type)map.First(x =>
-                                       IoCManager.Resolve<INavigationProvider>().GetUrl() == ((Tuple<Type, Uri>)x.Value).Item2).Key;
+                                       IoCManager.Resolve<INavigationProvider>().GetUrl() == ((Tuple<Type, Uri, bool>)x.Value).Item2).Key;
 
                                     ViewModelBase viewModel = (ViewModelBase)Activator.CreateInstance(selectedPageViewModel);
 
@@ -573,12 +588,17 @@ namespace Crystal2
 
         protected virtual Task OnSuspendingAsync()
         {
-            return Task.Delay(1);
+            return Task.FromResult<object>(null);
         }
 
+        /// <summary>
+        /// Called when a running, non-tombstoned application is resumed
+        /// </summary>
+        /// <remarks>Internal: See Resuming Event</remarks>
+        /// <returns></returns>
         protected virtual Task OnResumingAsync()
         {
-            return Task.Delay(1);
+            return Task.FromResult<object>(null);
         }
 
         protected virtual Task OnSplashScreenShownAsync()

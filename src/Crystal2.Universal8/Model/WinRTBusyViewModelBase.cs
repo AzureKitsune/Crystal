@@ -72,10 +72,10 @@ namespace Crystal2.Model
 
             TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
 
-            RoutedEventHandler eh = null;
-            eh = new RoutedEventHandler(async (obj, e) =>
+            EventHandler<object> eh = null;
+            eh = new EventHandler<object>(async (obj, e) =>
             {
-                currentPage.Loaded -= eh;
+                currentPage.LayoutUpdated -= eh;
 
                 while (!(bool)contentField.GetValue(currentPage))
                     await Task.Delay(100);
@@ -83,7 +83,7 @@ namespace Crystal2.Model
                 await Task.Delay(paddedWaitTimeInMilliseconds);
                 taskCompletionSource.SetResult(null);
             });
-            currentPage.Loaded += eh;
+            currentPage.LayoutUpdated += eh;
 
             return taskCompletionSource.Task;
         }

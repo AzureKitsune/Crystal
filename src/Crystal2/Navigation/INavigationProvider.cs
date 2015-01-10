@@ -49,5 +49,7 @@ namespace Crystal2.Navigation
         bool IsHome { get; }
 
         void GoHome();
+
+        void RemoveBackStackEntry();
     }
 }

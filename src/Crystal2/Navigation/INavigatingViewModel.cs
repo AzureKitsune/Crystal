@@ -12,7 +12,7 @@ namespace Crystal2.Navigation
         void OnNavigatedTo(object paramater, CrystalNavigationEventArgs args);
 
         bool OnNavigatingFrom();
-        void OnNavigatedFrom();
+        void OnNavigatedFrom(CrystalNavigationEventArgs arg);
 
         void OnRefresh();
     }

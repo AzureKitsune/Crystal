@@ -40,7 +40,7 @@ namespace Crystal2.Model
         /// Gets the value of a property.
         /// </summary>
         /// <typeparam name="T">The type to return the value as.</typeparam>
-        /// <param name="propertyName">The property to return the value of/</param>
+        /// <param name="propertyName">The property to return the value of.</param>
         /// <returns></returns>
         protected T GetPropertyValue<T>(string propertyName)
         {

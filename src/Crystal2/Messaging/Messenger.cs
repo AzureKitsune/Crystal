@@ -36,7 +36,7 @@ namespace Crystal2.Messaging
                             {
                                 ((IMessagingTarget)item).OnReceivedMessage(message, (result) =>
                                 {
-                                    taskCompletionSource.SetResult(result);
+                                    taskCompletionSource.TrySetResult(result);
                                 });
                             }
                         }

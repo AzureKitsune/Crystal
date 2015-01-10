@@ -126,7 +126,7 @@ namespace Crystal2.Model
 
         public virtual bool OnNavigatingFrom() { return false; }
 
-        public virtual void OnNavigatedFrom() { }
+        public virtual void OnNavigatedFrom(CrystalNavigationEventArgs args) { }
 
         public virtual void OnRefresh() { }
 

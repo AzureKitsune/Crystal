@@ -64,7 +64,12 @@ namespace Crystal2.Navigation
                 if (((navigationFrame.BackStack.Count > 0 && e2.NavigationMode == NavigationMode.Forward) ||
                     (navigationFrame.ForwardStack.Count > 0 && e2.NavigationMode == NavigationMode.Back))
                     && oldViewModel != null)
-                    oldViewModel.OnNavigatedFrom();
+                {
+                    oldViewModel.OnNavigatedFrom(new CrystalWinRTNavigationEventArgs(null)
+                    {
+                        Direction = ConvertToCrystalNavigation(e2.NavigationMode),
+                    });
+                }
 
                 if (navigationFrame.Content != null)
                 {
@@ -284,6 +289,15 @@ namespace Crystal2.Navigation
                 NavigationManager.NavigateToViewModel(homeViewModel, null);
                 NavigationManager.ClearBackStack();
             }
+        }
+
+
+        public void RemoveBackStackEntry()
+        {
+            var backStack = ((Frame)navigationFrame).BackStack;
+
+            if (backStack.Count > 1)
+                backStack.Remove(backStack.First());
         }
     }
 }

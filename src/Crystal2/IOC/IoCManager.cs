@@ -41,7 +41,11 @@ namespace Crystal2.IOC
         /// <returns></returns>
         public static T Resolve<T>() where T : IIoCObject
         {
-            return (T)itemsDictionary.First(x => x.Key == typeof(T)).Value;
+            var obj = (T)itemsDictionary.FirstOrDefault(x => x.Key == typeof(T)).Value;
+
+            if (obj == null) throw new Exception("Types implementing " + typeof(T).Name + " were not found.");
+
+            return obj;
         }
 
         public static IEnumerable<T> ResolveAll<T>() where T : IIoCObject
