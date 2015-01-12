@@ -32,7 +32,7 @@ namespace Crystal2
     public abstract class CrystalWinRTApplication : Application, ICrystalApplication
     {
         private TransitionCollection transitions;
-        private CrystalWinRTConfiguration applicationConfiguration = null;
+        internal CrystalWinRTConfiguration applicationConfiguration = null;
         private bool isResuming = false;
 
         public CrystalWinRTApplication()
@@ -66,6 +66,21 @@ namespace Crystal2
         private async void OnResuming(object sender, object e)
         {
             //isResuming = true;
+
+            if (NavigationManager.CurrentViewModel != null)
+            {
+                switch (applicationConfiguration.ResumingRefreshMethod)
+                {
+                    case CrystalWinRTResumingRefreshMethodEnum.OnRefresh:
+                        NavigationManager.CurrentViewModel.OnRefresh();
+                        break;
+                    case CrystalWinRTResumingRefreshMethodEnum.ResetNavigation:
+                        NavigationManager.CurrentViewModel.OnNavigatedTo(null, new CrystalWinRTNavigationEventArgs(null) { Direction = CrystalNavigationDirection.Reset });
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             await OnResumingAsync();
         }

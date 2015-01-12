@@ -12,6 +12,8 @@ namespace Crystal2
         {
             AutomaticallyDiscoverViewModelPairs = true;
             AutomaticallyCallInitializeComponent = true;
+
+            ResumingRefreshMethod = CrystalWinRTResumingRefreshMethodEnum.OnRefresh;
         }
         public bool AutoDetectSplashScreenImage { get; set; }
 
@@ -22,5 +24,10 @@ namespace Crystal2
         public bool AutomaticallyCallInitializeComponent { get; set; }
 
         public bool AutomaticallyDiscoverViewModelPairs { get; set; }
+
+        /// <summary>
+        /// Determines which method will be called when a suspended, non-tombstoned application is resumed.
+        /// </summary>
+        public CrystalWinRTResumingRefreshMethodEnum ResumingRefreshMethod { get; set; }
     }
 }

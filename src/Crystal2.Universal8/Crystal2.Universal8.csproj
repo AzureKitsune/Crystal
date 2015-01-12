@@ -54,6 +54,7 @@
     <Compile Include="Core\WinRTDispatcher.cs" />
     <Compile Include="CrystalWinRTApplication.cs" />
     <Compile Include="CrystalWinRTConfiguration.cs" />
+    <Compile Include="CrystalWinRTResumingRefreshMethodEnum.cs" />
     <Compile Include="Model\WinRTBusyViewModelBase.cs" />
     <Compile Include="Model\WinRTViewModelBase.cs" />
     <Compile Include="Navigation\CrystalWinRTNavigationEventArgs.cs" />
