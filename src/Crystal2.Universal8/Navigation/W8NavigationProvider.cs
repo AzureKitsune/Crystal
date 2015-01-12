@@ -135,7 +135,7 @@ namespace Crystal2.Navigation
 
             var map = provider.ProvideMap();
 
-            Tuple<Type, Uri, bool> selectedPage = (Tuple<Type, Uri, bool>)map.First(x => 
+            Tuple<Type, Uri, bool> selectedPage = (Tuple<Type, Uri, bool>)map.First(x =>
                 ((Tuple<Type, Uri, bool>)x.Value).Item1 == ((Page)((Frame)NavigationObject).Content).GetType()).Value;
             IsHome = selectedPage.Item1.GetTypeInfo().GetCustomAttribute<NavigationalLinkForPageToViewModelAttribute>().IsHome;
         }
@@ -211,7 +211,12 @@ namespace Crystal2.Navigation
             if (information.Parameter == null)
                 navigationFrame.Navigate(selectedPage.Item1);
             else
+            {
+                if (!(information.Parameter is ValueType) && CrystalWinRTApplication.Current.applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
+                    throw new Exception("Suspension/Restoration is not supported when passing non value-types as navigational parameters. This is a WinRT limitation.");
+
                 navigationFrame.Navigate(selectedPage.Item1, information.Parameter);
+            }
 
             //((Page)navigationFrame.Content).DataContext = information.TargetViewModel;
 
