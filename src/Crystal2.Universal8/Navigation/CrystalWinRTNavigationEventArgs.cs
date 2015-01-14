@@ -8,7 +8,7 @@ namespace Crystal2.Navigation
 {
     public class CrystalWinRTNavigationEventArgs: CrystalNavigationEventArgs
     {
-        internal CrystalWinRTNavigationEventArgs(object parameter): base ()
+        public CrystalWinRTNavigationEventArgs(object parameter): base ()
         {
             Parameter = parameter;
         }
