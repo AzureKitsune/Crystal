@@ -78,6 +78,7 @@
     </Compile>
     <Compile Include="UI\SplashScreen\IWinRTSplashScreenProvider.cs" />
     <Compile Include="Utilities\ColorHelper.cs" />
+    <Compile Include="Utilities\ValueTypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Lifecycle\" />

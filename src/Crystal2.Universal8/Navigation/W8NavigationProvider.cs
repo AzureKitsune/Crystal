@@ -1,4 +1,5 @@
 ﻿using Crystal2.Model;
+using Crystal2.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -212,7 +213,7 @@ namespace Crystal2.Navigation
                 navigationFrame.Navigate(selectedPage.Item1);
             else
             {
-                if (!(information.Parameter is ValueType) && CrystalWinRTApplication.Current.applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
+                if (!(ValueTypeHelper.IsConsideredValueType(information.Parameter)) && CrystalWinRTApplication.Current.applicationConfiguration.AutomaticallyHandleSuspendingAndRestoringState)
                     throw new Exception("Suspension/Restoration is not supported when passing non value-types as navigational parameters. This is a WinRT limitation.");
 
                 navigationFrame.Navigate(selectedPage.Item1, information.Parameter);
