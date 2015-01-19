@@ -62,7 +62,7 @@ namespace Crystal2.Navigation
                 Type selectedPageViewModel = (Type)map.First(x =>
                     uri == ((Tuple<Type, Uri, bool>)x.Value).Item2).Key;
 
-                if (((navigationFrame.BackStack.Count > 0 && e2.NavigationMode == NavigationMode.Forward) ||
+                if (((navigationFrame.BackStack.Count > 0 && (e2.NavigationMode == NavigationMode.Forward || e2.NavigationMode == NavigationMode.New)) ||
                     (navigationFrame.ForwardStack.Count > 0 && e2.NavigationMode == NavigationMode.Back))
                     && oldViewModel != null)
                 {
@@ -303,7 +303,7 @@ namespace Crystal2.Navigation
             var backStack = ((Frame)navigationFrame).BackStack;
 
             if (backStack.Count > 1)
-                backStack.Remove(backStack.First());
+                backStack.Remove(backStack.Last());
         }
     }
 }
