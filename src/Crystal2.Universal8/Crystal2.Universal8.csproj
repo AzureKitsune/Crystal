@@ -68,6 +68,7 @@
     <Compile Include="State\IStateHandlingViewModel.cs" />
     <Compile Include="State\IStateProvider.cs" />
     <Compile Include="State\StateObject.cs" />
+    <Compile Include="UI\IStatusBarProvider.cs" />
     <Compile Include="UI\MessageDialog\CrystalDialogYesNoMessageResult.cs" />
     <Compile Include="UI\MessageDialog\DefaultMessageDialogProvider.cs" />
     <Compile Include="UI\MessageDialog\IMessageDialogProvider.cs" />
@@ -77,6 +78,7 @@
       <DependentUpon>DefaultWinRTSplashScreen.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\SplashScreen\IWinRTSplashScreenProvider.cs" />
+    <Compile Include="UI\StatusBarHelper.cs" />
     <Compile Include="Utilities\ColorHelper.cs" />
     <Compile Include="Utilities\ValueTypeHelper.cs" />
   </ItemGroup>

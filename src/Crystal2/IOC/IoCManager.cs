@@ -47,6 +47,14 @@ namespace Crystal2.IOC
 
             return obj;
         }
+        public static T ResolveDefault<T>(Func<T> defaultObjectCreator) where T : IIoCObject
+        {
+            var obj = (T)itemsDictionary.FirstOrDefault(x => x.Key == typeof(T)).Value;
+
+            if (obj == null) return defaultObjectCreator();
+
+            return obj;
+        }
 
         public static IEnumerable<T> ResolveAll<T>() where T : IIoCObject
         {

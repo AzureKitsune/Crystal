@@ -3,6 +3,7 @@ using Crystal2.IOC;
 using Crystal2.Model;
 using Crystal2.Navigation;
 using Crystal2.State;
+using Crystal2.UI;
 using Crystal2.UI.MessageDialog;
 using Crystal2.UI.SplashScreen;
 using System;
@@ -194,7 +195,7 @@ namespace Crystal2
                 IoCManager.Resolve<IWinRTSplashScreenProvider>().Setup(splashBackground, splashImagePath);
             }
 
-            Parallel.Invoke(InitializeNavigation, () => { if (IsPhone()) { InitializePhoneBackButton(); } });
+            Parallel.Invoke(InitializeNavigation, () => { if (IsPhone()) { InitializePhoneStuff(); } });
 
             //set up the message dialog stuff
             if (!IoCManager.IsRegistered<IMessageDialogProvider>())
@@ -208,9 +209,9 @@ namespace Crystal2
             }
         }
 
-        private void InitializePhoneBackButton()
+        private void InitializePhoneStuff()
         {
-            //If running on the phone, dynamically load the referenced Crystal2.Universal8.Phone.dll for Back button functionality.
+            //If running on the phone, dynamically load the referenced Crystal2.Universal8.Phone.dll for Back button functionality and such.
 
             var files = Package.Current.InstalledLocation.GetFilesAsync().AsTask().Result;
             var refFile = files.FirstOrDefault(x => x.FileType == ".dll" && x.Name == "Crystal2.Universal8.Phone.dll");
@@ -220,20 +221,30 @@ namespace Crystal2
             var name = refFile.DisplayName;
 
             var assemblyName = new AssemblyName(name);
+            Assembly assembly = null;
 
             try
             {
-                var assembly = Assembly.Load(assemblyName);
+                assembly = Assembly.Load(assemblyName);
+            }
+            catch (Exception)
+            { }
 
+            if (assembly != null)
+            {
+                //load back button code
                 var phoneBackButtonHandler = (IBackButtonNavigationProvider)Activator.CreateInstance(assembly.ExportedTypes.First(
                     x => x.GetTypeInfo().ImplementedInterfaces.Any(y => y == (typeof(IBackButtonNavigationProvider)))));
 
                 phoneBackButtonHandler.Attach(this);
 
                 IoCManager.Register<IBackButtonNavigationProvider>(phoneBackButtonHandler);
+
+                var statusBarProvider = (IStatusBarProvider)Activator.CreateInstance(assembly.ExportedTypes.First(
+                    x => x.GetTypeInfo().ImplementedInterfaces.Any(y => y == (typeof(IStatusBarProvider)))));
+
+                IoCManager.Register<IStatusBarProvider>(statusBarProvider);
             }
-            catch (Exception)
-            { }
         }
 
         private void InitializeNavigation()
