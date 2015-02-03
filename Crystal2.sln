@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crystal2", "src\Crystal2\Crystal2.csproj", "{FFEAB44C-1D1E-4D13-B00B-C71237C01448}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Apps", "Test Apps", "{65EC5BBF-3E6A-4C21-ACB1-3FF778D35DDF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrystalSpeedLaunchTest", "src\Test Apps\CrystalSpeedLaunchTest\CrystalSpeedLaunchTest.csproj", "{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crystal2.Universal8.PC", "src\Crystal2.Universal8.PC\Crystal2.Universal8.PC.csproj", "{7BECD7AC-EC86-42F1-9DAC-9908C5EEE0A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,14 @@ Global
 		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Release|x86.ActiveCfg = Release|x86
 		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Release|x86.Build.0 = Release|x86
 		{CE9C4C11-AE81-43B6-9363-C5EF5C25569C}.Release|x86.Deploy.0 = Release|x86
+		{7BECD7AC-EC86-42F1-9DAC-9908C5EEE0A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BECD7AC-EC86-42F1-9DAC-9908C5EEE0A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BECD7AC-EC86-42F1-9DAC-9908C5EEE0A4}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{7BECD7AC-EC86-42F1-9DAC-9908C5EEE0A4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7BECD7AC-EC86-42F1-9DAC-9908C5EEE0A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BECD7AC-EC86-42F1-9DAC-9908C5EEE0A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BECD7AC-EC86-42F1-9DAC-9908C5EEE0A4}.Release|ARM.ActiveCfg = Release|Any CPU
+		{7BECD7AC-EC86-42F1-9DAC-9908C5EEE0A4}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

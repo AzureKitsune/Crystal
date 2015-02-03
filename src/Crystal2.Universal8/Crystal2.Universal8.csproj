@@ -59,6 +59,7 @@
     <Compile Include="Model\WinRTViewModelBase.cs" />
     <Compile Include="Navigation\CrystalWinRTNavigationEventArgs.cs" />
     <Compile Include="Navigation\IBackButtonNavigationProvider.cs" />
+    <Compile Include="Navigation\NavigableRegion.cs" />
     <Compile Include="Navigation\NavigationCommands.cs" />
     <Compile Include="Navigation\NavigationExtensions.cs" />
     <Compile Include="Navigation\W8NavigationDirectoryProvider.cs" />

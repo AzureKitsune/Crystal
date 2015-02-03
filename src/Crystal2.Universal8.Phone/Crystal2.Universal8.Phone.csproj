@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Crystal2</RootNamespace>
-    <AssemblyName>Crystal2.Universal8.Phone</AssemblyName>
+    <AssemblyName>Amrykid.Crystal2.Universal8.Phone</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>

@@ -35,6 +35,7 @@ namespace Crystal2
         private TransitionCollection transitions;
         internal CrystalWinRTConfiguration applicationConfiguration = null;
         private bool isResuming = false;
+        internal W8NavigationProvider GlobalNavigationProvider { get; private set; }
 
         public CrystalWinRTApplication()
             : base()
@@ -109,11 +110,9 @@ namespace Crystal2
 
                     if (state != null)
                     {
-                        var navProvider = IoCManager.Resolve<INavigationProvider>();
+                        state.NavigationState = GlobalNavigationProvider.GetNavigationContext() as string;
 
-                        state.NavigationState = navProvider.GetNavigationContext() as string;
-
-                        var viewModel = navProvider.GetCurrentViewModel();
+                        var viewModel = GlobalNavigationProvider.GetCurrentViewModel();
                         if (viewModel is IStateHandlingViewModel)
                         {
                             var stateObjs = new Dictionary<string, object>();
@@ -256,8 +255,8 @@ namespace Crystal2
                 OnNavigationInitializeOverride(IoCManager.Resolve<INavigationDirectoryProvider>() as Crystal2.Navigation.W8NavigationDirectoryProvider);
             }
 
-            var navigationProvider = new W8NavigationProvider();
-            IoCManager.Register<INavigationProvider>(navigationProvider);
+            GlobalNavigationProvider = new W8NavigationProvider();
+            IoCManager.Register<INavigationProvider>(GlobalNavigationProvider);
         }
 
         private Tuple<string, string> GetSplashScreenPath()
@@ -415,8 +414,9 @@ namespace Crystal2
                 RootFrame.CacheSize = 1;
 
                 //Now that we have a frame, initialize the INavigationProvider.
-                IoCManager.Resolve<INavigationProvider>()
-                    .Setup(RootFrame);
+                /*IoCManager.Resolve<INavigationProvider>()
+                    .Setup(RootFrame);*/
+                GlobalNavigationProvider.Setup(RootFrame);
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
@@ -437,18 +437,18 @@ namespace Crystal2
 
                                 if (state.NavigationState != null)
                                 {
-                                    IoCManager.Resolve<INavigationProvider>().SetNavigationContext(state.NavigationState);
+                                    GlobalNavigationProvider.SetNavigationContext(state.NavigationState);
 
                                     var provider = IOC.IoCManager.Resolve<INavigationDirectoryProvider>();
 
                                     var map = provider.ProvideMap();
 
                                     Type selectedPageViewModel = (Type)map.First(x =>
-                                       IoCManager.Resolve<INavigationProvider>().GetUrl() == ((Tuple<Type, Uri, bool>)x.Value).Item2).Key;
+                                       GlobalNavigationProvider.GetUrl() == ((Tuple<Type, Uri, bool>)x.Value).Item2).Key;
 
                                     ViewModelBase viewModel = (ViewModelBase)Activator.CreateInstance(selectedPageViewModel);
 
-                                    ((Page)((Frame)IoCManager.Resolve<INavigationProvider>().NavigationObject).Content).DataContext = viewModel;
+                                    ((Page)((Frame)GlobalNavigationProvider.NavigationObject).Content).DataContext = viewModel;
 
                                     viewModel.OnNavigatedTo(null, new CrystalWinRTNavigationEventArgs(null) { Direction = CrystalNavigationDirection.Forward });
 
