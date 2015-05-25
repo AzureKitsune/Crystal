@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -18,8 +19,20 @@ namespace Crystal3
         public CrystalApplication() : base()
         {
             Options = new CrystalConfiguration();
+            InitializeNavigation();
+        }
 
+        private static void InitializeNavigation()
+        {
             NavigationManager.ProbeForViewViewModelPairs();
+
+            EventHandler<BackRequestedEventArgs> systemBackHandler = null;
+            systemBackHandler = new EventHandler<BackRequestedEventArgs>((object sender, BackRequestedEventArgs args) =>
+            {
+                //walk down the navigation tree and check if each service wants to handle it?
+            });
+
+            SystemNavigationManager.GetForCurrentView().BackRequested += systemBackHandler;
         }
 
         private void InitializeRootFrame(IActivatedEventArgs e)

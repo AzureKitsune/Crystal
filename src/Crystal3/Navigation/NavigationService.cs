@@ -18,6 +18,8 @@ namespace Crystal3.Navigation
         {
             if (navFrame == null) throw new ArgumentNullException("navFrame");
             NavigationFrame = navFrame;
+
+            NavigationManager.RegisterNavigationService(this);
         }
 
         public NavigationService(Frame navFrame, FrameLevel navigationLevel) : this(navFrame)

@@ -85,7 +85,8 @@ namespace Crystal3.Navigation
         {
             List<NavigationService> services = new List<NavigationService>();
 
-            services.Add(RootNavigationService);
+            //services.Add(RootNavigationService); - no longer needed if every navigationservice registers itself in the constructor
+
             services.AddRange(nonRootServices);
 
             return services;
