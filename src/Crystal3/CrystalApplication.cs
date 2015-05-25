@@ -19,20 +19,21 @@ namespace Crystal3
         public CrystalApplication() : base()
         {
             Options = new CrystalConfiguration();
+            OnConfigure();
+
+            //base.InitializeComponent();
+
             InitializeNavigation();
         }
 
-        private static void InitializeNavigation()
+        protected virtual void OnConfigure()
+        {
+            Options.HandleSystemBackNavigation = true;
+        }
+
+        private void InitializeNavigation()
         {
             NavigationManager.ProbeForViewViewModelPairs();
-
-            EventHandler<BackRequestedEventArgs> systemBackHandler = null;
-            systemBackHandler = new EventHandler<BackRequestedEventArgs>((object sender, BackRequestedEventArgs args) =>
-            {
-                //walk down the navigation tree and check if each service wants to handle it?
-            });
-
-            SystemNavigationManager.GetForCurrentView().BackRequested += systemBackHandler;
         }
 
         private void InitializeRootFrame(IActivatedEventArgs e)
@@ -62,6 +63,21 @@ namespace Crystal3
 
             // Ensure the current window is active
             Window.Current.Activate();
+
+
+            if (Options.HandleSystemBackNavigation)
+            {
+                EventHandler<BackRequestedEventArgs> systemBackHandler = null;
+                systemBackHandler = new EventHandler<BackRequestedEventArgs>((object sender, BackRequestedEventArgs args) =>
+                {
+                    if (Options.HandleSystemBackNavigation)
+                    {
+                        //walk down the navigation tree and check if each service wants to handle it?
+                    }
+                });
+
+                SystemNavigationManager.GetForCurrentView().BackRequested += systemBackHandler;
+            }
         }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)

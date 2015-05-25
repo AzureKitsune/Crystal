@@ -11,5 +11,7 @@ namespace Crystal3
         {
 
         }
+
+        public bool HandleSystemBackNavigation { get; set; }
     }
 }
