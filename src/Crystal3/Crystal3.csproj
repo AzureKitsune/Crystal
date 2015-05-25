@@ -114,7 +114,7 @@
     <Compile Include="Actions\UITriggerCollection.cs" />
     <Compile Include="Core\IUIDispatcher.cs" />
     <Compile Include="CrystalConfiguration.cs" />
-    <Compile Include="CrystalUniversalApplication.cs" />
+    <Compile Include="CrystalApplication.cs" />
     <Compile Include="IOC\IIoCObject.cs" />
     <Compile Include="IOC\IoCManager.cs" />
     <Compile Include="Messaging\IMessagingTarget.cs" />
@@ -123,7 +123,11 @@
     <Compile Include="Messaging\Messenger.cs" />
     <Compile Include="Model\ModelBase.cs" />
     <Compile Include="Model\ViewModelBase.cs" />
+    <Compile Include="Model\ViewModelBase.Messaging.cs" />
     <Compile Include="Model\ViewModelPropertyKey.cs" />
+    <Compile Include="Navigation\NavigationManager.cs" />
+    <Compile Include="Navigation\NavigationService.cs" />
+    <Compile Include="Navigation\NavigationViewModelAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

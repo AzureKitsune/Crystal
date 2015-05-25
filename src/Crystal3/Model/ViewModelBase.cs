@@ -1,5 +1,4 @@
-﻿using Crystal2.Messaging;
-using Crystal2.Navigation;
+﻿using Crystal3.Messaging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,7 +11,7 @@ namespace Crystal3.Model
     /// <summary>
     /// A base class for ViewModels to inherit which implements INotifyPropertyChanged.
     /// </summary>
-    public abstract class ViewModelBase: INotifyPropertyChanged, INavigatingViewModel, IMessagingTarget
+    public abstract partial class ViewModelBase: INotifyPropertyChanged, IMessagingTarget
     {
         /// <summary>
         /// From INotifyPropertyChanged
@@ -119,58 +118,5 @@ namespace Crystal3.Model
 
             RaisePropertyChanged(propertyName); //Raises the property changed event for the property.
         }
-
-        public virtual void OnNavigatingTo() { }
-
-        public virtual void OnNavigatedTo(object parameter, CrystalNavigationEventArgs args) { }
-
-        public virtual bool OnNavigatingFrom() { return false; }
-
-        public virtual void OnNavigatedFrom(CrystalNavigationEventArgs args) { }
-
-        public virtual void OnRefresh() { }
-
-        internal NavigationInformation NavigationalData { get; set; }
-
-        #region Messaging
-        private List<MessagingTicket> ticketList = new List<MessagingTicket>();
-        protected Messaging.MessagingTicket SubscribeToMessage(string messageName, Action<object, Action<object>> callback)
-        {
-            if (ticketList.Any(x => x.Name == messageName))
-                throw new Exception("You are already subscribed to this message.");
-
-            if (string.IsNullOrWhiteSpace(messageName)) throw new ArgumentNullException("messageName");
-
-            if (!Messenger.IsTarget((IMessagingTarget)this))
-                Messenger.AddTarget(this);
-
-            var ticket = new Messaging.MessagingTicket(messageName, callback);
-
-            ticketList.Add(ticket);
-
-            return ticket;
-        }
-        protected void UnsubscribeToMessage(MessagingTicket ticket)
-        {
-            ticketList.Remove(ticket);
-
-            if (ticketList.Count == 0)
-                if (Messenger.IsTarget((IMessagingTarget)this))
-                    Messenger.RemoveTarget(this);
-        }
-
-        public void OnReceivedMessage(Message message, Action<object> resultCallback)
-        {
-            foreach (MessagingTicket ticket in ticketList)
-                if (ticket.Name == message.Name)
-                    ticket.Callback.Invoke(message, resultCallback);
-        }
-
-        public IEnumerable<string> GetSubscriptions()
-        {
-            foreach (var ticket in ticketList)
-                yield return ticket.Name;
-        }
-        #endregion
     }
 }
