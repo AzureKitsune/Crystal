@@ -1,8 +1,0 @@
-﻿<crystal:CrystalWinRTApplication
-    x:Class="CrystalSpeedLaunchTest.App"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:CrystalSpeedLaunchTest"
-    xmlns:crystal="using:Crystal2">
-
-</crystal:CrystalWinRTApplication>
