@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Navigation;
+using Crystal3.Navigation;
 
 namespace Crystal3.Model
 {
@@ -39,6 +41,7 @@ namespace Crystal3.Model
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
         /// <summary>
         /// Raises the PropertyChanged event for the specified property.
         /// </summary>

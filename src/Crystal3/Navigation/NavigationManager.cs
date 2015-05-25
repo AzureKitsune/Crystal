@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Context;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
@@ -17,6 +18,7 @@ namespace Crystal3.Navigation
         /// <ViewModelType, PageType>
         /// </summary>
         private static Dictionary<Type, Type> viewModelViewMappings = new Dictionary<Type, Type>();
+        private static List<NavigationService> nonRootServices = new List<NavigationService>();
         #endregion
 
         #region properties
@@ -28,9 +30,9 @@ namespace Crystal3.Navigation
         {
             viewModelViewMappings.Clear();
 
-            foreach(TypeInfo type in typeof(CrystalApplication).GetTypeInfo().Assembly.DefinedTypes.Where(x =>
-                                x.IsSubclassOf(typeof(Page)) &&
-                                x.CustomAttributes.Any(y => y.AttributeType == typeof(NavigationViewModelAttribute))))
+            foreach (TypeInfo type in CrystalApplication.Current.GetType().GetTypeInfo().Assembly.DefinedTypes.Where(x =>
+                                 x.IsSubclassOf(typeof(Page)) &&
+                                 x.CustomAttributes.Any(y => y.AttributeType == typeof(NavigationViewModelAttribute))))
             {
 
                 if (type.IsSubclassOf(typeof(Page)))
@@ -59,6 +61,34 @@ namespace Crystal3.Navigation
         internal static Type GetView(Type viewModelType)
         {
             return (Type)viewModelViewMappings[viewModelType];
+        }
+
+        internal static void RegisterNavigationService(NavigationService service)
+        {
+            if (service == null) throw new ArgumentNullException("service");
+
+            if (RootNavigationService != null && service.NavigationLevel == FrameLevel.One)
+            {
+                throw new Exception("There can only be one level-one navigation service.");
+            }
+
+            if (!nonRootServices.Contains(service))
+                nonRootServices.Add(service);
+        }
+
+        internal static IEnumerable<NavigationService> GetNavigationServiceFromFrameLevel(FrameLevel level = FrameLevel.One)
+        {
+            return nonRootServices.Where<NavigationService>(x => x.NavigationLevel == level);
+        }
+
+        internal static IEnumerable<NavigationService> GetAllServices()
+        {
+            List<NavigationService> services = new List<NavigationService>();
+
+            services.Add(RootNavigationService);
+            services.AddRange(nonRootServices);
+
+            return services;
         }
     }
 }
