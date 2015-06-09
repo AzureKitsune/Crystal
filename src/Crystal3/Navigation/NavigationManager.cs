@@ -85,12 +85,15 @@ namespace Crystal3.Navigation
                 throw new Exception("There can only be one level-one navigation service.");
             }
 
+            if (navigationServices.Any(x => x.NavigationLevel == frameLevel))
+                throw new Exception();
+
             navigationServices.Add(new NavigationService(frame, this, frameLevel));
         }
 
-        public IEnumerable<NavigationService> GetNavigationServiceFromFrameLevel(FrameLevel level = FrameLevel.One)
+        public NavigationService GetNavigationServiceFromFrameLevel(FrameLevel level = FrameLevel.One)
         {
-            return navigationServices.Where<NavigationService>(x => x.NavigationLevel == level);
+            return navigationServices.First<NavigationService>(x => x.NavigationLevel == level);
         }
 
         internal IEnumerable<NavigationService> GetAllServices()

@@ -15,6 +15,10 @@ namespace Crystal3.Navigation
         public FrameLevel NavigationLevel { get; private set; }
         internal NavigationManager NavigationManager { get; set; }
 
+        public bool CanGoBackward { get { return NavigationFrame.CanGoBack; } }
+
+        public void GoBack() { NavigationFrame.GoBack(); }
+
         internal NavigationService(Frame navFrame, NavigationManager manager)
         {
             if (navFrame == null) throw new ArgumentNullException("navFrame");
