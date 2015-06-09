@@ -11,22 +11,24 @@ using Windows.UI.Xaml.Controls;
 
 namespace Crystal3.Navigation
 {
-    public static class NavigationManager
+    public class NavigationManager
     {
         #region fields
         /// <summary>
         /// <ViewModelType, PageType>
         /// </summary>
-        private static Dictionary<Type, Type> viewModelViewMappings = new Dictionary<Type, Type>();
-        private static List<NavigationService> nonRootServices = new List<NavigationService>();
+        private Dictionary<Type, Type> viewModelViewMappings = new Dictionary<Type, Type>();
+        private List<NavigationService> nonRootServices = new List<NavigationService>();
         #endregion
 
         #region properties
-        public static NavigationService RootNavigationService { get; internal set; }
+        public NavigationService RootNavigationService { get; internal set; }
 
         #endregion
 
-        internal static void ProbeForViewViewModelPairs()
+        internal NavigationManager() { }
+
+        internal void ProbeForViewViewModelPairs()
         {
             viewModelViewMappings.Clear();
 
@@ -58,12 +60,12 @@ namespace Crystal3.Navigation
             }
         }
 
-        internal static Type GetView(Type viewModelType)
+        internal Type GetView(Type viewModelType)
         {
             return (Type)viewModelViewMappings[viewModelType];
         }
 
-        internal static void RegisterNavigationService(NavigationService service)
+        internal void RegisterNavigationService(NavigationService service)
         {
             if (service == null) throw new ArgumentNullException("service");
 
@@ -76,12 +78,12 @@ namespace Crystal3.Navigation
                 nonRootServices.Add(service);
         }
 
-        internal static IEnumerable<NavigationService> GetNavigationServiceFromFrameLevel(FrameLevel level = FrameLevel.One)
+        internal IEnumerable<NavigationService> GetNavigationServiceFromFrameLevel(FrameLevel level = FrameLevel.One)
         {
             return nonRootServices.Where<NavigationService>(x => x.NavigationLevel == level);
         }
 
-        internal static IEnumerable<NavigationService> GetAllServices()
+        internal IEnumerable<NavigationService> GetAllServices()
         {
             List<NavigationService> services = new List<NavigationService>();
 

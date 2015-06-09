@@ -31,14 +31,27 @@ namespace Crystal3
             Options.HandleSystemBackNavigation = true;
         }
 
+        protected override void OnWindowCreated(WindowCreatedEventArgs args)
+        {
+            var frame = new Frame();
+            var navManager = new NavigationManager();
+
+            navManager.RootNavigationService = new NavigationService(frame, navManager);
+            args.Window.Content = frame;
+
+            WindowManager.HandleNewWindow(args.Window, navManager);
+        }
+
         private void InitializeNavigation()
         {
-            NavigationManager.ProbeForViewViewModelPairs();
+            //handle the first window.
+
+            WindowManager.HandleNewWindow(Window.Current, new NavigationManager());
+            WindowManager.GetNavigationManagerForCurrentWindow().ProbeForViewViewModelPairs();
         }
 
         private void InitializeRootFrame(IActivatedEventArgs e)
         {
-
             var rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
@@ -58,7 +71,7 @@ namespace Crystal3
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
 
-                NavigationManager.RootNavigationService = new NavigationService(rootFrame);
+                WindowManager.GetNavigationManagerForCurrentWindow().RootNavigationService = new NavigationService(rootFrame, WindowManager.GetNavigationManagerForCurrentWindow());
             }
 
             // Ensure the current window is active

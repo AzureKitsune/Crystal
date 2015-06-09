@@ -130,6 +130,7 @@
     <Compile Include="Navigation\NavigationManager.cs" />
     <Compile Include="Navigation\NavigationService.cs" />
     <Compile Include="Navigation\NavigationViewModelAttribute.cs" />
+    <Compile Include="Navigation\WindowManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

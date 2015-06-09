@@ -13,16 +13,20 @@ namespace Crystal3.Navigation
     {
         public Frame NavigationFrame { get; private set; }
         public FrameLevel NavigationLevel { get; private set; }
+        internal NavigationManager NavigationManager { get; set; }
 
-        internal NavigationService(Frame navFrame)
+        internal NavigationService(Frame navFrame, NavigationManager manager)
         {
             if (navFrame == null) throw new ArgumentNullException("navFrame");
+
+            NavigationManager = manager;
+
             NavigationFrame = navFrame;
 
             NavigationManager.RegisterNavigationService(this);
         }
 
-        public NavigationService(Frame navFrame, FrameLevel navigationLevel) : this(navFrame)
+        public NavigationService(Frame navFrame, NavigationManager manager, FrameLevel navigationLevel) : this(navFrame, manager)
         {
             NavigationLevel = navigationLevel;
         }
