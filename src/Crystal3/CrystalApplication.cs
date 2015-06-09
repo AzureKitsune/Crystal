@@ -33,13 +33,16 @@ namespace Crystal3
 
         protected override void OnWindowCreated(WindowCreatedEventArgs args)
         {
-            var frame = new Frame();
-            var navManager = new NavigationManager();
+            if (args.Window != WindowManager.GetAllWindows().First()) //make sure it isn't our first window.
+            {
+                var frame = new Frame();
+                var navManager = new NavigationManager();
 
-            navManager.RootNavigationService = new NavigationService(frame, navManager);
-            args.Window.Content = frame;
+                navManager.RootNavigationService = new NavigationService(frame, navManager);
+                args.Window.Content = frame;
 
-            WindowManager.HandleNewWindow(args.Window, navManager);
+                WindowManager.HandleNewWindow(args.Window, navManager);
+            }
         }
 
         private void InitializeNavigation()

@@ -18,7 +18,7 @@ namespace Crystal3.Navigation
         /// <ViewModelType, PageType>
         /// </summary>
         private Dictionary<Type, Type> viewModelViewMappings = new Dictionary<Type, Type>();
-        private List<NavigationService> nonRootServices = new List<NavigationService>();
+        private List<NavigationService> navigationServices = new List<NavigationService>();
         #endregion
 
         #region properties
@@ -74,13 +74,23 @@ namespace Crystal3.Navigation
                 throw new Exception("There can only be one level-one navigation service.");
             }
 
-            if (!nonRootServices.Contains(service))
-                nonRootServices.Add(service);
+            if (!navigationServices.Contains(service))
+                navigationServices.Add(service);
         }
 
-        internal IEnumerable<NavigationService> GetNavigationServiceFromFrameLevel(FrameLevel level = FrameLevel.One)
+        public void RegisterFrameAsNavigationService(Frame frame, FrameLevel frameLevel = FrameLevel.Two)
         {
-            return nonRootServices.Where<NavigationService>(x => x.NavigationLevel == level);
+            if (RootNavigationService != null && frameLevel == FrameLevel.One)
+            {
+                throw new Exception("There can only be one level-one navigation service.");
+            }
+
+            navigationServices.Add(new NavigationService(frame, this, frameLevel));
+        }
+
+        public IEnumerable<NavigationService> GetNavigationServiceFromFrameLevel(FrameLevel level = FrameLevel.One)
+        {
+            return navigationServices.Where<NavigationService>(x => x.NavigationLevel == level);
         }
 
         internal IEnumerable<NavigationService> GetAllServices()
@@ -89,7 +99,7 @@ namespace Crystal3.Navigation
 
             //services.Add(RootNavigationService); - no longer needed if every navigationservice registers itself in the constructor
 
-            services.AddRange(nonRootServices);
+            services.AddRange(navigationServices);
 
             return services;
         }

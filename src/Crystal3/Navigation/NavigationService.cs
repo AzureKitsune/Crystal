@@ -26,7 +26,7 @@ namespace Crystal3.Navigation
             NavigationManager.RegisterNavigationService(this);
         }
 
-        public NavigationService(Frame navFrame, NavigationManager manager, FrameLevel navigationLevel) : this(navFrame, manager)
+        internal NavigationService(Frame navFrame, NavigationManager manager, FrameLevel navigationLevel) : this(navFrame, manager)
         {
             NavigationLevel = navigationLevel;
         }
