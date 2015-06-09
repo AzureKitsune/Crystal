@@ -88,7 +88,19 @@ namespace Crystal3
                 {
                     if (Options.HandleSystemBackNavigation)
                     {
-                        //walk down the navigation tree and check if each service wants to handle it?
+                        //walk down the navigation tree and check if each service wants to handle it
+
+                        foreach(var service in WindowManager.GetNavigationManagerForCurrentWindow()
+                                                .GetAllServices()
+                                                .OrderByDescending(x => x.NavigationLevel))
+                        {
+                            if (service.CanGoBackward)
+                            {
+                                service.GoBack();
+
+                                args.Handled = true;
+                            }
+                        }
                     }
                 });
 

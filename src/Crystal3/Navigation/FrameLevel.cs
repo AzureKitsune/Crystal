@@ -3,8 +3,8 @@
     public enum FrameLevel
     {
         One = 1,
-        Two,
-        Three,
-        Four
+        Two = 2,
+        Three = 3,
+        Four =4
     }
 }
