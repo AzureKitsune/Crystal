@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Crystal3
 {
-    public abstract class CrystalApplication: Application
+    public abstract class CrystalApplication : Application
     {
         public CrystalConfiguration Options { get; private set; }
 
@@ -81,6 +81,15 @@ namespace Crystal3
             Window.Current.Activate();
 
 
+
+            //TODO write mini-IOC thing and implement Dispatcher service
+            Dispatcher = Window.Current.Dispatcher;
+
+            HandleBackNavigation();
+        }
+
+        private void HandleBackNavigation()
+        {
             if (Options.HandleSystemBackNavigation)
             {
                 EventHandler<BackRequestedEventArgs> systemBackHandler = null;
@@ -90,7 +99,7 @@ namespace Crystal3
                     {
                         //walk down the navigation tree and check if each service wants to handle it
 
-                        foreach(var service in WindowManager.GetNavigationManagerForCurrentWindow()
+                        foreach (var service in WindowManager.GetNavigationManagerForCurrentWindow()
                                                 .GetAllServices()
                                                 .OrderByDescending(x => x.NavigationLevel))
                         {
@@ -123,5 +132,7 @@ namespace Crystal3
         }
 
         public abstract void OnFreshLaunch(LaunchActivatedEventArgs args);
+
+        public static CoreDispatcher Dispatcher { get; private set; }
     }
 }
