@@ -11,6 +11,8 @@ namespace Crystal3.Navigation
 {
     public class NavigationService
     {
+        private ViewModelBase lastViewModel = null;
+
         //TODO pass CrystalNavigationEventArgs instead of the built-in WinRT event args
 
         public Frame NavigationFrame { get; private set; }
@@ -37,7 +39,7 @@ namespace Crystal3.Navigation
 
         private void NavigationFrame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
-            
+
         }
 
         private void NavigationFrame_Navigated(object sender, NavigationEventArgs e)
@@ -49,7 +51,8 @@ namespace Crystal3.Navigation
                 //TODO implement event/hook for injecting cached viewmodels
 
                 //ViewModelBase lastViewModel = default(ViewModelBase);
-                //lastViewModel.OnNavigatedFrom(sender, e);
+                if (lastViewModel != null)
+                    lastViewModel.OnNavigatedFrom(sender, e);
 
                 var viewModel = Activator.CreateInstance(NavigationManager.GetViewModel(((Page)(e.Content)).GetType())) as ViewModelBase;
 
@@ -63,6 +66,8 @@ namespace Crystal3.Navigation
                 ((Page)e.Content).DataContext = viewModel;
 
                 viewModel.OnNavigatedTo(this, e);
+
+                lastViewModel = viewModel;
             }
         }
 
@@ -89,10 +94,10 @@ namespace Crystal3.Navigation
                 {
                     e.Cancel = viewModel.OnNavigatingTo(sender, e);
                 }
-                else if (e.NavigationMode == NavigationMode.Back)
-                {
-                    e.Cancel = viewModel.OnNavigatingFrom(sender, e);
-                }
+                //else if (e.NavigationMode == NavigationMode.Back)
+                //{
+                //    e.Cancel = viewModel.OnNavigatingFrom(sender, e);
+                //}
             });
 
             NavigatedEventHandler navigatedHandler = null;
@@ -114,10 +119,10 @@ namespace Crystal3.Navigation
 
                     viewModel.OnNavigatedTo(sender, e);
                 }
-                else if (e.NavigationMode == NavigationMode.Back)
-                {
-                    viewModel.OnNavigatedFrom(sender, e);
-                }
+                //else if (e.NavigationMode == NavigationMode.Back)
+                //{
+                //    viewModel.OnNavigatedFrom(sender, e);
+                //}
             });
 
 
@@ -125,6 +130,8 @@ namespace Crystal3.Navigation
             NavigationFrame.Navigating += navigatingHandler;
 
             NavigationFrame.Navigate(view, parameter);
+
+            lastViewModel = viewModel;
         }
 
         /// <summary>
