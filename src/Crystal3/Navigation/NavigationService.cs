@@ -47,6 +47,10 @@ namespace Crystal3.Navigation
                 //so the following line (view in git history) seems to point out a possible bug. when using inline navigation, the inline-page's datacontext reverts to the datacontext of the frame's parent.
                 //... mo-code, mo-problems - we create a new instance to solve that problem.
                 //TODO implement event/hook for injecting cached viewmodels
+
+                //ViewModelBase lastViewModel = default(ViewModelBase);
+                //lastViewModel.OnNavigatedFrom(sender, e);
+
                 var viewModel = Activator.CreateInstance(NavigationManager.GetViewModel(((Page)(e.Content)).GetType())) as ViewModelBase;
 
                 try
@@ -56,9 +60,9 @@ namespace Crystal3.Navigation
                 }
                 catch (Exception) { }
 
-                viewModel.OnNavigatedFrom(sender, e);
-
                 ((Page)e.Content).DataContext = viewModel;
+
+                viewModel.OnNavigatedTo(this, e);
             }
         }
 
