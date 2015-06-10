@@ -42,11 +42,12 @@ namespace Crystal3.Navigation
 
         private void NavigationFrame_Navigated(object sender, NavigationEventArgs e)
         {
-            if (e.NavigationMode == NavigationMode.Back && ((Page)(e.Content)).DataContext is ViewModelBase)
+            if (e.NavigationMode == NavigationMode.Back)
             {
-                //so the following line seems to point out a possible bug. when using inline navigation, the inline-page's datacontext reverts to the datacontext of the frame's parent.
-                //... mo-code, mo-problems
-                var viewModel = ((Page)(e.Content)).DataContext as ViewModelBase;
+                //so the following line (view in git history) seems to point out a possible bug. when using inline navigation, the inline-page's datacontext reverts to the datacontext of the frame's parent.
+                //... mo-code, mo-problems - we create a new instance to solve that problem.
+                //TODO implement event/hook for injecting cached viewmodels
+                var viewModel = Activator.CreateInstance(NavigationManager.GetViewModel(((Page)(e.Content)).GetType())) as ViewModelBase;
 
                 try
                 {
@@ -56,6 +57,8 @@ namespace Crystal3.Navigation
                 catch (Exception) { }
 
                 viewModel.OnNavigatedFrom(sender, e);
+
+                ((Page)e.Content).DataContext = viewModel;
             }
         }
 
