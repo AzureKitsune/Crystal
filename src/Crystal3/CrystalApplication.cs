@@ -1,4 +1,7 @@
-﻿using Crystal3.Navigation;
+﻿using Crystal3.Core;
+using Crystal3.IOC;
+using Crystal3.Navigation;
+using Crystal3.UI.Dispatcher;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +25,6 @@ namespace Crystal3
             OnConfigure();
 
             //base.InitializeComponent();
-
             InitializeNavigation();
         }
 
@@ -43,6 +45,11 @@ namespace Crystal3
 
                 WindowManager.HandleNewWindow(args.Window, navManager);
             }
+        }
+
+        private void InitializeIoC()
+        {
+            IoCManager.Register<IUIDispatcher>(new UIDispatcher(Window.Current.Dispatcher));
         }
 
         private void InitializeNavigation()
@@ -80,10 +87,7 @@ namespace Crystal3
             // Ensure the current window is active
             Window.Current.Activate();
 
-
-
-            //TODO write mini-IOC thing and implement Dispatcher service
-            Dispatcher = Window.Current.Dispatcher;
+            InitializeIoC();
 
             HandleBackNavigation();
         }
@@ -133,6 +137,6 @@ namespace Crystal3
 
         public abstract void OnFreshLaunch(LaunchActivatedEventArgs args);
 
-        public static CoreDispatcher Dispatcher { get; private set; }
+        public static IUIDispatcher Dispatcher { get { return IOC.IoCManager.Resolve<IUIDispatcher>(); } }
     }
 }
