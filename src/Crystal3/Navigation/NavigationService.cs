@@ -11,6 +11,8 @@ namespace Crystal3.Navigation
 {
     public class NavigationService
     {
+        //TODO pass CrystalNavigationEventArgs instead of the built-in WinRT event args
+
         public Frame NavigationFrame { get; private set; }
         public FrameLevel NavigationLevel { get; private set; }
         internal NavigationManager NavigationManager { get; set; }
@@ -24,10 +26,37 @@ namespace Crystal3.Navigation
             if (navFrame == null) throw new ArgumentNullException("navFrame");
 
             NavigationManager = manager;
-
             NavigationFrame = navFrame;
+            NavigationFrame.DataContext = null;
 
             NavigationManager.RegisterNavigationService(this);
+
+            NavigationFrame.Navigating += NavigationFrame_Navigating;
+            NavigationFrame.Navigated += NavigationFrame_Navigated;
+        }
+
+        private void NavigationFrame_Navigating(object sender, NavigatingCancelEventArgs e)
+        {
+            
+        }
+
+        private void NavigationFrame_Navigated(object sender, NavigationEventArgs e)
+        {
+            if (e.NavigationMode == NavigationMode.Back && ((Page)(e.Content)).DataContext is ViewModelBase)
+            {
+                //so the following line seems to point out a possible bug. when using inline navigation, the inline-page's datacontext reverts to the datacontext of the frame's parent.
+                //... mo-code, mo-problems
+                var viewModel = ((Page)(e.Content)).DataContext as ViewModelBase;
+
+                try
+                {
+                    if (NavigationServicePreNavigatedSignaled != null)
+                        NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, e));
+                }
+                catch (Exception) { }
+
+                viewModel.OnNavigatedFrom(sender, e);
+            }
         }
 
         internal NavigationService(Frame navFrame, NavigationManager manager, FrameLevel navigationLevel) : this(navFrame, manager)
@@ -64,12 +93,19 @@ namespace Crystal3.Navigation
             {
                 NavigationFrame.Navigated -= navigatedHandler;
 
+                try
+                {
+                    if (NavigationServicePreNavigatedSignaled != null)
+                        NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, e));
+                }
+                catch (Exception) { }
+
                 if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Forward)
                 {
-                    viewModel.OnNavigatedTo(sender, e);
-
                     Page page = e.Content as Page;
                     page.DataContext = viewModel;
+
+                    viewModel.OnNavigatedTo(sender, e);
                 }
                 else if (e.NavigationMode == NavigationMode.Back)
                 {
@@ -84,5 +120,9 @@ namespace Crystal3.Navigation
             NavigationFrame.Navigate(view, parameter);
         }
 
+        /// <summary>
+        /// A workaround for .NET event's first-subscribe, last-fire approach.
+        /// </summary>
+        public event EventHandler<NavigationServicePreNavigatedSignaledEventArgs> NavigationServicePreNavigatedSignaled;
     }
 }

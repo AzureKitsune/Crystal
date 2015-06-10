@@ -99,6 +99,8 @@ namespace Crystal3
                                 service.GoBack();
 
                                 args.Handled = true;
+
+                                return;
                             }
                         }
                     }

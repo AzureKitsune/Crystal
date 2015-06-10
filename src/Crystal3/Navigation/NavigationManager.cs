@@ -93,7 +93,8 @@ namespace Crystal3.Navigation
 
         public NavigationService GetNavigationServiceFromFrameLevel(FrameLevel level = FrameLevel.One)
         {
-            return navigationServices.First<NavigationService>(x => x.NavigationLevel == level);
+            var service = navigationServices.First<NavigationService>(x => x.NavigationLevel == level);
+            return service;
         }
 
         internal IEnumerable<NavigationService> GetAllServices()
