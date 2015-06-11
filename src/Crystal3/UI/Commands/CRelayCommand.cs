@@ -30,7 +30,8 @@ namespace Crystal3.UI.Commands
 
         public void Execute(object parameter)
         {
-            executeFunction(parameter);
+            if (CanExecute(parameter))
+                executeFunction(parameter);
         }
     }
 }
