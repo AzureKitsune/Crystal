@@ -200,38 +200,13 @@ namespace Crystal3
 
             StorageFile file = await CrystalDataFolder.CreateFileAsync(SuspensionStateFileName, CreationCollisionOption.OpenIfExists);
 
-            var stream = await file.OpenAsync(FileAccessMode.ReadWrite);
-            var writer = new DataWriter(stream);
-            writer.WriteString(navigationState);
-            await writer.FlushAsync();
-
-            writer.Dispose();
-            try
-            {
-                stream.Dispose();
-            }
-            catch (Exception) { }
+            await FileIO.WriteTextAsync(file, navigationState);
         }
         private async Task LoadAppState()
         {
             StorageFile file = await CrystalDataFolder.CreateFileAsync(SuspensionStateFileName, CreationCollisionOption.OpenIfExists);
-            var stream = await file.OpenReadAsync();
-            var reader = new DataReader(stream);
 
-            string navigationState = string.Empty;
-
-            while (true)
-            {
-                try
-                {
-                    await reader.LoadAsync(1);
-                    navigationState += reader.ReadString(1);
-                }
-                catch (Exception)
-                {
-                    break;
-                }
-            }
+            string navigationState = await FileIO.ReadTextAsync(file);
 
             WindowManager.GetNavigationManagerForCurrentWindow().RootNavigationService.NavigationFrame.SetNavigationState(navigationState);
         }
