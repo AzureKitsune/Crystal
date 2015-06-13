@@ -16,7 +16,7 @@ namespace Crystal3.Navigation
         //TODO pass CrystalNavigationEventArgs instead of the built-in WinRT event args
 
         public Frame NavigationFrame { get; private set; }
-        public FrameLevel NavigationLevel { get; private set; }
+        public FrameLevel NavigationLevel { get; internal set; }
         internal NavigationManager NavigationManager { get; set; }
 
         public bool CanGoBackward { get { return NavigationFrame.CanGoBack; } }
