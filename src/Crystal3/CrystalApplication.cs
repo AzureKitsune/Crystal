@@ -49,7 +49,8 @@ namespace Crystal3
 
         private void InitializeIoC()
         {
-            IoCManager.Register<IUIDispatcher>(new UIDispatcher(Window.Current.Dispatcher));
+            if (!IoCManager.IsRegistered<IUIDispatcher>())
+                IoCManager.Register<IUIDispatcher>(new UIDispatcher(Window.Current.Dispatcher));
         }
 
         private void InitializeNavigation()

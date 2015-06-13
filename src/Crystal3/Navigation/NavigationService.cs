@@ -92,7 +92,10 @@ namespace Crystal3.Navigation
 
                 if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Forward)
                 {
-                    e.Cancel = viewModel.OnNavigatingTo(sender, e);
+                    if (lastViewModel != null)
+                        e.Cancel = lastViewModel.OnNavigatingFrom(sender, e);
+
+                    viewModel.OnNavigatingTo(sender, e);
                 }
                 //else if (e.NavigationMode == NavigationMode.Back)
                 //{
@@ -114,15 +117,23 @@ namespace Crystal3.Navigation
 
                 if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Forward)
                 {
+                    if (lastViewModel != null)
+                        lastViewModel.OnNavigatedFrom(sender, e);
+
                     Page page = e.Content as Page;
                     page.DataContext = viewModel;
 
                     viewModel.OnNavigatedTo(sender, e);
+
+                    lastViewModel = viewModel;
+
                 }
                 //else if (e.NavigationMode == NavigationMode.Back)
                 //{
                 //    viewModel.OnNavigatedFrom(sender, e);
                 //}
+
+
             });
 
 
@@ -130,8 +141,6 @@ namespace Crystal3.Navigation
             NavigationFrame.Navigating += navigatingHandler;
 
             NavigationFrame.Navigate(view, parameter);
-
-            lastViewModel = viewModel;
         }
 
         /// <summary>
