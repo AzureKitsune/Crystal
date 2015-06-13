@@ -125,6 +125,7 @@
     <Compile Include="Model\ViewModelBase.cs" />
     <Compile Include="Model\ViewModelBase.Messaging.cs" />
     <Compile Include="Model\ViewModelBase.Navigation.cs" />
+    <Compile Include="Model\ViewModelBase.State.cs" />
     <Compile Include="Model\ViewModelPropertyKey.cs" />
     <Compile Include="Navigation\FrameLevel.cs" />
     <Compile Include="Navigation\NavigationManager.cs" />

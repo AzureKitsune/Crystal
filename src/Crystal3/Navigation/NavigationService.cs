@@ -54,7 +54,7 @@ namespace Crystal3.Navigation
                 if (lastViewModel != null)
                     lastViewModel.OnNavigatedFrom(sender, e);
 
-                var viewModel = Activator.CreateInstance(NavigationManager.GetViewModel(((Page)(e.Content)).GetType())) as ViewModelBase;
+                var viewModel = Activator.CreateInstance(NavigationManager.GetViewModelType(((Page)(e.Content)).GetType())) as ViewModelBase;
 
                 try
                 {
@@ -78,7 +78,7 @@ namespace Crystal3.Navigation
 
         public void NavigateTo<T>(object parameter = null) where T : ViewModelBase
         {
-            var view = NavigationManager.GetView(typeof(T));
+            var view = NavigationManager.GetViewType(typeof(T));
 
             if (view == null) throw new Exception("View not found!");
 

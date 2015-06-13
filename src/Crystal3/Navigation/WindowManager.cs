@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Crystal3.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,6 +30,11 @@ namespace Crystal3.Navigation
         internal static IEnumerable<Window> GetAllWindows()
         {
             return WindowNavigationManagers.Keys;
+        }
+
+        internal static ViewModelBase GetRootViewModel()
+        {
+            return GetNavigationManagerForCurrentWindow().RootNavigationService.NavigationFrame.DataContext as ViewModelBase;
         }
     }
 }

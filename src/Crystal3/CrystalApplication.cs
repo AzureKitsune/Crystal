@@ -1,5 +1,6 @@
 ﻿using Crystal3.Core;
 using Crystal3.IOC;
+using Crystal3.Model;
 using Crystal3.Navigation;
 using Crystal3.UI.Dispatcher;
 using System;
@@ -178,6 +179,13 @@ namespace Crystal3
         private async void CrystalApplication_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
+
+            var rootViewModel = WindowManager.GetRootViewModel();
+            if (rootViewModel != null)
+            {
+                await rootViewModel.OnSuspendingAsync(null);
+            }
+
             await SaveAppState();
 
             await OnSuspendingAsync();
@@ -185,9 +193,13 @@ namespace Crystal3
             deferral.Complete();
         }
 
-        private void CrystalApplication_Resuming(object sender, object e)
+        private async void CrystalApplication_Resuming(object sender, object e)
         {
-
+            var rootViewModel = WindowManager.GetRootViewModel();
+            if (rootViewModel != null)
+            {
+                await rootViewModel.OnResumingAsync();
+            }
         }
 
         public virtual Task OnSuspendingAsync() { return Task.FromResult<object>(null); }

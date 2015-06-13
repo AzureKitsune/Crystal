@@ -60,12 +60,12 @@ namespace Crystal3.Navigation
             }
         }
 
-        internal Type GetViewModel(Type viewType)
+        internal Type GetViewModelType(Type viewType)
         {
             return (Type)viewModelViewMappings.First(x => x.Value == viewType).Key;
         }
 
-        internal Type GetView(Type viewModelType)
+        internal Type GetViewType(Type viewModelType)
         {
             return (Type)viewModelViewMappings[viewModelType];
         }
