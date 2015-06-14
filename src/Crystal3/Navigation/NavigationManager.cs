@@ -83,7 +83,7 @@ namespace Crystal3.Navigation
                 navigationServices.Add(service);
         }
 
-        public void RegisterFrameAsNavigationService(Frame frame, FrameLevel frameLevel = FrameLevel.Two)
+        public NavigationService RegisterFrameAsNavigationService(Frame frame, FrameLevel frameLevel = FrameLevel.Two)
         {
             if (RootNavigationService != null && frameLevel == FrameLevel.One)
             {
@@ -93,7 +93,11 @@ namespace Crystal3.Navigation
             if (navigationServices.Any(x => x.NavigationLevel == frameLevel))
                 throw new Exception();
 
-            navigationServices.Add(new NavigationService(frame, this, frameLevel));
+            var service = new NavigationService(frame, this, frameLevel);
+
+            navigationServices.Add(service);
+
+            return service;
         }
 
         public NavigationService GetNavigationServiceFromFrameLevel(FrameLevel level = FrameLevel.One)
