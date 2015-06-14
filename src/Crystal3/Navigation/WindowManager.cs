@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace Crystal3.Navigation
 {
@@ -34,7 +35,12 @@ namespace Crystal3.Navigation
 
         internal static ViewModelBase GetRootViewModel()
         {
-            return GetNavigationManagerForCurrentWindow().RootNavigationService.NavigationFrame.DataContext as ViewModelBase;
+            var navManager = GetNavigationManagerForCurrentWindow();
+            var frame = navManager.RootNavigationService.NavigationFrame;
+            var page = frame.Content as Page;
+            var viewModel = page.DataContext as ViewModelBase;
+
+            return viewModel;
         }
     }
 }
