@@ -37,6 +37,11 @@ namespace Crystal3.Navigation
             NavigationFrame.Navigated += NavigationFrame_Navigated;
         }
 
+        public bool IsNavigatedTo<T>() where T: ViewModelBase
+        {
+            return ((Page)NavigationFrame.Content).DataContext is T;
+        }
+
         private void NavigationFrame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
 
