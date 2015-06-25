@@ -112,6 +112,7 @@
     <Compile Include="Actions\CrystalRelayCommand.cs" />
     <Compile Include="Actions\IUITrigger.cs" />
     <Compile Include="Actions\UITriggerCollection.cs" />
+    <Compile Include="Core\IMessageDialogService.cs" />
     <Compile Include="Core\IUIDispatcher.cs" />
     <Compile Include="CrystalConfiguration.cs" />
     <Compile Include="CrystalApplication.cs" />
@@ -138,6 +139,7 @@
     <Compile Include="UI\Converters\InverseNullToVisibilityConverter.cs" />
     <Compile Include="UI\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="UI\Dispatcher\UIDispatcher.cs" />
+    <Compile Include="UI\MessageDialog\DefaultMessageDialogService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Numerics.Vectors, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">

@@ -71,7 +71,6 @@ namespace Crystal3
         }
 
         private void InitializeIoC()
-
         {
             if (!IoCManager.IsRegistered<IUIDispatcher>())
                 IoCManager.Register<IUIDispatcher>(new UIDispatcher(Window.Current.Dispatcher));
