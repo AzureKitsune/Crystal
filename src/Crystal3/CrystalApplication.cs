@@ -192,8 +192,11 @@ namespace Crystal3
             deferral.Complete();
         }
 
+        [DebuggerNonUserCode]
         private async void CrystalApplication_Resuming(object sender, object e)
         {
+            await OnResumingAsync();
+
             var rootViewModel = WindowManager.GetRootViewModel();
             if (rootViewModel != null)
             {

@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Navigation;
 
 namespace Crystal3.Navigation
@@ -23,21 +25,48 @@ namespace Crystal3.Navigation
 
         public void GoBack() { NavigationFrame.GoBack(); }
 
+        private Stack<ViewModelBase> viewModelBackStack = null;
+        private Stack<ViewModelBase> viewModelForwardStack = null;
+
         internal NavigationService(Frame navFrame, NavigationManager manager)
         {
             if (navFrame == null) throw new ArgumentNullException("navFrame");
 
             NavigationManager = manager;
             NavigationFrame = navFrame;
-            NavigationFrame.DataContext = null;
+            //NavigationFrame.DataContext = null;
+
+            viewModelBackStack = new Stack<ViewModelBase>();
+            viewModelForwardStack = new Stack<ViewModelBase>();
 
             NavigationManager.RegisterNavigationService(this);
 
             NavigationFrame.Navigating += NavigationFrame_Navigating;
             NavigationFrame.Navigated += NavigationFrame_Navigated;
+
+            CrystalApplication.Current.Resuming += Current_Resuming;
+            CrystalApplication.Current.Suspending += Current_Suspending;
         }
 
-        public bool IsNavigatedTo<T>() where T: ViewModelBase
+        private void Current_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+        {
+
+        }
+
+        private void Current_Resuming(object sender, object e)
+        {
+            var currentPage = NavigationFrame.Content as Page;
+
+            if (currentPage != null)
+            {
+                if (currentPage.DataContext == null)
+                {
+                    currentPage.DataContext = lastViewModel;
+                }
+            }
+        }
+
+        public bool IsNavigatedTo<T>() where T : ViewModelBase
         {
             return ((Page)NavigationFrame.Content).DataContext is T;
         }
@@ -57,9 +86,13 @@ namespace Crystal3.Navigation
 
                 //ViewModelBase lastViewModel = default(ViewModelBase);
                 if (lastViewModel != null)
+                {
                     lastViewModel.OnNavigatedFrom(sender, e);
 
-                var viewModel = Activator.CreateInstance(NavigationManager.GetViewModelType(((Page)(e.Content)).GetType())) as ViewModelBase;
+                    viewModelForwardStack.Push(lastViewModel);
+                }
+
+                var viewModel = viewModelBackStack.Pop();
 
                 try
                 {
@@ -67,6 +100,8 @@ namespace Crystal3.Navigation
                         NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, e));
                 }
                 catch (Exception) { }
+
+                if (viewModel == null) throw new Exception();
 
                 ((Page)e.Content).DataContext = viewModel;
 
@@ -87,16 +122,18 @@ namespace Crystal3.Navigation
 
             if (view == null) throw new Exception("View not found!");
 
-            ViewModelBase viewModel = Activator.CreateInstance(typeof(T)) as ViewModelBase;
-            viewModel.NavigationService = this;
+            ViewModelBase viewModel = null;
 
             NavigatingCancelEventHandler navigatingHandler = null;
             navigatingHandler = new NavigatingCancelEventHandler((object sender, Windows.UI.Xaml.Navigation.NavigatingCancelEventArgs e) =>
             {
                 NavigationFrame.Navigating -= navigatingHandler;
 
-                if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Forward)
+                if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Refresh)
                 {
+                    viewModel = Activator.CreateInstance(typeof(T)) as ViewModelBase;
+                    viewModel.NavigationService = this;
+
                     if (lastViewModel != null)
                         e.Cancel = lastViewModel.OnNavigatingFrom(sender, e);
 
@@ -120,13 +157,24 @@ namespace Crystal3.Navigation
                 }
                 catch (Exception) { }
 
-                if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Forward)
+                if (e.NavigationMode == NavigationMode.New)
                 {
                     if (lastViewModel != null)
+                    {
                         lastViewModel.OnNavigatedFrom(sender, e);
 
+                        viewModelBackStack.Push(lastViewModel);
+                    }
+
                     Page page = e.Content as Page;
+
+                    //page.NavigationCacheMode = NavigationCacheMode.Enabled;
+
+                    if (viewModel == null) throw new Exception();
+
                     page.DataContext = viewModel;
+
+                    //page.SetValue(FrameworkElement.DataContextProperty, viewModel);
 
                     viewModel.OnNavigatedTo(sender, e);
 
