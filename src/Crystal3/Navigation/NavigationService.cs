@@ -113,15 +113,23 @@ namespace Crystal3.Navigation
 
         internal void HandleTerminationReload()
         {
-            var viewModelType = NavigationManager.GetViewModelType(((Page)NavigationFrame.Content).GetType());
-            var viewModel = Activator.CreateInstance(viewModelType) as ViewModelBase;
-            viewModel.NavigationService = this;
+            //since the page is going to be created, we need to recreate the viewmodel and inject it.
 
-            ((Page)NavigationFrame.Content).DataContext = viewModel;
+            if (((Page)NavigationFrame.Content).DataContext == null) //sanity check
+            {
+                //gran and create the viewmodel as if we were navigating to it.
+                var viewModelType = NavigationManager.GetViewModelType(((Page)NavigationFrame.Content).GetType());
+                var viewModel = Activator.CreateInstance(viewModelType) as ViewModelBase;
+                viewModel.NavigationService = this;
 
-            viewModel.OnNavigatedTo(null, new CrystalNavigationEventArgs());
+                ((Page)NavigationFrame.Content).DataContext = viewModel; //set the datacontext
 
-            viewModel.OnResumingAsync();
+
+                //simulate the navigation events.
+                viewModel.OnNavigatingTo(null, new CrystalNavigationEventArgs());
+                viewModel.OnNavigatedTo(null, new CrystalNavigationEventArgs());
+                viewModel.OnResumingAsync();
+            }
         }
 
         internal NavigationService(Frame navFrame, NavigationManager manager, FrameLevel navigationLevel) : this(navFrame, manager)
