@@ -10,10 +10,10 @@ namespace Crystal3.Navigation
 {
     public class NavigationServicePreNavigatedSignaledEventArgs: EventArgs
     {
-        public NavigationEventArgs InnerEventArgs { get; private set; }
+        public CrystalNavigationEventArgs InnerEventArgs { get; private set; }
         public ViewModelBase ViewModel { get; private set; }
 
-        internal NavigationServicePreNavigatedSignaledEventArgs(ViewModelBase viewModel, NavigationEventArgs e)
+        internal NavigationServicePreNavigatedSignaledEventArgs(ViewModelBase viewModel, CrystalNavigationEventArgs e)
         {
             ViewModel = viewModel;
             InnerEventArgs = e;

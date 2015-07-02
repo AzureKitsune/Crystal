@@ -20,6 +20,7 @@ namespace Crystal3.Navigation
             ViewModel = viewModel;
         }
         public Type ViewModel { get; set; }
+        public bool Singleton { get; set; }
         public bool IsHome { get; set; }
     }
 }

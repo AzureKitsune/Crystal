@@ -87,7 +87,7 @@ namespace Crystal3.Navigation
                 //ViewModelBase lastViewModel = default(ViewModelBase);
                 if (lastViewModel != null)
                 {
-                    lastViewModel.OnNavigatedFrom(sender, e);
+                    lastViewModel.OnNavigatedFrom(sender, new CrystalNavigationEventArgs(e));
 
                     viewModelForwardStack.Push(lastViewModel);
                 }
@@ -97,7 +97,7 @@ namespace Crystal3.Navigation
                 try
                 {
                     if (NavigationServicePreNavigatedSignaled != null)
-                        NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, e));
+                        NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs(e)));
                 }
                 catch (Exception) { }
 
@@ -105,10 +105,23 @@ namespace Crystal3.Navigation
 
                 ((Page)e.Content).DataContext = viewModel;
 
-                viewModel.OnNavigatedTo(this, e);
+                viewModel.OnNavigatedTo(this, new CrystalNavigationEventArgs(e));
 
                 lastViewModel = viewModel;
             }
+        }
+
+        internal void HandleTerminationReload()
+        {
+            var viewModelType = NavigationManager.GetViewModelType(((Page)NavigationFrame.Content).GetType());
+            var viewModel = Activator.CreateInstance(viewModelType) as ViewModelBase;
+            viewModel.NavigationService = this;
+
+            ((Page)NavigationFrame.Content).DataContext = viewModel;
+
+            viewModel.OnNavigatedTo(null, new CrystalNavigationEventArgs());
+
+            viewModel.OnResumingAsync();
         }
 
         internal NavigationService(Frame navFrame, NavigationManager manager, FrameLevel navigationLevel) : this(navFrame, manager)
@@ -135,9 +148,9 @@ namespace Crystal3.Navigation
                     viewModel.NavigationService = this;
 
                     if (lastViewModel != null)
-                        e.Cancel = lastViewModel.OnNavigatingFrom(sender, e);
+                        e.Cancel = lastViewModel.OnNavigatingFrom(sender, new CrystalNavigationEventArgs(e));
 
-                    viewModel.OnNavigatingTo(sender, e);
+                    viewModel.OnNavigatingTo(sender, new CrystalNavigationEventArgs(e));
                 }
                 //else if (e.NavigationMode == NavigationMode.Back)
                 //{
@@ -153,7 +166,7 @@ namespace Crystal3.Navigation
                 try
                 {
                     if (NavigationServicePreNavigatedSignaled != null)
-                        NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, e));
+                        NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs(e)));
                 }
                 catch (Exception) { }
 
@@ -161,7 +174,7 @@ namespace Crystal3.Navigation
                 {
                     if (lastViewModel != null)
                     {
-                        lastViewModel.OnNavigatedFrom(sender, e);
+                        lastViewModel.OnNavigatedFrom(sender, new CrystalNavigationEventArgs(e));
 
                         viewModelBackStack.Push(lastViewModel);
                     }
@@ -176,7 +189,7 @@ namespace Crystal3.Navigation
 
                     //page.SetValue(FrameworkElement.DataContextProperty, viewModel);
 
-                    viewModel.OnNavigatedTo(sender, e);
+                    viewModel.OnNavigatedTo(sender, new CrystalNavigationEventArgs(e));
 
                     lastViewModel = viewModel;
 
