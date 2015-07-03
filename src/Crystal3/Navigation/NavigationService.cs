@@ -128,7 +128,7 @@ namespace Crystal3.Navigation
                 //simulate the navigation events.
                 viewModel.OnNavigatingTo(null, new CrystalNavigationEventArgs());
                 viewModel.OnNavigatedTo(null, new CrystalNavigationEventArgs());
-                viewModel.OnResumingAsync();
+                //viewModel.OnResumingAsync();
             }
         }
 

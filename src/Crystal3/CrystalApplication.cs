@@ -106,6 +106,8 @@ namespace Crystal3
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
+                    //Resurrection!
+
                     await LoadAppState();
 
                     navService.HandleTerminationReload();
