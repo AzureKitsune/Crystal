@@ -214,6 +214,8 @@ namespace Crystal3
         #region Loading and Saving AppState
         private async Task SaveAppState()
         {
+            //todo allow the top level viewmodels to save and load their state via an IDictionary<string, object> object.
+
             var navigationState = WindowManager.GetNavigationManagerForCurrentWindow().RootNavigationService.NavigationFrame.GetNavigationState();
 
             StorageFile file = await CrystalDataFolder.CreateFileAsync(SuspensionStateFileName, CreationCollisionOption.OpenIfExists);
