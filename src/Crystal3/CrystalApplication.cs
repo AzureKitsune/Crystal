@@ -168,7 +168,7 @@ namespace Crystal3
         {
             await InitializeRootFrameAsync(args);
 
-            OnActivated(args);
+            OnActivation(args);
         }
 
         public abstract void OnFreshLaunch(LaunchActivatedEventArgs args);

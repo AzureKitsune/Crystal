@@ -71,6 +71,12 @@ namespace Crystal3.Navigation
             return ((Page)NavigationFrame.Content).DataContext is T;
         }
 
+        public void ClearBackStack()
+        {
+            viewModelBackStack.Clear();
+            NavigationFrame.BackStack.Clear();
+        }
+
         private void NavigationFrame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
 
