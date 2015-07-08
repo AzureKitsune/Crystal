@@ -68,7 +68,7 @@ namespace Crystal3.Navigation
 
         public bool IsNavigatedTo<T>() where T : ViewModelBase
         {
-            return ((Page)NavigationFrame.Content).DataContext is T;
+            return ((Page)NavigationFrame.Content)?.DataContext is T;
         }
 
         public void ClearBackStack()

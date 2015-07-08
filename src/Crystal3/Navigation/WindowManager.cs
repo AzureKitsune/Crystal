@@ -1,4 +1,5 @@
 ﻿using Crystal3.Model;
+using Crystal3.UI.StatusManager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,26 +12,35 @@ namespace Crystal3.Navigation
 {
     public static class WindowManager
     {
-        static Dictionary<Window, NavigationManager> WindowNavigationManagers = new Dictionary<Window, NavigationManager>();
+        static List<WindowBundle> WindowNavigationManagers = new List<WindowBundle>();
 
         internal static void HandleNewWindow(Window window, NavigationManager manager)
         {
-            if (WindowNavigationManagers.ContainsKey(window) || WindowNavigationManagers.ContainsValue(manager))
+            if (WindowNavigationManagers.Any(x => x.WindowView == window || x.NavigationManager == manager))
                 throw new Exception();
 
-            //handle any future initialization
+            //handle any further initialization
+            var bundle = new WindowBundle();
+            bundle.NavigationManager = manager;
+            bundle.WindowView = window;
+            bundle.StatusManager = new UI.StatusManager.StatusManager(window);
 
-            WindowNavigationManagers.Add(window, manager);
+            WindowNavigationManagers.Add(bundle);
         }
 
         public static NavigationManager GetNavigationManagerForCurrentWindow()
         {
-            return WindowNavigationManagers[Window.Current];
+            return WindowNavigationManagers.First(x => x.WindowView == Window.Current)?.NavigationManager;
+        }
+
+        public static StatusManager GetStatusManagerForCurrentWindow()
+        {
+            return WindowNavigationManagers.First(x => x.WindowView == Window.Current)?.StatusManager;
         }
 
         internal static IEnumerable<Window> GetAllWindows()
         {
-            return WindowNavigationManagers.Keys;
+            return WindowNavigationManagers.Select(x => x.WindowView);
         }
 
         internal static ViewModelBase GetRootViewModel()

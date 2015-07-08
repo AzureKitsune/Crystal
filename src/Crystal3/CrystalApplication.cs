@@ -3,6 +3,7 @@ using Crystal3.IOC;
 using Crystal3.Model;
 using Crystal3.Navigation;
 using Crystal3.UI.Dispatcher;
+using Crystal3.UI.StatusManager;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -120,6 +121,8 @@ namespace Crystal3
             InitializeIoC();
 
             HandleBackNavigation();
+
+            WindowManager.GetStatusManagerForCurrentWindow().Initialize();
         }
 
         private void HandleBackNavigation()
@@ -231,5 +234,18 @@ namespace Crystal3
             WindowManager.GetNavigationManagerForCurrentWindow().RootNavigationService.NavigationFrame.SetNavigationState(navigationState);
         }
         #endregion
+
+        public static Platform GetDevicePlatform()
+        {
+            switch (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToLower())
+            {
+                case "windows.mobile":
+                    return Platform.Mobile;
+                case "windows.desktop":
+                    return Platform.Desktop;
+                default:
+                    return Platform.Unknown;
+            }
+        }
     }
 }
