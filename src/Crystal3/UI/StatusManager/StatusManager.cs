@@ -30,6 +30,7 @@ namespace Crystal3.UI.StatusManager
             if (currentPlatform == Core.Platform.Mobile && CanAccessMobileStatusBar())
             {
                 mobileStatusBar = StatusBar.GetForCurrentView();
+                mobileStatusBar.ProgressIndicator.ProgressValue = 0;
                 await mobileStatusBar.ShowAsync();
             }
 
@@ -43,16 +44,20 @@ namespace Crystal3.UI.StatusManager
 
         private void UpdateStatusText(string status)
         {
-            if (currentPlatform == Core.Platform.Mobile)
+            CrystalApplication.Dispatcher.RunAsync(() =>
             {
-                if (CanAccessMobileStatusBar())
+                if (currentPlatform == Core.Platform.Mobile)
                 {
-                    if (mobileStatusBar != null)
+                    if (CanAccessMobileStatusBar())
                     {
-                        mobileStatusBar.ProgressIndicator.Text = status;
+                        if (mobileStatusBar != null)
+                        {
+                            mobileStatusBar.ProgressIndicator.Text = status;
+                            mobileStatusBar.ProgressIndicator.ShowAsync();
+                        }
                     }
                 }
-            }
+            });
         }
         private void UpdateNormalStatus()
         {
@@ -87,15 +92,21 @@ namespace Crystal3.UI.StatusManager
             }
         }
 
-        public async Task<T> DoIndefiniteWorkAsync<T>(string statusText, Task<T> workCallback)
+        public Task<T> DoIndefiniteWorkAsync<T>(string statusText, Task<T> workCallback)
         {
             UpdateStatusText(statusText);
+            UpdateProgress(null);
 
-            var result = await workCallback;
+            return workCallback.ContinueWith<T>(x =>
+            {
+                CrystalApplication.Dispatcher.RunAsync(() =>
+                {
+                    UpdateNormalStatus();
+                    UpdateProgress(0);
+                });
 
-            UpdateNormalStatus();
-
-            return result;
+                return x.Result;
+            });
         }
 
         public async Task<T> DoWorkAsync<T>(string statusText, IAsyncOperationWithProgress<T, double?> workCallback)
