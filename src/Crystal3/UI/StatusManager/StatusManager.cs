@@ -1,6 +1,7 @@
 ﻿using Crystal3.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -92,6 +93,7 @@ namespace Crystal3.UI.StatusManager
             }
         }
 
+        [DebuggerNonUserCode]
         public Task<T> DoIndefiniteWorkAsync<T>(string statusText, Task<T> workCallback)
         {
             UpdateStatusText(statusText);
