@@ -131,6 +131,7 @@
     <Compile Include="Model\ViewModelPropertyKey.cs" />
     <Compile Include="Navigation\CrystalNavigationEventArgs.cs" />
     <Compile Include="Navigation\FrameLevel.cs" />
+    <Compile Include="Navigation\NavigationAttributes.cs" />
     <Compile Include="Navigation\NavigationManager.cs" />
     <Compile Include="Navigation\NavigationService.cs" />
     <Compile Include="Navigation\NavigationServicePreNavigatedSignaledEventArgs.cs" />

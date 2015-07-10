@@ -15,12 +15,14 @@ namespace Crystal3.Navigation
 
         public CrystalNavigationEventArgs(NavigatingCancelEventArgs args)
         {
-
+            Parameter = args.Parameter;
         }
 
         public CrystalNavigationEventArgs(NavigationEventArgs args)
         {
-
+            Parameter = args.Parameter;
         }
+
+        public object Parameter { get; private set; }
     }
 }
