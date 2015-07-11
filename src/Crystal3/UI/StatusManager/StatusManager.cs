@@ -120,10 +120,10 @@ namespace Crystal3.UI.StatusManager
             });
 
             workCallback.Completed = new AsyncOperationWithProgressCompletedHandler<T, double?>((sender, status) =>
-           {
-               UpdateProgress(null);
-               UpdateNormalStatus();
-           });
+            {
+                UpdateProgress(null);
+                UpdateNormalStatus();
+            });
 
             return await workCallback;
         }
