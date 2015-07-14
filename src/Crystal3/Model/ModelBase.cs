@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,9 +41,9 @@ namespace Crystal3.Model
         /// Gets the value of a property.
         /// </summary>
         /// <typeparam name="T">The type to return the value as.</typeparam>
-        /// <param name="propertyName">The property to return the value of.</param>
+        /// <param name="propertyName">The property to return the value of/</param>
         /// <returns></returns>
-        protected T GetPropertyValue<T>(string propertyName)
+        protected T GetPropertyValue<T>([CallerMemberName] string propertyName = "")
         {
             if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentNullException("propertyName");
 
@@ -55,7 +56,7 @@ namespace Crystal3.Model
         /// <typeparam name="T">The type parameter of the value to be set.</typeparam>
         /// <param name="propertyName">The name of the property to be set.</param>
         /// <param name="value">The value to be set.</param>
-        protected void SetPropertyValue<T>(string propertyName, T value)
+        protected void SetPropertyValue<T>([CallerMemberName] string propertyName = "", T value = default(T))
         {
             if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentNullException("propertyName");
 
