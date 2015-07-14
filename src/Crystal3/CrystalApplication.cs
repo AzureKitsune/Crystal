@@ -68,6 +68,13 @@ namespace Crystal3
                 args.Window.Content = frame;
 
                 WindowManager.HandleNewWindow(args.Window, navManager);
+
+                if (Options.HandleBackButtonForTopLevelNavigation && Options.HandleBackButtonForTopLevelNavigation)
+                {
+                    //todo remember to remove this event handler when the view closes
+                    navManager.RootNavigationService.NavigationFrame.Navigated += HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated;
+
+                }
             }
         }
 
@@ -125,6 +132,11 @@ namespace Crystal3
             WindowManager.GetStatusManagerForCurrentWindow().Initialize();
         }
 
+        private void HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
+        {
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = ((Frame)sender).CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+        }
+
         private void HandleBackNavigation()
         {
             if (Options.HandleSystemBackNavigation)
@@ -153,6 +165,13 @@ namespace Crystal3
                 });
 
                 SystemNavigationManager.GetForCurrentView().BackRequested += systemBackHandler;
+
+
+                if (Options.HandleBackButtonForTopLevelNavigation && Options.HandleBackButtonForTopLevelNavigation)
+                {
+                    WindowManager.GetNavigationManagerForCurrentWindow().RootNavigationService.NavigationFrame.Navigated += HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated;
+
+                }
             }
         }
 

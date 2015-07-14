@@ -13,5 +13,6 @@ namespace Crystal3
         }
 
         public bool HandleSystemBackNavigation { get; set; }
+        public bool HandleBackButtonForTopLevelNavigation { get; set; }
     }
 }

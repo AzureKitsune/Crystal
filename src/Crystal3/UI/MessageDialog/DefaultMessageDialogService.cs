@@ -11,7 +11,8 @@ namespace Crystal3.UI.MessageDialog
     {
         public object Show(string message = "", string title = "Message")
         {
-            throw new NotImplementedException();
+            ShowAsync(message, title).RunSynchronously();
+            return null;
         }
 
         public async Task<object> ShowAsync(string message, string title = "Message")
