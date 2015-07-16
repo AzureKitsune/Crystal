@@ -34,7 +34,6 @@ namespace Crystal3
             InitializeDataFolder();
 
             //base.InitializeComponent();
-            InitializeNavigation();
 
             this.Resuming += CrystalApplication_Resuming;
             this.Suspending += CrystalApplication_Suspending;
@@ -59,7 +58,8 @@ namespace Crystal3
 
         protected override void OnWindowCreated(WindowCreatedEventArgs args)
         {
-            if (args.Window != WindowManager.GetAllWindows().First()) //make sure it isn't our first window.
+            var firstWindow = WindowManager.GetAllWindows().FirstOrDefault();
+            if (args.Window != firstWindow && firstWindow != null) //make sure it isn't our first window.
             {
                 var frame = new Frame();
                 var navManager = new NavigationManager();
@@ -68,13 +68,6 @@ namespace Crystal3
                 args.Window.Content = frame;
 
                 WindowManager.HandleNewWindow(args.Window, navManager);
-
-                if (Options.HandleBackButtonForTopLevelNavigation && Options.HandleBackButtonForTopLevelNavigation)
-                {
-                    //todo remember to remove this event handler when the view closes
-                    navManager.RootNavigationService.NavigationFrame.Navigated += HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated;
-
-                }
             }
         }
 
@@ -84,11 +77,11 @@ namespace Crystal3
                 IoCManager.Register<IUIDispatcher>(new UIDispatcher(Window.Current.Dispatcher));
         }
 
-        private void InitializeNavigation()
+        private void InitializeNavigation(NavigationManager navManager)
         {
             //handle the first window.
 
-            WindowManager.HandleNewWindow(Window.Current, new NavigationManager());
+            WindowManager.HandleNewWindow(Window.Current, navManager);
             WindowManager.GetNavigationManagerForCurrentWindow().ProbeForViewViewModelPairs();
         }
 
@@ -108,9 +101,14 @@ namespace Crystal3
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
 
-                var navService = new NavigationService(rootFrame, WindowManager.GetNavigationManagerForCurrentWindow());
+
+                var navManager = new NavigationManager();
+                var navService = new NavigationService(rootFrame, navManager);
                 navService.NavigationLevel = FrameLevel.One;
-                WindowManager.GetNavigationManagerForCurrentWindow().RootNavigationService = navService;
+
+                navManager.RootNavigationService = navService;
+
+                InitializeNavigation(navManager);
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
@@ -130,11 +128,6 @@ namespace Crystal3
             HandleBackNavigation();
 
             WindowManager.GetStatusManagerForCurrentWindow().Initialize();
-        }
-
-        private void HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
-        {
-            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = ((Frame)sender).CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
         }
 
         private void HandleBackNavigation()
@@ -165,13 +158,6 @@ namespace Crystal3
                 });
 
                 SystemNavigationManager.GetForCurrentView().BackRequested += systemBackHandler;
-
-
-                if (Options.HandleBackButtonForTopLevelNavigation && Options.HandleBackButtonForTopLevelNavigation)
-                {
-                    WindowManager.GetNavigationManagerForCurrentWindow().RootNavigationService.NavigationFrame.Navigated += HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated;
-
-                }
             }
         }
 

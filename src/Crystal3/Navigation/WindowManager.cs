@@ -12,35 +12,37 @@ namespace Crystal3.Navigation
 {
     public static class WindowManager
     {
-        static List<WindowBundle> WindowNavigationManagers = new List<WindowBundle>();
+        static List<WindowService> WindowNavigationServices = new List<WindowService>();
 
         internal static void HandleNewWindow(Window window, NavigationManager manager)
         {
-            if (WindowNavigationManagers.Any(x => x.WindowView == window || x.NavigationManager == manager))
+            if (WindowNavigationServices.Any(x => x.WindowView == window || x.NavigationManager == manager))
                 throw new Exception();
 
             //handle any further initialization
-            var bundle = new WindowBundle();
-            bundle.NavigationManager = manager;
-            bundle.WindowView = window;
-            bundle.StatusManager = new UI.StatusManager.StatusManager(window);
+            var service = new WindowService(window, manager, new UI.StatusManager.StatusManager(window));
 
-            WindowNavigationManagers.Add(bundle);
+            WindowNavigationServices.Add(service);
+        }
+
+        public static WindowService GetWindowServiceForCurrentWindow()
+        {
+            return WindowNavigationServices.First(x => x.WindowView == Window.Current);
         }
 
         public static NavigationManager GetNavigationManagerForCurrentWindow()
         {
-            return WindowNavigationManagers.First(x => x.WindowView == Window.Current)?.NavigationManager;
+            return GetWindowServiceForCurrentWindow()?.NavigationManager;
         }
 
         public static StatusManager GetStatusManagerForCurrentWindow()
         {
-            return WindowNavigationManagers.First(x => x.WindowView == Window.Current)?.StatusManager;
+            return GetWindowServiceForCurrentWindow()?.StatusManager;
         }
 
         internal static IEnumerable<Window> GetAllWindows()
         {
-            return WindowNavigationManagers.Select(x => x.WindowView);
+            return WindowNavigationServices.Select(x => x.WindowView);
         }
 
         internal static ViewModelBase GetRootViewModel()

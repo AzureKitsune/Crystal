@@ -136,7 +136,7 @@
     <Compile Include="Navigation\NavigationService.cs" />
     <Compile Include="Navigation\NavigationServicePreNavigatedSignaledEventArgs.cs" />
     <Compile Include="Navigation\NavigationViewModelAttribute.cs" />
-    <Compile Include="Navigation\WindowBundle.cs" />
+    <Compile Include="Navigation\WindowService.cs" />
     <Compile Include="Navigation\WindowManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\Commands\CRelayCommand.cs" />
