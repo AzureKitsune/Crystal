@@ -98,22 +98,29 @@ namespace Crystal3.Navigation
                     viewModelForwardStack.Push(lastViewModel);
                 }
 
-                var viewModel = viewModelBackStack.Pop();
-
-                try
+                if (viewModelBackStack.Count > 0)
                 {
-                    if (NavigationServicePreNavigatedSignaled != null)
-                        NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs(e)));
+                    var viewModel = viewModelBackStack.Pop();
+
+                    try
+                    {
+                        if (NavigationServicePreNavigatedSignaled != null)
+                            NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs(e)));
+                    }
+                    catch (Exception) { }
+
+                    if (viewModel == null) throw new Exception();
+
+                    ((Page)e.Content).DataContext = viewModel;
+
+                    viewModel.OnNavigatedTo(this, new CrystalNavigationEventArgs(e));
+
+                    lastViewModel = viewModel;
                 }
-                catch (Exception) { }
-
-                if (viewModel == null) throw new Exception();
-
-                ((Page)e.Content).DataContext = viewModel;
-
-                viewModel.OnNavigatedTo(this, new CrystalNavigationEventArgs(e));
-
-                lastViewModel = viewModel;
+                else
+                {
+                    HandleTerminationReload();
+                }
             }
         }
 
