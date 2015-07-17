@@ -87,6 +87,8 @@ namespace Crystal3
 
         private async Task InitializeRootFrameAsync(IActivatedEventArgs e)
         {
+            InitializeIoC();
+
             var rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
@@ -122,8 +124,6 @@ namespace Crystal3
 
             // Ensure the current window is active
             Window.Current.Activate();
-
-            InitializeIoC();
 
             HandleBackNavigation();
 
