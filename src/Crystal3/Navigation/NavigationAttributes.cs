@@ -12,14 +12,14 @@ namespace Crystal3.Navigation
     {
         #region PageTitle
         /// <summary>
-        /// Dependency property to set the orientation of the axis
+        /// Dependency property to set the page title for navigation.
         /// </summary>
         public static readonly DependencyProperty PageTitleProperty =
             DependencyProperty.RegisterAttached("PageTitle",
-            typeof(Page), typeof(string), new PropertyMetadata(""));
+            typeof(string), typeof(Page), new PropertyMetadata(""));
 
         /// <summary>
-        /// Sets the orientation.
+        /// Sets the page title.
         /// </summary>
         /// <param name="element">The element.</param>
         /// <param name="value">The value.</param>
@@ -29,7 +29,7 @@ namespace Crystal3.Navigation
         }
 
         /// <summary>
-        /// Gets the orientation.
+        /// Gets the page title.
         /// </summary>
         /// <param name="element">The element.</param>
         /// <returns></returns>
