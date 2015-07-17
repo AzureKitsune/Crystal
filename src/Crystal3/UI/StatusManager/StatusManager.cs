@@ -45,6 +45,7 @@ namespace Crystal3.UI.StatusManager
 
         private void UpdateStatusText(string status)
         {
+            //todo fix rare bug where this is called on launch and dispatcher is null
             CrystalApplication.Dispatcher.RunAsync(() =>
             {
                 if (currentPlatform == Core.Platform.Mobile)
@@ -101,7 +102,7 @@ namespace Crystal3.UI.StatusManager
 
             return workCallback.ContinueWith<T>(x =>
             {
-                CrystalApplication.Dispatcher.RunAsync(() =>
+                CrystalApplication.Dispatcher.RunAsync(IUIDispatcherPriority.Low, () =>
                 {
                     UpdateNormalStatus();
                     UpdateProgress(0);

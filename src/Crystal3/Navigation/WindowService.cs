@@ -54,5 +54,11 @@ namespace Crystal3.Navigation
         {
             RefreshAppViewBackButtonVisibility(NavigationManager.RootNavigationService.NavigationFrame);
         }
+
+        //not very mvvm-y
+        public void SetAppViewBackButtonVisibility(bool visible)
+        {
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = visible ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+        }
     }
 }
