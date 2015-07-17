@@ -23,6 +23,7 @@ namespace Crystal3.Navigation
             Parameter = args.Parameter;
         }
 
+        public CrystalNavigationDirection Direction { get; set; }
         public object Parameter { get; private set; }
     }
 }
