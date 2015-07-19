@@ -94,29 +94,30 @@ namespace Crystal3.UI.StatusManager
             }
         }
 
-        [DebuggerNonUserCode]
-        public Task<T> DoIndefiniteWorkAsync<T>(string statusText, Task<T> workCallback)
+        public async Task<T> DoIndefiniteWorkAsync<T>(string statusText, Task<T> workCallback)
         {
             if (currentPlatform == Core.Platform.Mobile)
             {
-                UpdateStatusText(statusText);
-                UpdateProgress(null);
+                await CrystalApplication.Dispatcher.RunAsync(IUIDispatcherPriority.Low, () =>
+                {
+                    UpdateStatusText(statusText);
+                    UpdateProgress(null);
+                });
+            }
 
-                return workCallback.ContinueWith<T>(x =>
+            return await workCallback.ContinueWith(x =>
+            {
+                if (currentPlatform == Core.Platform.Mobile)
                 {
                     CrystalApplication.Dispatcher.RunAsync(IUIDispatcherPriority.Low, () =>
                     {
                         UpdateNormalStatus();
                         UpdateProgress(0);
                     });
+                }
 
-                    return x.Result;
-                });
-            }
-            else
-            {
-                return workCallback;
-            }
+                return x;
+            }).Unwrap().ConfigureAwait(false);
         }
 
         public async Task<T> DoWorkAsync<T>(string statusText, IAsyncOperationWithProgress<T, double?> workCallback)
