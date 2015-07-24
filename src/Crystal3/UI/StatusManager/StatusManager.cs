@@ -116,6 +116,9 @@ namespace Crystal3.UI.StatusManager
                     });
                 }
 
+                if (x.Exception != null)
+                    throw new Exception("Error", x.Exception);
+
                 return x;
             }).Unwrap().ConfigureAwait(false);
         }
