@@ -141,6 +141,20 @@ namespace Crystal3.UI.StatusManager
                     });
                 }
             }
+
+            public void SetStatus(string text)
+            {
+                ParentStatusManager.UpdateStatusText(text);
+            }
+
+
+            public async Task SetStatusWithPauseAsync(string text, int showTimeSeconds)
+            {
+                ParentStatusManager.UpdateStatusText(text);
+
+                await Task.Delay(showTimeSeconds * 1000);
+            }
+
         }
 
         public class DefiniteWorkStatusManagerControl : IndefiniteWorkStatusManagerControl
@@ -148,11 +162,6 @@ namespace Crystal3.UI.StatusManager
             internal DefiniteWorkStatusManagerControl(StatusManager manager, string statusText) : base(manager, statusText)
             {
 
-            }
-
-            public void SetStatus(string text)
-            {
-                ParentStatusManager.UpdateStatusText(text);
             }
 
             public void SetProgress(double value)
