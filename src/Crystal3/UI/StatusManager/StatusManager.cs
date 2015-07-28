@@ -94,50 +94,71 @@ namespace Crystal3.UI.StatusManager
             }
         }
 
-        public async Task<T> DoIndefiniteWorkAsync<T>(string statusText, Task<T> workCallback)
+        public IndefiniteWorkStatusManagerControl DoIndefiniteWork(string statusText)
         {
-            if (currentPlatform == Core.Platform.Mobile)
+            return new IndefiniteWorkStatusManagerControl(this, statusText);
+        }
+
+        public DefiniteWorkStatusManagerControl DoWork(string statusText)
+        {
+            return new DefiniteWorkStatusManagerControl(this, statusText);
+        }
+
+        public abstract class StatusManagerControl : IDisposable
+        {
+            internal StatusManagerControl(StatusManager manager)
             {
-                await CrystalApplication.Dispatcher.RunAsync(IUIDispatcherPriority.Low, () =>
-                {
-                    UpdateStatusText(statusText);
-                    UpdateProgress(null);
-                });
+                ParentStatusManager = manager;
             }
 
-            return await workCallback.ContinueWith(x =>
+            public StatusManager ParentStatusManager { get; private set; }
+
+            public abstract void Dispose();
+        }
+
+        public class IndefiniteWorkStatusManagerControl : StatusManagerControl
+        {
+            internal IndefiniteWorkStatusManagerControl(StatusManager manager, string statusText) : base(manager)
             {
                 if (currentPlatform == Core.Platform.Mobile)
                 {
                     CrystalApplication.Dispatcher.RunAsync(IUIDispatcherPriority.Low, () =>
                     {
-                        UpdateNormalStatus();
-                        UpdateProgress(0);
+                        manager.UpdateStatusText(statusText);
+                        manager.UpdateProgress(null);
                     });
                 }
+            }
 
-                if (x.Exception != null)
-                    throw new Exception("Error", x.Exception);
-
-                return x;
-            }).Unwrap().ConfigureAwait(false);
+            public override void Dispose()
+            {
+                if (currentPlatform == Core.Platform.Mobile)
+                {
+                    CrystalApplication.Dispatcher.RunAsync(IUIDispatcherPriority.Low, () =>
+                    {
+                        this.ParentStatusManager.UpdateNormalStatus();
+                        this.ParentStatusManager.UpdateProgress(0);
+                    });
+                }
+            }
         }
 
-        public async Task<T> DoWorkAsync<T>(string statusText, IAsyncOperationWithProgress<T, double?> workCallback)
+        public class DefiniteWorkStatusManagerControl : IndefiniteWorkStatusManagerControl
         {
-            workCallback.Progress = new AsyncOperationProgressHandler<T, double?>((sender, progressValue) =>
+            internal DefiniteWorkStatusManagerControl(StatusManager manager, string statusText) : base(manager, statusText)
             {
-                UpdateStatusText(statusText);
-                UpdateProgress(progressValue);
-            });
 
-            workCallback.Completed = new AsyncOperationWithProgressCompletedHandler<T, double?>((sender, status) =>
+            }
+
+            public void SetStatus(string text)
             {
-                UpdateProgress(null);
-                UpdateNormalStatus();
-            });
+                ParentStatusManager.UpdateStatusText(text);
+            }
 
-            return await workCallback;
+            public void SetProgress(double value)
+            {
+                ParentStatusManager.UpdateProgress(value);
+            }
         }
     }
 }
