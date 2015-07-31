@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BC606221-8028-4217-9D99-EEFE3E4E327F}</ProjectGuid>
+    <ProjectGuid>{E7AC86BE-E1F7-42E4-8DA0-7E1EBEF1130B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Crystal3</RootNamespace>
