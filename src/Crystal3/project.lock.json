@@ -14566,7 +14566,8 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "Microsoft.NETCore.UniversalWindowsPlatform >= 5.0.0"
+      "Microsoft.NETCore.UniversalWindowsPlatform >= 5.0.0",
+      "System.Numerics.Vectors >= 4.1.0"
     ],
     "UAP,Version=v10.0": []
   }
