@@ -62,10 +62,10 @@ namespace Crystal3
             if (args.Window != firstWindow && firstWindow != null) //make sure it isn't our first window.
             {
                 var frame = new Frame();
-                var navManager = new NavigationManager();
 
-                navManager.AppInstance = this;
+                var navManager = new NavigationManager(this);
                 navManager.RootNavigationService = new NavigationService(frame, navManager);
+
                 args.Window.Content = frame;
 
                 WindowManager.HandleNewWindow(args.Window, navManager);
@@ -105,8 +105,8 @@ namespace Crystal3
                 Window.Current.Content = rootFrame;
 
 
-                var navManager = new NavigationManager();
-                navManager.AppInstance = this;
+                var navManager = new NavigationManager(this);
+
                 var navService = new NavigationService(rootFrame, navManager);
                 navService.NavigationLevel = FrameLevel.One;
 

@@ -27,7 +27,12 @@ namespace Crystal3.Navigation
 
         #endregion
 
-        internal NavigationManager() { }
+        internal NavigationManager(CrystalApplication appInstance)
+        {
+            if (appInstance == null) throw new ArgumentNullException("appInstance");
+
+            AppInstance = appInstance;
+        }
 
         internal void ProbeForViewViewModelPairs()
         {
@@ -35,7 +40,7 @@ namespace Crystal3.Navigation
 
             foreach (TypeInfo type in AppInstance.GetType().GetTypeInfo().Assembly.DefinedTypes.Where(x =>
                         x.IsSubclassOf(typeof(Page)) &&
-                        x.CustomAttributes.Any(y => 
+                        x.CustomAttributes.Any(y =>
                         y.AttributeType == typeof(NavigationViewModelAttribute))))
             {
 
