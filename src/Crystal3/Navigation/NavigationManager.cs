@@ -23,6 +23,7 @@ namespace Crystal3.Navigation
 
         #region properties
         public NavigationService RootNavigationService { get; internal set; }
+        internal CrystalApplication AppInstance { get; set; }
 
         #endregion
 
@@ -32,9 +33,10 @@ namespace Crystal3.Navigation
         {
             viewModelViewMappings.Clear();
 
-            foreach (TypeInfo type in typeof(CrystalApplication).GetTypeInfo().Assembly.DefinedTypes.Where(x =>
+            foreach (TypeInfo type in AppInstance.GetType().GetTypeInfo().Assembly.DefinedTypes.Where(x =>
                         x.IsSubclassOf(typeof(Page)) &&
-                        x.CustomAttributes.Any(y => y.AttributeType == typeof(NavigationViewModelAttribute))))
+                        x.CustomAttributes.Any(y => 
+                        y.AttributeType == typeof(NavigationViewModelAttribute))))
             {
 
                 if (type.IsSubclassOf(typeof(Page)))
