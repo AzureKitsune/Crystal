@@ -32,9 +32,9 @@ namespace Crystal3.Navigation
         {
             viewModelViewMappings.Clear();
 
-            foreach (TypeInfo type in CrystalApplication.Current.GetType().GetTypeInfo().Assembly.DefinedTypes.Where(x =>
-                                 x.IsSubclassOf(typeof(Page)) &&
-                                 x.CustomAttributes.Any(y => y.AttributeType == typeof(NavigationViewModelAttribute))))
+            foreach (TypeInfo type in typeof(CrystalApplication).GetTypeInfo().Assembly.DefinedTypes.Where(x =>
+                        x.IsSubclassOf(typeof(Page)) &&
+                        x.CustomAttributes.Any(y => y.AttributeType == typeof(NavigationViewModelAttribute))))
             {
 
                 if (type.IsSubclassOf(typeof(Page)))
