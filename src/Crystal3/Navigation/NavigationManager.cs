@@ -115,13 +115,7 @@ namespace Crystal3.Navigation
 
         internal IEnumerable<NavigationService> GetAllServices()
         {
-            List<NavigationService> services = new List<NavigationService>();
-
-            //services.Add(RootNavigationService); - no longer needed if every navigationservice registers itself in the constructor
-
-            services.AddRange(navigationServices);
-
-            return services;
+            return navigationServices;
         }
     }
 }
