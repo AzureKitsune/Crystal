@@ -17,7 +17,7 @@ namespace Crystal3.Navigation
         /// <summary>
         /// <ViewModelType, PageType>
         /// </summary>
-        private Dictionary<Type, Type> viewModelViewMappings = new Dictionary<Type, Type>();
+        private static Dictionary<Type, Type> viewModelViewMappings = new Dictionary<Type, Type>();
         private List<NavigationService> navigationServices = new List<NavigationService>();
         #endregion
 
