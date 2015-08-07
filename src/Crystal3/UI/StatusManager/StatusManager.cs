@@ -1,6 +1,7 @@
 ﻿using Crystal3.Core;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -12,18 +13,24 @@ using Windows.UI.Xaml;
 
 namespace Crystal3.UI.StatusManager
 {
-    public class StatusManager
+    public class StatusManager : INotifyPropertyChanged
     {
-        private static Crystal3.Core.Platform currentPlatform = Crystal3.Core.Platform.Unknown;
-        private static string normalStatusText = null;
-        private static StatusBar mobileStatusBar = null;
-        private static Window boundWindow = null;
+        private Crystal3.Core.Platform currentPlatform = Crystal3.Core.Platform.Unknown;
+        private string normalStatusText = null;
+        private bool isBusyValue = false;
+        private StatusBar mobileStatusBar = null;
+        private Window boundWindow = null;
+        private List<StatusManagerControl> controllers = null;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         internal StatusManager(Window window)
         {
             currentPlatform = CrystalApplication.GetDevicePlatform();
 
             boundWindow = window;
+
+            controllers = new List<StatusManagerControl>();
         }
 
         internal async void Initialize()
@@ -91,17 +98,39 @@ namespace Crystal3.UI.StatusManager
                 normalStatusText = value;
 
                 UpdateNormalStatus();
+
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("NormalStatusText"));
             }
+        }
+
+        public bool IsBusy
+        {
+            get { return isBusyValue; }
+            private set
+            {
+                isBusyValue = value;
+
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("IsBusy"));
+            }
+        }
+
+        private void RefreshStatus()
+        {
+            IsBusy = controllers.Count > 0;
         }
 
         public IndefiniteWorkStatusManagerControl DoIndefiniteWork(string statusText)
         {
-            return new IndefiniteWorkStatusManagerControl(this, statusText);
+            var control = new IndefiniteWorkStatusManagerControl(this, statusText);
+            RefreshStatus();
+            return control;
         }
 
         public DefiniteWorkStatusManagerControl DoWork(string statusText)
         {
-            return new DefiniteWorkStatusManagerControl(this, statusText);
+            var control = new DefiniteWorkStatusManagerControl(this, statusText);
+            RefreshStatus();
+            return control;
         }
 
         public abstract class StatusManagerControl : IDisposable
@@ -109,6 +138,8 @@ namespace Crystal3.UI.StatusManager
             internal StatusManagerControl(StatusManager manager)
             {
                 ParentStatusManager = manager;
+
+                ParentStatusManager.controllers.Add(this);
             }
 
             public StatusManager ParentStatusManager { get; private set; }
@@ -120,7 +151,7 @@ namespace Crystal3.UI.StatusManager
         {
             internal IndefiniteWorkStatusManagerControl(StatusManager manager, string statusText) : base(manager)
             {
-                if (currentPlatform == Core.Platform.Mobile)
+                if (manager.currentPlatform == Core.Platform.Mobile)
                 {
                     CrystalApplication.Dispatcher.RunAsync(IUIDispatcherPriority.Low, () =>
                     {
@@ -132,7 +163,7 @@ namespace Crystal3.UI.StatusManager
 
             public override void Dispose()
             {
-                if (currentPlatform == Core.Platform.Mobile)
+                if (ParentStatusManager.currentPlatform == Core.Platform.Mobile)
                 {
                     CrystalApplication.Dispatcher.RunAsync(IUIDispatcherPriority.Low, () =>
                     {
@@ -140,6 +171,9 @@ namespace Crystal3.UI.StatusManager
                         this.ParentStatusManager.UpdateProgress(0);
                     });
                 }
+
+                ParentStatusManager.controllers.Remove(this);
+                ParentStatusManager.RefreshStatus();
             }
 
             public void SetStatus(string text)
@@ -167,6 +201,12 @@ namespace Crystal3.UI.StatusManager
             public void SetProgress(double value)
             {
                 ParentStatusManager.UpdateProgress(value);
+            }
+
+            public override void Dispose()
+            {
+                ParentStatusManager.controllers.Remove(this);
+                ParentStatusManager.RefreshStatus();
             }
         }
     }
