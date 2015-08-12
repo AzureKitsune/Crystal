@@ -42,7 +42,11 @@ namespace Crystal3.UI.StatusManager
                 await mobileStatusBar.ShowAsync();
             }
 
-            NormalStatusText = ApplicationView.GetForCurrentView().Title;
+            try
+            {
+                NormalStatusText = ApplicationView.GetForCurrentView().Title;
+            }
+            catch (Exception) { }
         }
 
         internal bool CanAccessMobileStatusBar()
@@ -52,21 +56,21 @@ namespace Crystal3.UI.StatusManager
 
         private void UpdateStatusText(string status)
         {
-            //todo fix rare bug where this is called on launch and dispatcher is null
-            CrystalApplication.Dispatcher.RunAsync(() =>
+            if (currentPlatform == Core.Platform.Mobile)
             {
-                if (currentPlatform == Core.Platform.Mobile)
+                //todo fix rare bug where this is called on launch and dispatcher is null
+                CrystalApplication.Dispatcher.RunAsync(async () =>
                 {
                     if (CanAccessMobileStatusBar())
                     {
                         if (mobileStatusBar != null)
                         {
                             mobileStatusBar.ProgressIndicator.Text = status;
-                            mobileStatusBar.ProgressIndicator.ShowAsync();
+                            await mobileStatusBar.ProgressIndicator.ShowAsync();
                         }
                     }
-                }
-            });
+                });
+            }
         }
         private void UpdateNormalStatus()
         {
@@ -77,13 +81,16 @@ namespace Crystal3.UI.StatusManager
         {
             if (currentPlatform == Core.Platform.Mobile)
             {
-                if (CanAccessMobileStatusBar())
+                CrystalApplication.Dispatcher.RunAsync(() =>
                 {
-                    if (mobileStatusBar != null)
+                    if (CanAccessMobileStatusBar())
                     {
-                        mobileStatusBar.ProgressIndicator.ProgressValue = status;
+                        if (mobileStatusBar != null)
+                        {
+                            mobileStatusBar.ProgressIndicator.ProgressValue = status;
+                        }
                     }
-                }
+                });
             }
         }
 
@@ -153,11 +160,8 @@ namespace Crystal3.UI.StatusManager
             {
                 if (manager.currentPlatform == Core.Platform.Mobile)
                 {
-                    CrystalApplication.Dispatcher.RunAsync(IUIDispatcherPriority.Low, () =>
-                    {
-                        manager.UpdateStatusText(statusText);
-                        manager.UpdateProgress(null);
-                    });
+                    manager.UpdateStatusText(statusText);
+                    manager.UpdateProgress(null);
                 }
             }
 
@@ -165,11 +169,8 @@ namespace Crystal3.UI.StatusManager
             {
                 if (ParentStatusManager.currentPlatform == Core.Platform.Mobile)
                 {
-                    CrystalApplication.Dispatcher.RunAsync(IUIDispatcherPriority.Low, () =>
-                    {
-                        this.ParentStatusManager.UpdateNormalStatus();
-                        this.ParentStatusManager.UpdateProgress(0);
-                    });
+                    this.ParentStatusManager.UpdateNormalStatus();
+                    this.ParentStatusManager.UpdateProgress(0);
                 }
 
                 ParentStatusManager.controllers.Remove(this);
