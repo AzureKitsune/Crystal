@@ -121,6 +121,8 @@ namespace Crystal3
                     await LoadAppState();
 
                     navService.HandleTerminationReload();
+
+                    //todo handle multiple windows in this case.
                 }
             }
 

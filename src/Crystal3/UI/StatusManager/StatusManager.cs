@@ -94,6 +94,9 @@ namespace Crystal3.UI.StatusManager
             }
         }
 
+        /// <summary>
+        /// The text to show in the status bar when there aren't any controllers active. Think of it as the titlebar in a mobile application.
+        /// </summary>
         public string NormalStatusText
         {
             get
@@ -106,7 +109,8 @@ namespace Crystal3.UI.StatusManager
 
                 UpdateNormalStatus();
 
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("NormalStatusText"));
+                if (PropertyChanged != null) //makes this property binding-friendly.
+                    PropertyChanged(this, new PropertyChangedEventArgs("NormalStatusText"));
             }
         }
 
@@ -117,12 +121,14 @@ namespace Crystal3.UI.StatusManager
             {
                 isBusyValue = value;
 
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("IsBusy"));
+                if (PropertyChanged != null) //makes this property binding-friendly.
+                    PropertyChanged(this, new PropertyChangedEventArgs("IsBusy"));
             }
         }
 
         private void RefreshStatus()
         {
+            //as long as there are active controllers, the status manager should say that it is busy.
             IsBusy = controllers.Count > 0;
         }
 
@@ -146,7 +152,10 @@ namespace Crystal3.UI.StatusManager
             {
                 ParentStatusManager = manager;
 
-                ParentStatusManager.controllers.Add(this);
+                if (!ParentStatusManager.controllers.Contains(this))
+                    ParentStatusManager.controllers.Add(this);
+                else
+                    throw new Exception("StatusManagerControl is already present in the ParentStatusManager's controller list.");
             }
 
             public StatusManager ParentStatusManager { get; private set; }
@@ -196,7 +205,11 @@ namespace Crystal3.UI.StatusManager
         {
             internal DefiniteWorkStatusManagerControl(StatusManager manager, string statusText) : base(manager, statusText)
             {
-
+                if (manager.currentPlatform == Core.Platform.Mobile)
+                {
+                    manager.UpdateStatusText(statusText);
+                    manager.UpdateProgress(0);
+                }
             }
 
             public void SetProgress(double value)
