@@ -1,9 +1,11 @@
 ﻿using Crystal3.Core;
+using Crystal3.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -132,25 +134,37 @@ namespace Crystal3.UI.StatusManager
             IsBusy = controllers.Count > 0;
         }
 
-        public IndefiniteWorkStatusManagerControl DoIndefiniteWork(string statusText)
+        internal void RemoveAllControllersForCallingViewModel(ViewModelBase callingViewModel)
         {
-            var control = new IndefiniteWorkStatusManagerControl(this, statusText);
+            lock (controllers)
+            {
+                foreach (var control in controllers.Where(x => object.ReferenceEquals(x.ParentViewModel, callingViewModel)).ToArray())
+                    control.Dispose();
+
+                RefreshStatus();
+            }
+        }
+
+        public IndefiniteWorkStatusManagerControl DoIndefiniteWork(ViewModelBase callingViewModel, string statusText)
+        {
+            var control = new IndefiniteWorkStatusManagerControl(this, statusText, callingViewModel);
             RefreshStatus();
             return control;
         }
 
-        public DefiniteWorkStatusManagerControl DoWork(string statusText)
+        public DefiniteWorkStatusManagerControl DoWork(ViewModelBase callingViewModel, string statusText)
         {
-            var control = new DefiniteWorkStatusManagerControl(this, statusText);
+            var control = new DefiniteWorkStatusManagerControl(this, statusText, callingViewModel);
             RefreshStatus();
             return control;
         }
 
         public abstract class StatusManagerControl : IDisposable
         {
-            internal StatusManagerControl(StatusManager manager)
+            internal StatusManagerControl(StatusManager manager, ViewModelBase callingViewModel)
             {
                 ParentStatusManager = manager;
+                ParentViewModel = callingViewModel;
 
                 if (!ParentStatusManager.controllers.Contains(this))
                     ParentStatusManager.controllers.Add(this);
@@ -160,12 +174,14 @@ namespace Crystal3.UI.StatusManager
 
             public StatusManager ParentStatusManager { get; private set; }
 
+            internal ViewModelBase ParentViewModel { get; private set; }
+
             public abstract void Dispose();
         }
 
         public class IndefiniteWorkStatusManagerControl : StatusManagerControl
         {
-            internal IndefiniteWorkStatusManagerControl(StatusManager manager, string statusText) : base(manager)
+            internal IndefiniteWorkStatusManagerControl(StatusManager manager, string statusText, ViewModelBase callingViewModel) : base(manager, callingViewModel)
             {
                 if (manager.currentPlatform == Core.Platform.Mobile)
                 {
@@ -203,7 +219,7 @@ namespace Crystal3.UI.StatusManager
 
         public class DefiniteWorkStatusManagerControl : IndefiniteWorkStatusManagerControl
         {
-            internal DefiniteWorkStatusManagerControl(StatusManager manager, string statusText) : base(manager, statusText)
+            internal DefiniteWorkStatusManagerControl(StatusManager manager, string statusText, ViewModelBase callingViewModel) : base(manager, statusText, callingViewModel)
             {
                 if (manager.currentPlatform == Core.Platform.Mobile)
                 {

@@ -16,5 +16,12 @@ namespace Crystal3.Model
         }
 
         public StatusManager Status { get; private set; }
+
+        protected internal override void OnNavigatedFrom(object sender, CrystalNavigationEventArgs e)
+        {
+            Status.RemoveAllControllersForCallingViewModel(this);
+
+            base.OnNavigatedFrom(sender, e);
+        }
     }
 }
