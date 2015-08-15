@@ -147,7 +147,7 @@ namespace Crystal3.Navigation
 
         private CrystalNavigationDirection ConvertToCrystalNavDirections(NavigationMode dir)
         {
-            switch(dir)
+            switch (dir)
             {
                 case NavigationMode.New:
                 case NavigationMode.Forward:
