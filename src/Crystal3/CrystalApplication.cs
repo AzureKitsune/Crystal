@@ -155,6 +155,9 @@ namespace Crystal3
 
                                 args.Handled = true;
 
+                                WindowManager.GetWindowServiceForCurrentWindow()
+                                .RefreshAppViewBackButtonVisibility();
+
                                 return;
                             }
                         }

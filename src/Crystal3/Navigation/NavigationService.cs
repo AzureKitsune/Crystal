@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -14,6 +15,7 @@ namespace Crystal3.Navigation
     public class NavigationService
     {
         private ViewModelBase lastViewModel = null;
+        private ManualResetEvent navigationLock = null;
 
         //TODO pass CrystalNavigationEventArgs instead of the built-in WinRT event args
 
@@ -23,14 +25,14 @@ namespace Crystal3.Navigation
 
         public bool CanGoBackward { get { return NavigationFrame.CanGoBack; } }
 
-        public void GoBack() { NavigationFrame.GoBack(); }
-
         private Stack<ViewModelBase> viewModelBackStack = null;
         private Stack<ViewModelBase> viewModelForwardStack = null;
 
         internal NavigationService(Frame navFrame, NavigationManager manager)
         {
             if (navFrame == null) throw new ArgumentNullException("navFrame");
+
+            navigationLock = new ManualResetEvent(true);
 
             NavigationManager = manager;
             NavigationFrame = navFrame;
@@ -43,6 +45,8 @@ namespace Crystal3.Navigation
 
             NavigationFrame.Navigating += NavigationFrame_Navigating;
             NavigationFrame.Navigated += NavigationFrame_Navigated;
+            NavigationFrame.NavigationFailed += NavigationFrame_NavigationFailed;
+            NavigationFrame.NavigationStopped += NavigationFrame_NavigationStopped;
 
             CrystalApplication.Current.Resuming += Current_Resuming;
             CrystalApplication.Current.Suspending += Current_Suspending;
@@ -66,6 +70,15 @@ namespace Crystal3.Navigation
             }
         }
 
+
+        public void GoBack()
+        {
+            navigationLock.WaitOne();
+
+            navigationLock.Reset();
+            NavigationFrame.GoBack();
+        }
+
         public bool IsNavigatedTo<T>() where T : ViewModelBase
         {
             return ((Page)NavigationFrame.Content)?.DataContext is T;
@@ -75,6 +88,18 @@ namespace Crystal3.Navigation
         {
             viewModelBackStack.Clear();
             NavigationFrame.BackStack.Clear();
+        }
+
+
+        private void NavigationFrame_NavigationStopped(object sender, NavigationEventArgs e)
+        {
+            navigationLock.Set();
+        }
+
+        private void NavigationFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
+        {
+            navigationLock.Set();
+            e.Handled = true;
         }
 
         private void NavigationFrame_Navigating(object sender, NavigatingCancelEventArgs e)
@@ -121,6 +146,8 @@ namespace Crystal3.Navigation
                 {
                     HandleTerminationReload();
                 }
+
+                navigationLock.Set();
             }
         }
 
@@ -166,8 +193,25 @@ namespace Crystal3.Navigation
             NavigationLevel = navigationLevel;
         }
 
-        public void NavigateTo<T>(object parameter = null) where T : ViewModelBase
+
+        private Task waitForNavigationAsyncTask = null;
+        private async Task WaitForNavigationLockAsync()
         {
+            await Task.Delay(250);
+
+            if (waitForNavigationAsyncTask?.Status == TaskStatus.Running)
+                 await waitForNavigationAsyncTask;
+            else
+            {
+                waitForNavigationAsyncTask = Task.Run(() => navigationLock.WaitOne());
+
+                await waitForNavigationAsyncTask;
+            }
+        }
+        public async void NavigateTo<T>(object parameter = null) where T : ViewModelBase
+        {
+            navigationLock.WaitOne();
+
             var view = NavigationManager.GetViewType(typeof(T));
 
             if (view == null) throw new Exception("View not found!");
@@ -236,14 +280,17 @@ namespace Crystal3.Navigation
                 //    viewModel.OnNavigatedFrom(sender, e);
                 //}
 
-
+                navigationLock.Set();
             });
 
+            navigationLock.Reset();
 
             NavigationFrame.Navigated += navigatedHandler;
             NavigationFrame.Navigating += navigatingHandler;
 
             NavigationFrame.Navigate(view, parameter);
+
+
         }
 
         /// <summary>
