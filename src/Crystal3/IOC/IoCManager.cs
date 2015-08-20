@@ -11,11 +11,11 @@ namespace Crystal3.IOC
     /// </summary>
     public static class IoCManager
     {
-        private static Dictionary<Type, IIoCObject> itemsDictionary = null;
+        private static List<KeyValuePair<Type, IIoCObject>> itemsList = null;
 
         static IoCManager()
         {
-            itemsDictionary = new Dictionary<Type, IIoCObject>();
+            itemsList = new List<KeyValuePair<Type, IIoCObject>>();
         }
 
         /// <summary>
@@ -32,8 +32,22 @@ namespace Crystal3.IOC
             if (!(objectToRegister is T))
                 throw new Exception("Object and type do not match!");
 
-            itemsDictionary.Add(typeof(T), objectToRegister);
+            itemsList.Add(new KeyValuePair<Type, IIoCObject>(typeof(T), objectToRegister));
         }
+
+        public static void Unregister<T>(T objectToUnregister) where T : IIoCObject
+        {
+            var item = itemsList.Where(x => x is T).FirstOrDefault(x => object.ReferenceEquals((T)x.Value, objectToUnregister));
+            try
+            {
+                itemsList.Remove(item); //can't null check since switch to List<KeyValuePair<... . todo
+            }
+            catch (Exception)
+            {
+                throw new Exception("Object not found.");
+            }
+        }
+
         /// <summary>
         /// Resolves an object based on the type parameter.
         /// </summary>
@@ -41,7 +55,7 @@ namespace Crystal3.IOC
         /// <returns></returns>
         public static T Resolve<T>() where T : IIoCObject
         {
-            var obj = (T)itemsDictionary.FirstOrDefault(x => x.Key == typeof(T)).Value;
+            var obj = (T)itemsList.FirstOrDefault(x => x.Key == typeof(T)).Value;
 
             if (obj == null) throw new Exception("Types implementing " + typeof(T).Name + " were not found.");
 
@@ -49,7 +63,7 @@ namespace Crystal3.IOC
         }
         public static T ResolveDefault<T>(Func<T> defaultObjectCreator) where T : IIoCObject
         {
-            var obj = (T)itemsDictionary.FirstOrDefault(x => x.Key == typeof(T)).Value;
+            var obj = (T)itemsList.FirstOrDefault(x => x.Key == typeof(T)).Value;
 
             if (obj == null) return defaultObjectCreator();
 
@@ -58,12 +72,16 @@ namespace Crystal3.IOC
 
         public static IEnumerable<T> ResolveAll<T>() where T : IIoCObject
         {
-            return (IEnumerable<T>)itemsDictionary.Where(x => x.Key == typeof(T)).Select(x => x.Value);
+            var items = itemsList.Where(x =>
+                    x.Key == typeof(T))
+                .Select(x =>
+                      x.Value);
+            return (IEnumerable<T>)items.ToArray().Select(x => (T)x);
         }
 
         public static bool IsRegistered<T>() where T : IIoCObject
         {
-            return itemsDictionary.Any(x => x.Key == typeof(T));
+            return itemsList.Any(x => x.Key == typeof(T));
         }
     }
 }
