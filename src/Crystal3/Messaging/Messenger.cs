@@ -12,16 +12,15 @@ namespace Crystal3.Messaging
         private static List<IMessagingTarget> targetList = new List<IMessagingTarget>();
 
         [DebuggerNonUserCode]
-        public static Task<object> SendMessageAsync(Type target, string name, object value)
+        public static Task<object> SendMessageAsync(string name, object value)
         {
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException("name");
 
-            return SendMessageAsync(target, new Message(name, value));
+            return SendMessageAsync(new Message(name, value));
         }
 
-        public static Task<object> SendMessageAsync(Type target, Message message)
+        public static Task<object> SendMessageAsync(Message message)
         {
-            if (target == null) throw new ArgumentNullException("target");
             if (message == null) throw new ArgumentNullException("message");
 
             TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
