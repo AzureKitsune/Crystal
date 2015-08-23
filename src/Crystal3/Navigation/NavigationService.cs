@@ -208,7 +208,7 @@ namespace Crystal3.Navigation
                 await waitForNavigationAsyncTask;
             }
         }
-        public async void NavigateTo<T>(object parameter = null) where T : ViewModelBase
+        public void NavigateTo<T>(object parameter = null) where T : ViewModelBase
         {
             navigationLock.WaitOne();
 

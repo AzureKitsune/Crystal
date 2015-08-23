@@ -57,23 +57,23 @@ namespace Crystal3.Navigation
             return viewModel;
         }
 
-        public static async Task<WindowService> CreateNewWindowAsync<T>(object parameter = null) where T : ViewModelBase
+        public static Task<WindowService> CreateNewWindowAsync<T>(object parameter = null) where T : ViewModelBase
         {
             throw new NotImplementedException(); //todo, figure out how to make an actual new window.
 
-            var view = CoreApplication.CreateNewView();
-            //and here, the above HandleNewWindow method should be called.
+            //var view = CoreApplication.CreateNewView();
+            ////and here, the above HandleNewWindow method should be called.
 
-            var bundle = WindowNavigationServices.First(x =>
-                    x.WindowView.Dispatcher == view.Dispatcher);
+            //var bundle = WindowNavigationServices.First(x =>
+            //        x.WindowView.Dispatcher == view.Dispatcher);
 
-            await bundle.WindowView.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, new Windows.UI.Core.DispatchedHandler(() =>
-            {
-                bundle.NavigationManager.RootNavigationService.NavigateTo<T>(parameter);
-            }));
+            //await bundle.WindowView.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, new Windows.UI.Core.DispatchedHandler(() =>
+            //{
+            //    bundle.NavigationManager.RootNavigationService.NavigateTo<T>(parameter);
+            //}));
 
 
-            return bundle;
+            //return bundle;
         }
     }
 }
