@@ -37,13 +37,13 @@ namespace Crystal3.UI.Converters
             double months = Math.Round(timeDiff.TotalDays * 0.03285421);
             if (months >= 1) return string.Format(MonthStringFormat, months);
 
-            if (timeDiff.TotalDays > 0) return string.Format(DayStringFormat, timeDiff.TotalDays);
+            if (timeDiff.TotalDays > 0) return string.Format(DayStringFormat, Math.Round(timeDiff.TotalDays));
 
-            if (timeDiff.TotalHours > 0) return string.Format(HourFormatString, timeDiff.TotalHours);
+            if (timeDiff.TotalHours > 0) return string.Format(HourFormatString, Math.Round(timeDiff.TotalHours));
 
-            if (timeDiff.TotalMinutes > 0) return string.Format(MinuteFormatString, timeDiff.TotalMinutes);
+            if (timeDiff.TotalMinutes > 0) return string.Format(MinuteFormatString, Math.Round(timeDiff.TotalMinutes));
 
-            if (timeDiff.TotalSeconds > 0) return string.Format(SecondFormatString, timeDiff.TotalSeconds);
+            if (timeDiff.TotalSeconds > 0) return string.Format(SecondFormatString, Math.Round(timeDiff.TotalSeconds));
 
             return null;
         }
