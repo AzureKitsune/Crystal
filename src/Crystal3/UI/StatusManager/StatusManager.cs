@@ -67,6 +67,8 @@ namespace Crystal3.UI.StatusManager
                     {
                         if (mobileStatusBar != null)
                         {
+                            if (AnimateStatusBarText)
+                                await mobileStatusBar.ProgressIndicator.HideAsync();
                             mobileStatusBar.ProgressIndicator.Text = status;
                             await mobileStatusBar.ProgressIndicator.ShowAsync();
                         }
@@ -127,6 +129,8 @@ namespace Crystal3.UI.StatusManager
                     PropertyChanged(this, new PropertyChangedEventArgs("IsBusy"));
             }
         }
+
+        public bool AnimateStatusBarText { get; set; }
 
         private void RefreshStatus()
         {
