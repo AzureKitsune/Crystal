@@ -17,6 +17,8 @@ namespace Crystal3.UI.Converters
             HourFormatString = "{0} hours ago";
             MinuteFormatString = "{0} minutes ago";
             SecondFormatString = "{0} seconds ago";
+
+            DayAndMonthStringFormat = "{0} months, and {1} days ago";
         }
 
         public string YearStringFormat { get; set; }
@@ -25,6 +27,9 @@ namespace Crystal3.UI.Converters
         public string HourFormatString { get; set; }
         public string MinuteFormatString { get; set; }
         public string SecondFormatString { get; set; }
+
+        public bool CombineDaysAndMonths { get; set; }
+        public string DayAndMonthStringFormat { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -35,7 +40,13 @@ namespace Crystal3.UI.Converters
             if (timeDiff.TotalDays > 365) return string.Format(YearStringFormat, Math.Round(timeDiff.TotalDays / 365));
 
             double months = Math.Round(timeDiff.TotalDays * 0.03285421);
-            if (months >= 1) return string.Format(MonthStringFormat, months);
+            if (months >= 1)
+            {
+                if (!CombineDaysAndMonths)
+                    return string.Format(MonthStringFormat, months);
+                else
+                    return string.Format(DayAndMonthStringFormat, months, Math.Round(timeDiff.TotalDays));
+            }
 
             if (timeDiff.TotalDays > 0) return string.Format(DayStringFormat, Math.Round(timeDiff.TotalDays));
 
