@@ -170,18 +170,23 @@ namespace Crystal3
 
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
-            if (args.PreviousExecutionState != ApplicationExecutionState.Running && args.PreviousExecutionState != ApplicationExecutionState.Suspended)
+            if (args.PreviousExecutionState != ApplicationExecutionState.Running && args.PreviousExecutionState != ApplicationExecutionState.Suspended && args.TileId == "App")
             {
                 await InitializeRootFrameAsync(args);
 
                 if (args.PreviousExecutionState != ApplicationExecutionState.Terminated)
                     OnFreshLaunch(args);
             }
+            else if ((args.PreviousExecutionState == ApplicationExecutionState.Running || args.PreviousExecutionState == ApplicationExecutionState.Suspended) && !string.IsNullOrWhiteSpace(args.Arguments))
+            {
+                OnActivation(args);
+            }
         }
 
         protected override async void OnActivated(IActivatedEventArgs args)
         {
-            await InitializeRootFrameAsync(args);
+            if (args.PreviousExecutionState != ApplicationExecutionState.Running && args.PreviousExecutionState != ApplicationExecutionState.Suspended)
+                await InitializeRootFrameAsync(args);
 
             OnActivation(args);
         }
