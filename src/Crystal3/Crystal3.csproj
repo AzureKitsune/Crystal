@@ -153,6 +153,7 @@
     <Compile Include="UI\Converters\RelativeTimeConverter.cs" />
     <Compile Include="UI\Dispatcher\UIDispatcher.cs" />
     <Compile Include="UI\MessageDialog\DefaultMessageDialogService.cs" />
+    <Compile Include="UI\PageExtensions.cs" />
     <Compile Include="UI\StatusManager\StatusManager.cs" />
     <Content Include="Properties\Crystal3.rd.xml" />
   </ItemGroup>
