@@ -47,7 +47,12 @@ namespace Crystal3.Navigation
             return WindowNavigationServices.Select(x => x.WindowView);
         }
 
-        internal static ViewModelBase GetRootViewModel()
+        internal static IEnumerable<WindowService> GetAllWindowServices()
+        {
+            return WindowNavigationServices.AsReadOnly();
+        }
+
+        internal static ViewModelBase GetRootViewModelForCurrentWindow()
         {
             var navManager = GetNavigationManagerForCurrentWindow();
             var frame = navManager.RootNavigationService.NavigationFrame;

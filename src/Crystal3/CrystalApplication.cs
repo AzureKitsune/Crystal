@@ -203,10 +203,20 @@ namespace Crystal3
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
-            var rootViewModel = WindowManager.GetRootViewModel();
-            if (rootViewModel != null)
+            foreach (var window in WindowManager.GetAllWindowServices())
             {
-                await rootViewModel.OnSuspendingAsync(null);
+                try
+                {
+                    var rootViewModel = window.GetRootViewModel();
+                    if (rootViewModel != null)
+                    {
+                        await rootViewModel.OnSuspendingAsync(null);
+                    }
+                }
+                catch (Exception)
+                {
+
+                }
             }
 
             await SaveAppState();
@@ -221,10 +231,13 @@ namespace Crystal3
         {
             await OnResumingAsync();
 
-            var rootViewModel = WindowManager.GetRootViewModel();
-            if (rootViewModel != null)
+            foreach (var window in WindowManager.GetAllWindowServices())
             {
-                await rootViewModel.OnResumingAsync();
+                var rootViewModel = window.GetRootViewModel();
+                if (rootViewModel != null)
+                {
+                    await rootViewModel.OnResumingAsync();
+                }
             }
         }
 
@@ -242,13 +255,23 @@ namespace Crystal3
 
             await FileIO.WriteTextAsync(file, navigationState);
         }
-        private async Task LoadAppState()
+        private async Task<bool> LoadAppState()
         {
             StorageFile file = await CrystalDataFolder.CreateFileAsync(SuspensionStateFileName, CreationCollisionOption.OpenIfExists);
 
             string navigationState = await FileIO.ReadTextAsync(file);
 
-            WindowManager.GetNavigationManagerForCurrentWindow().RootNavigationService.NavigationFrame.SetNavigationState(navigationState);
+            try
+            {
+                WindowManager.GetNavigationManagerForCurrentWindow()
+                    .RootNavigationService.NavigationFrame.SetNavigationState(navigationState);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
         #endregion
 

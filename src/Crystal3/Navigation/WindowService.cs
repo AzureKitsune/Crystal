@@ -1,4 +1,5 @@
-﻿using Crystal3.UI.StatusManager;
+﻿using Crystal3.Model;
+using Crystal3.UI.StatusManager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace Crystal3.Navigation
         private void RefreshAppViewBackButtonVisibility(object sender)
         {
             if (((CrystalApplication)CrystalApplication.Current).Options.HandleBackButtonForTopLevelNavigation
-                            && ((CrystalApplication)CrystalApplication.Current).Options.HandleBackButtonForTopLevelNavigation)
+                 && ((CrystalApplication)CrystalApplication.Current).Options.HandleBackButtonForTopLevelNavigation)
             {
                 SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = ((Frame)sender).CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
             }
@@ -59,6 +60,16 @@ namespace Crystal3.Navigation
         public void SetAppViewBackButtonVisibility(bool visible)
         {
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = visible ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+        }
+
+        internal ViewModelBase GetRootViewModel()
+        {
+            var navManager = NavigationManager;
+            var frame = navManager.RootNavigationService.NavigationFrame;
+            var page = frame.Content as Page;
+            var viewModel = page.DataContext as ViewModelBase;
+
+            return viewModel;
         }
     }
 }
