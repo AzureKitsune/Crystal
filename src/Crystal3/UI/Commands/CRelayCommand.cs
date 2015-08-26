@@ -11,8 +11,8 @@ namespace Crystal3.UI.Commands
     {
         public event EventHandler CanExecuteChanged;
 
-        Func<object, bool> canExecuteFunction = null;
-        Action<object> executeFunction = null;
+        protected Func<object, bool> canExecuteFunction = null;
+        protected Action<object> executeFunction = null;
 
         public CRelayCommand(Action<object> executePredicate)
         {
