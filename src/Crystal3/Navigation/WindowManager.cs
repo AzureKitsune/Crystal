@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -62,23 +63,32 @@ namespace Crystal3.Navigation
             return viewModel;
         }
 
-        public static Task<WindowService> CreateNewWindowAsync<T>(object parameter = null) where T : ViewModelBase
+        public static async Task<WindowService> CreateNewWindowAsync<T>(object parameter = null) where T : ViewModelBase
         {
-            throw new NotImplementedException(); //todo, figure out how to make an actual new window.
+            //https://github.com/Microsoft/Windows-universal-samples/blob/master/Samples/MultipleViews/cs/Scenario1.xaml.cs#L71
 
-            //var view = CoreApplication.CreateNewView();
-            ////and here, the above HandleNewWindow method should be called.
+            var view = CoreApplication.CreateNewView();
+            //and here, the above HandleNewWindow method should be called.
 
-            //var bundle = WindowNavigationServices.First(x =>
-            //        x.WindowView.Dispatcher == view.Dispatcher);
+            await view.Dispatcher.RunAsync((Windows.UI.Core.CoreDispatcherPriority.Normal, new Windows.UI.Core.DispatchedHandler(() =>
+            {
+                var frame = new Frame();
 
-            //await bundle.WindowView.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, new Windows.UI.Core.DispatchedHandler(() =>
-            //{
-            //    bundle.NavigationManager.RootNavigationService.NavigateTo<T>(parameter);
-            //}));
+                var navManager = new NavigationManager((CrystalApplication)CrystalApplication.Current);
+                navManager.RootNavigationService = new NavigationService(frame, navManager);
+
+                Window.Current.Content = frame;
+
+                WindowManager.HandleNewWindow(Window.Current, navManager);
+
+                navManager.RootNavigationService.NavigateTo<T>(parameter);
+            }));
 
 
-            //return bundle;
+            var bundle = WindowNavigationServices.First(x =>
+                x.WindowView.Dispatcher == view.Dispatcher);
+
+            return bundle;
         }
     }
 }
