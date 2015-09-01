@@ -70,7 +70,7 @@ namespace Crystal3.Navigation
             var view = CoreApplication.CreateNewView();
             //and here, the above HandleNewWindow method should be called.
 
-            await view.Dispatcher.RunAsync((Windows.UI.Core.CoreDispatcherPriority.Normal, new Windows.UI.Core.DispatchedHandler(() =>
+            await view.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, new Windows.UI.Core.DispatchedHandler(() =>
             {
                 var frame = new Frame();
 
