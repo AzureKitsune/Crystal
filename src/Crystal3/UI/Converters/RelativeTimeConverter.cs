@@ -19,6 +19,8 @@ namespace Crystal3.UI.Converters
             SecondFormatString = "{0} seconds ago";
 
             DayAndMonthStringFormat = "{0} months, and {1} days ago";
+
+            NegativeTimeDiffErrorStringFormat = "In Another Universe";
         }
 
         public string YearStringFormat { get; set; }
@@ -30,6 +32,8 @@ namespace Crystal3.UI.Converters
 
         public bool CombineDaysAndMonths { get; set; }
         public string DayAndMonthStringFormat { get; set; }
+
+        public string NegativeTimeDiffErrorStringFormat { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -55,6 +59,8 @@ namespace Crystal3.UI.Converters
             if (timeDiff.TotalMinutes > 0) return string.Format(MinuteFormatString, Math.Round(timeDiff.TotalMinutes));
 
             if (timeDiff.TotalSeconds > 0) return string.Format(SecondFormatString, Math.Round(timeDiff.TotalSeconds));
+
+            if (timeDiff.TotalMilliseconds < 0) return NegativeTimeDiffErrorStringFormat;
 
             return null;
         }
