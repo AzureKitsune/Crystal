@@ -9,22 +9,22 @@ namespace Crystal3.UI.Commands
 {
     public class CManualRelayCommand: CRelayCommand, ICommand
     {
-        public new event EventHandler CanExecuteChanged;
-
+        private bool canExecute = false;
         public CManualRelayCommand(Action<object> executePredicate): base(executePredicate)
         {
 
         }
 
-        public CManualRelayCommand(Action<object> executePredicate, Func<object, bool> canExecutePredicate) : base(executePredicate, canExecutePredicate)
+        public override bool CanExecute(object parameter)
         {
-
+            return canExecute;
         }
 
-        public void RaiseCanExecute()
+        public void SetCanExecute(bool value)
         {
-            if (CanExecuteChanged != null)
-                CanExecuteChanged(this, EventArgs.Empty);
+            canExecute = value;
+
+            base.RaiseCanExecute();
         }
     }
 }

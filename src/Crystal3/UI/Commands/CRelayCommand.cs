@@ -23,7 +23,7 @@ namespace Crystal3.UI.Commands
             canExecuteFunction = canExecutePredicate;
         }
 
-        public bool CanExecute(object parameter)
+        public virtual bool CanExecute(object parameter)
         {
             return canExecuteFunction == null ? true : canExecuteFunction(parameter);
         }
@@ -32,6 +32,12 @@ namespace Crystal3.UI.Commands
         {
             if (CanExecute(parameter))
                 executeFunction(parameter);
+        }
+
+        public void RaiseCanExecute()
+        {
+            if (CanExecuteChanged != null)
+                CanExecuteChanged(this, EventArgs.Empty);
         }
     }
 }
