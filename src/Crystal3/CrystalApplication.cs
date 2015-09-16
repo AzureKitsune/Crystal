@@ -104,7 +104,6 @@ namespace Crystal3
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
 
-
                 var navManager = new NavigationManager(this);
 
                 var navService = new NavigationService(rootFrame, navManager);
@@ -118,11 +117,12 @@ namespace Crystal3
                 {
                     //Resurrection!
 
-                    await LoadAppState();
+                    if (await LoadAppState() == true)
+                    {
+                        navService.HandleTerminationReload();
 
-                    navService.HandleTerminationReload();
-
-                    //todo handle multiple windows in this case.
+                        //todo handle multiple windows in this case.
+                    }
                 }
             }
 
