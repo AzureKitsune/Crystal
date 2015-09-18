@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Metadata;
+using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 
@@ -41,6 +42,9 @@ namespace Crystal3.UI.StatusManager
             {
                 mobileStatusBar = StatusBar.GetForCurrentView();
                 mobileStatusBar.ProgressIndicator.ProgressValue = 0;
+
+                StatusBarForegroundColor = mobileStatusBar.ForegroundColor;
+
                 await mobileStatusBar.ShowAsync();
             }
 
@@ -92,6 +96,8 @@ namespace Crystal3.UI.StatusManager
                         if (mobileStatusBar != null)
                         {
                             mobileStatusBar.ProgressIndicator.ProgressValue = status;
+
+                            mobileStatusBar.ForegroundColor = StatusBarForegroundColor;
                         }
                     }
                 });
@@ -131,6 +137,8 @@ namespace Crystal3.UI.StatusManager
         }
 
         public bool AnimateStatusBarText { get; set; }
+
+        public Color? StatusBarForegroundColor { get; set; }
 
         private void RefreshStatus()
         {
