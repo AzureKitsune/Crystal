@@ -107,9 +107,14 @@ namespace Crystal3.Navigation
             return service;
         }
 
+        public void UnregisterNavigationServiceByFrameLevel(FrameLevel frameLevel)
+        {
+           navigationServices.RemoveAll(x => x.NavigationLevel == frameLevel);
+        }
+
         public NavigationService GetNavigationServiceFromFrameLevel(FrameLevel level = FrameLevel.One)
         {
-            var service = navigationServices.First<NavigationService>(x => x.NavigationLevel == level);
+            var service = navigationServices.FirstOrDefault<NavigationService>(x => x.NavigationLevel == level);
             return service;
         }
 
