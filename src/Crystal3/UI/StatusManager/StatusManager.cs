@@ -34,6 +34,8 @@ namespace Crystal3.UI.StatusManager
             boundWindow = window;
 
             controllers = new List<StatusManagerControl>();
+
+            StatusBarForegroundColor = Colors.White;
         }
 
         internal async void Initialize()
@@ -43,11 +45,7 @@ namespace Crystal3.UI.StatusManager
                 mobileStatusBar = StatusBar.GetForCurrentView();
                 mobileStatusBar.ProgressIndicator.ProgressValue = 0;
 
-                try
-                {
-                    StatusBarForegroundColor = mobileStatusBar.ForegroundColor;
-                }
-                catch (Exception) { }
+                
 
                 await mobileStatusBar.ShowAsync();
             }
