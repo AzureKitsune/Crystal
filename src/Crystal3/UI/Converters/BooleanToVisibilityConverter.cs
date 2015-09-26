@@ -17,7 +17,7 @@ namespace Crystal3.UI.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
-            throw new NotImplementedException();
+            return (Visibility)value == Visibility.Visible ? true : false;
         }
     }
 }

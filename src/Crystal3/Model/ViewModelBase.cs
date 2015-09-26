@@ -112,6 +112,14 @@ namespace Crystal3.Model
         {
             if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentNullException("propertyName");
 
+            SetPropertyValueSuppressPropertyChanged<T>(propertyName, value);
+
+            RaisePropertyChanged(propertyName); //Raises the property changed event for the property.
+        }
+        protected void SetPropertyValueSuppressPropertyChanged<T>([CallerMemberName] string propertyName = "", T value = default(T))
+        {
+            if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentNullException("propertyName");
+
             //Sets the property if it exists or adds it if it doesn't.
             if (propertyCollection.ContainsKey(propertyName))
             {
@@ -119,8 +127,6 @@ namespace Crystal3.Model
             }
             else
                 propertyCollection.Add(propertyName, value); //Adds the property.
-
-            RaisePropertyChanged(propertyName); //Raises the property changed event for the property.
         }
     }
 }
