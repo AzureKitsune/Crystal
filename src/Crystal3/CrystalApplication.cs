@@ -233,10 +233,27 @@ namespace Crystal3
 
             foreach (var window in WindowManager.GetAllWindowServices())
             {
-                var rootViewModel = window.GetRootViewModel();
-                if (rootViewModel != null)
+                List<ViewModelBase> viewModelsInWindow = new List<ViewModelBase>();
+
+                //var rootViewModel = window.GetRootViewModel();
+                //viewModelsInWindow.Add(rootViewModel);
+
+                viewModelsInWindow.AddRange(window.NavigationManager.GetAllServices().Select(x => x.GetNavigatedViewModel()).Distinct());
+
+                foreach (var viewModel in viewModelsInWindow)
                 {
-                    await rootViewModel.OnResumingAsync();
+                    if (viewModel != null)
+                    {
+                        switch (Options.ViewModelResumeMethod)
+                        {
+                            case ViewModelResumeMethod.ResumingAsync:
+                                await viewModel.OnResumingAsync();
+                                break;
+                            case ViewModelResumeMethod.OnNavigatedToRefresh:
+                                viewModel.OnNavigatedTo(sender, new CrystalNavigationEventArgs() { Direction = CrystalNavigationDirection.Refresh });
+                                break;
+                        }
+                    }
                 }
             }
         }

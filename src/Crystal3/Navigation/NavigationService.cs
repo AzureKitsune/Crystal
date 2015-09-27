@@ -84,6 +84,11 @@ namespace Crystal3.Navigation
             return ((Page)NavigationFrame.Content)?.DataContext is T;
         }
 
+        public ViewModelBase GetNavigatedViewModel()
+        {
+            return (ViewModelBase)((Page)NavigationFrame.Content)?.DataContext;
+        }
+
         public void ClearBackStack()
         {
             viewModelBackStack.Clear();

@@ -102,7 +102,7 @@ namespace Crystal3.Navigation
 
             var service = new NavigationService(frame, this, frameLevel);
 
-            navigationServices.Add(service);
+            //navigationServices.Add(service);
 
             return service;
         }
