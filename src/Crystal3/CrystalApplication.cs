@@ -177,9 +177,9 @@ namespace Crystal3
                 if (args.PreviousExecutionState != ApplicationExecutionState.Terminated)
                     OnFreshLaunch(args);
             }
-            else if ((args.PreviousExecutionState == ApplicationExecutionState.Running || args.PreviousExecutionState == ApplicationExecutionState.Suspended) && !string.IsNullOrWhiteSpace(args.Arguments))
+            else
             {
-                OnActivation(args);
+                OnActivated(args);
             }
         }
 

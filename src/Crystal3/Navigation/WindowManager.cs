@@ -30,6 +30,8 @@ namespace Crystal3.Navigation
 
         public static WindowService GetWindowServiceForCurrentWindow()
         {
+            if (Window.Current == null & CoreApplication.MainView.CoreWindow.Dispatcher.HasThreadAccess) throw new Exception("Cannot perform this operation unless we're on the UI thread.");
+
             return WindowNavigationServices.First(x => x.WindowView == Window.Current);
         }
 
