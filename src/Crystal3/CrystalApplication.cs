@@ -53,7 +53,8 @@ namespace Crystal3
 
         protected virtual void OnConfigure()
         {
-            Options.HandleSystemBackNavigation = true;
+            //Options.HandleSystemBackNavigation = true;
+            //Options.NavigationRoutingMethod = NavigationRoutingMethod.Dynamic;
         }
 
         protected override void OnWindowCreated(WindowCreatedEventArgs args)
@@ -83,7 +84,9 @@ namespace Crystal3
             //handle the first window.
 
             WindowManager.HandleNewWindow(Window.Current, navManager);
-            WindowManager.GetNavigationManagerForCurrentWindow().ProbeForViewViewModelPairs();
+
+            if (Options.NavigationRoutingMethod == NavigationRoutingMethod.Dynamic)
+                WindowManager.GetNavigationManagerForCurrentWindow().ProbeForViewViewModelPairs();
         }
 
         private async Task InitializeRootFrameAsync(IActivatedEventArgs e)
@@ -303,6 +306,11 @@ namespace Crystal3
                 default:
                     return Platform.Unknown;
             }
+        }
+
+        protected internal virtual Type ResolveStaticPage(Type viewModelType)
+        {
+            return null;
         }
     }
 }

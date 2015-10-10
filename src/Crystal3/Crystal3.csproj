@@ -134,6 +134,7 @@
     <Compile Include="Model\ViewModelBase.Navigation.cs" />
     <Compile Include="Model\ViewModelBase.State.cs" />
     <Compile Include="Model\ViewModelPropertyKey.cs" />
+    <Compile Include="NavigationRoutingMethod.cs" />
     <Compile Include="Navigation\CrystalNavigationDirection.cs" />
     <Compile Include="Navigation\CrystalNavigationEventArgs.cs" />
     <Compile Include="Navigation\FrameLevel.cs" />

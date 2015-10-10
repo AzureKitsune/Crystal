@@ -74,7 +74,19 @@ namespace Crystal3.Navigation
 
         internal Type GetViewType(Type viewModelType)
         {
-            return (Type)viewModelViewMappings[viewModelType];
+            if (AppInstance.Options.NavigationRoutingMethod == NavigationRoutingMethod.Dynamic || viewModelViewMappings.ContainsKey(viewModelType))
+            {
+                return (Type)viewModelViewMappings[viewModelType];
+            }
+            else
+            {
+                var pageType = AppInstance.ResolveStaticPage(viewModelType);
+
+                if (!viewModelViewMappings.ContainsKey(viewModelType))
+                    viewModelViewMappings.Add(viewModelType, pageType);
+
+                return pageType;
+            }
         }
 
         internal void RegisterNavigationService(NavigationService service)
@@ -109,7 +121,7 @@ namespace Crystal3.Navigation
 
         public void UnregisterNavigationServiceByFrameLevel(FrameLevel frameLevel)
         {
-           navigationServices.RemoveAll(x => x.NavigationLevel == frameLevel);
+            navigationServices.RemoveAll(x => x.NavigationLevel == frameLevel);
         }
 
         public NavigationService GetNavigationServiceFromFrameLevel(FrameLevel level = FrameLevel.One)
