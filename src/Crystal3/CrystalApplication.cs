@@ -222,9 +222,7 @@ namespace Crystal3
                 }
             }
 
-            await SaveAppState();
-
-            await OnSuspendingAsync();
+            await Task.WhenAll(OnSuspendingAsync(), SaveAppState());
 
             deferral.Complete();
         }
