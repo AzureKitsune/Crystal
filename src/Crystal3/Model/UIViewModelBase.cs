@@ -15,6 +15,8 @@ namespace Crystal3.Model
            Status = WindowManager.GetStatusManagerForCurrentWindow();
         }
 
+        public bool IsBusy { get { return GetPropertyValue<bool>(); } protected set { SetPropertyValue<bool>(value: value); } }
+
         public StatusManager Status { get; private set; }
 
         protected internal override void OnNavigatedFrom(object sender, CrystalNavigationEventArgs e)
