@@ -130,7 +130,7 @@ namespace Crystal3
             }
 
             // Ensure the current window is active
-            Window.Current.Activate();
+            //Window.Current.Activate();
 
             HandleBackNavigation();
 
@@ -178,7 +178,13 @@ namespace Crystal3
                 await InitializeRootFrameAsync(args);
 
                 if (args.PreviousExecutionState != ApplicationExecutionState.Terminated)
-                    OnFreshLaunch(args);
+                {
+                    await AsyncWindowActivate(OnFreshLaunchAsync(args));
+                }
+                else
+                {
+                    Window.Current.Activate();
+                }
             }
             else
             {
@@ -191,11 +197,19 @@ namespace Crystal3
             if (args.PreviousExecutionState != ApplicationExecutionState.Running && args.PreviousExecutionState != ApplicationExecutionState.Suspended)
                 await InitializeRootFrameAsync(args);
 
-            OnActivation(args);
+           await AsyncWindowActivate(OnActivationAsync(args));
         }
 
-        public abstract void OnFreshLaunch(LaunchActivatedEventArgs args);
-        public virtual void OnActivation(IActivatedEventArgs args) { }
+        private async Task AsyncWindowActivate(Task activationTask)
+        {
+            // Ensure the current window is active
+            await Task.WhenAny(activationTask, Task.Delay(5000));
+            
+            Window.Current.Activate();
+        }
+
+        public abstract Task OnFreshLaunchAsync(LaunchActivatedEventArgs args);
+        public virtual Task OnActivationAsync(IActivatedEventArgs args) { return Task.FromResult<object>(null); }
 
         public static IUIDispatcher Dispatcher { get { return IOC.IoCManager.Resolve<IUIDispatcher>(); } }
 
