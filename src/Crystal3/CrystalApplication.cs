@@ -220,6 +220,8 @@ namespace Crystal3
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
+            var suspendingOp = OnSuspendingAsync();
+
             foreach (var window in WindowManager.GetAllWindowServices())
             {
                 try
@@ -236,7 +238,7 @@ namespace Crystal3
                 }
             }
 
-            await Task.WhenAll(OnSuspendingAsync(), SaveAppState());
+            await Task.WhenAll(suspendingOp, SaveAppState());
 
             deferral.Complete();
         }
