@@ -311,15 +311,7 @@ namespace Crystal3
 
         public static Platform GetDevicePlatform()
         {
-            switch (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToLower())
-            {
-                case "windows.mobile":
-                    return Platform.Mobile;
-                case "windows.desktop":
-                    return Platform.Desktop;
-                default:
-                    return Platform.Unknown;
-            }
+            return SystemInformation.GetDevicePlatform();
         }
 
         protected internal virtual Type ResolveStaticPage(Type viewModelType)
