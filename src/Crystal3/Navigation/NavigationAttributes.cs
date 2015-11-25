@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace Crystal3.Navigation
 {
-    public class NavigationAttributes: DependencyObject
+    public class NavigationAttributes : DependencyObject
     {
         #region PageTitle
         /// <summary>
@@ -36,6 +37,28 @@ namespace Crystal3.Navigation
         public static string GetPageTitle(UIElement element)
         {
             return (string)element.GetValue(PageTitleProperty);
+        }
+        #endregion
+
+        #region Navigation Hint
+
+        public static readonly DependencyProperty NavigationHintProperty =
+            DependencyProperty.RegisterAttached("NavigationHint",
+            typeof(string), typeof(UIElement), new PropertyMetadata(""));
+
+
+        public static void SetNavigationHint(UIElement element, string value)
+        {
+            if (CrystalApplication.Current.GetType().GetTypeInfo().Assembly.DefinedTypes.FirstOrDefault(x => x.FullName == value) == null)
+                throw new ArgumentException("Type not found.", "value");
+
+            element.SetValue(NavigationHintProperty, value);
+        }
+
+
+        public static string GetNavigationHint(UIElement element)
+        {
+            return (string)element.GetValue(NavigationHintProperty);
         }
         #endregion
     }
