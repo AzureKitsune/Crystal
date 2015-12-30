@@ -128,6 +128,7 @@
     <Compile Include="Messaging\MessagingTicket.cs" />
     <Compile Include="Messaging\Messenger.cs" />
     <Compile Include="Model\ModelBase.cs" />
+    <Compile Include="Model\ModelViewModelBase.cs" />
     <Compile Include="Model\UIViewModelBase.cs" />
     <Compile Include="Model\ViewModelBase.cs" />
     <Compile Include="Model\ViewModelBase.Messaging.cs" />
@@ -147,8 +148,10 @@
     <Compile Include="Navigation\WindowService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemInformation.cs" />
+    <Compile Include="TaskExtensions.cs" />
     <Compile Include="UI\Commands\CManualRelayCommand.cs" />
     <Compile Include="UI\Commands\CRelayCommand.cs" />
+    <Compile Include="UI\ContentExtensions.cs" />
     <Compile Include="UI\Converters\BooleanToInverseBooleanConverter.cs" />
     <Compile Include="UI\Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="UI\Converters\InverseBooleanToVisibilityConverter.cs" />
