@@ -154,7 +154,9 @@
     <Compile Include="UI\ContentExtensions.cs" />
     <Compile Include="UI\Converters\BooleanToInverseBooleanConverter.cs" />
     <Compile Include="UI\Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="UI\Converters\CollectionNullOrEmptyToVisibilityConverter.cs" />
     <Compile Include="UI\Converters\InverseBooleanToVisibilityConverter.cs" />
+    <Compile Include="UI\Converters\InverseCollectionNullOrEmptyToVisibilityConverter.cs" />
     <Compile Include="UI\Converters\InverseNullToVisibilityConverter.cs" />
     <Compile Include="UI\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="UI\Converters\RelativeTimeConverter.cs" />
