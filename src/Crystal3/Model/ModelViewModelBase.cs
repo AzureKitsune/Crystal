@@ -10,13 +10,8 @@ namespace Crystal3.Model
     /// <summary>
     /// A ViewModel that pretends to be a Model
     /// </summary>
-    public class ModelViewModelBase: ViewModelBase
+    public class ModelViewModelBase: UIViewModelBase
     {
-        protected internal override sealed void OnNavigatedFrom(object sender, CrystalNavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(sender, e);
-        }
-
         protected internal override sealed bool OnNavigatingFrom(object sender, CrystalNavigationEventArgs e)
         {
             return base.OnNavigatingFrom(sender, e);

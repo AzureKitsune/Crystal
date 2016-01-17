@@ -32,6 +32,10 @@ namespace Crystal3.UI
         {
             if (args.NewValue != null)
             {
+                if (sender.DataContext != null)
+                    if (sender.DataContext is ViewModelBase)
+                        ((ViewModelBase)sender.DataContext).OnNavigatedFrom(sender, new Navigation.CrystalNavigationEventArgs() { Direction = Navigation.CrystalNavigationDirection.Refresh });
+
                 if (args.NewValue is ViewModelBase)
                     ((ViewModelBase)args.NewValue).OnNavigatedTo(sender, new Navigation.CrystalNavigationEventArgs() { Direction = Navigation.CrystalNavigationDirection.Refresh });
             }
