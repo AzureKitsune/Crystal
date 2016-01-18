@@ -302,5 +302,16 @@ namespace Crystal3.Navigation
         /// A workaround for .NET event's first-subscribe, last-fire approach.
         /// </summary>
         public event EventHandler<NavigationServicePreNavigatedSignaledEventArgs> NavigationServicePreNavigatedSignaled;
+
+        public event EventHandler<NavigationManagerPreBackRequestedEventArgs> PreBackRequested;
+        internal bool SignalPreBackRequested()
+        {
+            NavigationManagerPreBackRequestedEventArgs eventArgs = new NavigationManagerPreBackRequestedEventArgs();
+
+            if (PreBackRequested != null)
+                PreBackRequested(this, eventArgs);
+
+            return eventArgs.Handled;
+        }
     }
 }

@@ -141,6 +141,7 @@
     <Compile Include="Navigation\FrameLevel.cs" />
     <Compile Include="Navigation\NavigationAttributes.cs" />
     <Compile Include="Navigation\NavigationManager.cs" />
+    <Compile Include="Navigation\NavigationManagerPreBackRequestedEventArgs.cs" />
     <Compile Include="Navigation\NavigationService.cs" />
     <Compile Include="Navigation\NavigationServicePreNavigatedSignaledEventArgs.cs" />
     <Compile Include="Navigation\NavigationViewModelAttribute.cs" />

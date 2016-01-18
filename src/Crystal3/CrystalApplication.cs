@@ -152,21 +152,24 @@ namespace Crystal3
                                                 .GetAllServices()
                                                 .OrderByDescending(x => x.NavigationLevel))
                         {
-                            if (service.CanGoBackward)
+                            if (service.SignalPreBackRequested())
+                            {
+                                args.Handled = true;
+                            }
+                            else if (service.CanGoBackward)
                             {
                                 service.GoBack();
 
-                                args.Handled = true;
-
                                 WindowManager.GetWindowServiceForCurrentWindow()
                                 .RefreshAppViewBackButtonVisibility();
+
+                                args.Handled = true;
 
                                 return;
                             }
                         }
                     }
                 });
-
                 SystemNavigationManager.GetForCurrentView().BackRequested += systemBackHandler;
             }
         }
@@ -197,14 +200,14 @@ namespace Crystal3
             if (args.PreviousExecutionState != ApplicationExecutionState.Running && args.PreviousExecutionState != ApplicationExecutionState.Suspended)
                 await InitializeRootFrameAsync(args);
 
-           await AsyncWindowActivate(OnActivationAsync(args));
+            await AsyncWindowActivate(OnActivationAsync(args));
         }
 
         private async Task AsyncWindowActivate(Task activationTask)
         {
             // Ensure the current window is active
             await Task.WhenAny(activationTask, Task.Delay(5000));
-            
+
             Window.Current.Activate();
         }
 
