@@ -44,8 +44,7 @@ namespace Crystal3.Navigation
 
         private void RefreshAppViewBackButtonVisibility(object sender)
         {
-            if (((CrystalApplication)CrystalApplication.Current).Options.HandleBackButtonForTopLevelNavigation
-                 && ((CrystalApplication)CrystalApplication.Current).Options.HandleBackButtonForTopLevelNavigation)
+            if (((CrystalApplication)CrystalApplication.Current).Options.HandleBackButtonForTopLevelNavigation)
             {
                 SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = ((Frame)sender).CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
             }
