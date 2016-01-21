@@ -155,8 +155,14 @@ namespace Crystal3
                             if (service.SignalPreBackRequested())
                             {
                                 args.Handled = true;
+
+                                WindowManager.GetWindowServiceForCurrentWindow()
+                                .RefreshAppViewBackButtonVisibility();
+
+                                return;
                             }
-                            else if (service.CanGoBackward)
+
+                            if (service.CanGoBackward)
                             {
                                 service.GoBack();
 
