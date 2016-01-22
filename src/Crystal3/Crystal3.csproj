@@ -150,8 +150,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemInformation.cs" />
     <Compile Include="TaskExtensions.cs" />
-    <Compile Include="UI\Commands\CManualRelayCommand.cs" />
-    <Compile Include="UI\Commands\CRelayCommand.cs" />
+    <Compile Include="UI\Commands\ManualRelayCommand.cs" />
+    <Compile Include="UI\Commands\RelayCommand.cs" />
     <Compile Include="UI\ContentExtensions.cs" />
     <Compile Include="UI\Converters\BooleanToInverseBooleanConverter.cs" />
     <Compile Include="UI\Converters\BooleanToVisibilityConverter.cs" />

@@ -8,20 +8,20 @@ using System.Windows.Input;
 namespace Crystal3.UI.Commands
 {
     /// <summary>
-    /// Crystal's version of a RelayCommand. I regret calling it CRelayCommand.
+    /// Crystal's version of a RelayCommand.
     /// </summary>
-    public class CRelayCommand : ICommand
+    public class RelayCommand : ICommand
     {
         public event EventHandler CanExecuteChanged;
 
         protected Func<object, bool> canExecuteFunction = null;
         protected Action<object> executeFunction = null;
 
-        public CRelayCommand(Action<object> executePredicate)
+        public RelayCommand(Action<object> executePredicate)
         {
             executeFunction = executePredicate;
         }
-        public CRelayCommand(Action<object> executePredicate, Func<object, bool> canExecutePredicate) : this(executePredicate)
+        public RelayCommand(Action<object> executePredicate, Func<object, bool> canExecutePredicate) : this(executePredicate)
         {
             canExecuteFunction = canExecutePredicate;
         }
