@@ -13,6 +13,9 @@ using Windows.UI.Xaml.Controls;
 
 namespace Crystal3.Navigation
 {
+    /// <summary>
+    /// The second highest class in a CrystalApplication. Corresponds to one Window in the application.
+    /// </summary>
     public static class WindowManager
     {
         static List<WindowService> WindowNavigationServices = new List<WindowService>();
@@ -65,6 +68,12 @@ namespace Crystal3.Navigation
             return viewModel;
         }
 
+        /// <summary>
+        /// Experimental!
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
         public static async Task<WindowService> CreateNewWindowAsync<T>(object parameter = null) where T : ViewModelBase
         {
             //https://github.com/Microsoft/Windows-universal-samples/blob/master/Samples/MultipleViews/cs/Scenario1.xaml.cs#L71

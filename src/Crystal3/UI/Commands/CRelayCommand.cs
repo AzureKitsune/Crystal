@@ -7,6 +7,9 @@ using System.Windows.Input;
 
 namespace Crystal3.UI.Commands
 {
+    /// <summary>
+    /// Crystal's version of a RelayCommand. I regret calling it CRelayCommand.
+    /// </summary>
     public class CRelayCommand : ICommand
     {
         public event EventHandler CanExecuteChanged;

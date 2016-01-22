@@ -9,6 +9,9 @@ using Windows.UI.Xaml.Controls;
 
 namespace Crystal3.Navigation
 {
+    /// <summary>
+    /// Attributes that can be used to aid in navigation in certain situations.
+    /// </summary>
     public class NavigationAttributes : DependencyObject
     {
         #region PageTitle

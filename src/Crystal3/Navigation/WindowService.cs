@@ -11,6 +11,9 @@ using Windows.UI.Xaml.Controls;
 
 namespace Crystal3.Navigation
 {
+    /// <summary>
+    /// User-level class for manipulating the Window itself.
+    /// </summary>
     public class WindowService
     {
         internal WindowService(Window view, NavigationManager navManager, StatusManager statManager)

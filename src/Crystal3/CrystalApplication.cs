@@ -20,6 +20,9 @@ using Windows.UI.Xaml.Controls;
 
 namespace Crystal3
 {
+    /// <summary>
+    /// The highest class in the application hierarchy. Your application class should inherit from this.
+    /// </summary>
     public abstract class CrystalApplication : Application
     {
         StorageFolder CrystalDataFolder = null;
@@ -146,7 +149,7 @@ namespace Crystal3
                 {
                     if (Options.HandleSystemBackNavigation)
                     {
-                        //walk down the navigation tree and check if each service wants to handle it
+                        //walk down the navigation tree (by FrameLevel) and check if each service wants to handle it
 
                         foreach (var service in WindowManager.GetNavigationManagerForCurrentWindow()
                                                 .GetAllServices()

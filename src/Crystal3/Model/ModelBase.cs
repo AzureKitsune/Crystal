@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Crystal3.Model
 {
+    /// <summary>
+    /// A basic class for models.
+    /// </summary>
     [DataContract]
     public abstract class ModelBase: INotifyPropertyChanged
     {

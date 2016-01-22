@@ -11,8 +11,15 @@ namespace Crystal3.Model
 {
     public partial class ViewModelBase
     {
+        /// <summary>
+        /// Returns this View Model's NavigationService instance.
+        /// </summary>
         protected internal NavigationService NavigationService { get; internal set; }
 
+        /// <summary>
+        /// Returns the FrameLevel of this View Model's NavigationService.
+        /// </summary>
+        /// <returns></returns>
         private FrameLevel GetNavigationFrameLevel()
         {
             return NavigationService.NavigationLevel;

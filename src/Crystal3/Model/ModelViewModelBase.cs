@@ -8,7 +8,7 @@ using Crystal3.Navigation;
 namespace Crystal3.Model
 {
     /// <summary>
-    /// A ViewModel that pretends to be a Model
+    /// A ViewModel that pretends to be a Model. Very niche usage.
     /// </summary>
     public class ModelViewModelBase: UIViewModelBase
     {

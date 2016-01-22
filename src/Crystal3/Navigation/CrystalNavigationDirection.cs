@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Crystal3.Navigation
 {
+    /// <summary>
+    /// Represents the direction of navigation.
+    /// </summary>
     public enum CrystalNavigationDirection
     {
         None = 0,

@@ -14,7 +14,7 @@ namespace Crystal3.Model
     /// <summary>
     /// A base class for ViewModels to inherit which implements INotifyPropertyChanged.
     /// </summary>
-    public abstract partial class ViewModelBase: INotifyPropertyChanged, IMessagingTarget
+    public abstract partial class ViewModelBase: INotifyPropertyChanged
     {
         /// <summary>
         /// From INotifyPropertyChanged

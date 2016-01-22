@@ -12,6 +12,9 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Crystal3.Navigation
 {
+    /// <summary>
+    /// Service for handling navigation on the user-level.
+    /// </summary>
     public class NavigationService
     {
         private ViewModelBase lastViewModel = null;
@@ -19,10 +22,19 @@ namespace Crystal3.Navigation
 
         //TODO pass CrystalNavigationEventArgs instead of the built-in WinRT event args
 
+        /// <summary>
+        /// The frame attached to this service.
+        /// </summary>
         public Frame NavigationFrame { get; private set; }
+        /// <summary>
+        /// The frame level of this service.
+        /// </summary>
         public FrameLevel NavigationLevel { get; internal set; }
         internal NavigationManager NavigationManager { get; set; }
 
+        /// <summary>
+        /// Returns if the frame can go backward in its back stack.
+        /// </summary>
         public bool CanGoBackward { get { return NavigationFrame.CanGoBack; } }
 
         private Stack<ViewModelBase> viewModelBackStack = null;
@@ -59,6 +71,7 @@ namespace Crystal3.Navigation
 
         private void Current_Resuming(object sender, object e)
         {
+            ///IIRC, handle if the page was recreated.... wtf.
             var currentPage = NavigationFrame.Content as Page;
 
             if (currentPage != null)
@@ -70,25 +83,40 @@ namespace Crystal3.Navigation
             }
         }
 
-
+        /// <summary>
+        /// Goes backward in the back stack.
+        /// </summary>
         public void GoBack()
         {
+            //Navigation is asynchronous so it had to be synchronized or else it would cause problems with an earlier app I was writing.
             navigationLock.WaitOne();
 
             navigationLock.Reset();
             NavigationFrame.GoBack();
         }
 
+        /// <summary>
+        /// Returns if the provided ViewModel's view is visible.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public bool IsNavigatedTo<T>() where T : ViewModelBase
         {
             return ((Page)NavigationFrame.Content)?.DataContext is T;
         }
 
+        /// <summary>
+        /// Returns the current view's view model. Niche usage.
+        /// </summary>
+        /// <returns></returns>
         public ViewModelBase GetNavigatedViewModel()
         {
             return (ViewModelBase)((Page)NavigationFrame.Content)?.DataContext;
         }
 
+        /// <summary>
+        /// Clears the back stack.
+        /// </summary>
         public void ClearBackStack()
         {
             viewModelBackStack.Clear();
@@ -213,6 +241,11 @@ namespace Crystal3.Navigation
                 await waitForNavigationAsyncTask;
             }
         }
+        /// <summary>
+        /// Navigates to the view that corresponds to the view model provided.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
         public void NavigateTo<T>(object parameter = null) where T : ViewModelBase
         {
             navigationLock.WaitOne();

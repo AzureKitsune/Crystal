@@ -7,6 +7,9 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Crystal3.Navigation
 {
+    /// <summary>
+    /// EventArgs containing information about the navigation process.
+    /// </summary>
     public class CrystalNavigationEventArgs: EventArgs
     {
         public CrystalNavigationEventArgs()
