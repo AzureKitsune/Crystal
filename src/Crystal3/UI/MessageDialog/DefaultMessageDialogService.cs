@@ -9,12 +9,12 @@ namespace Crystal3.UI.MessageDialog
 {
     public class DefaultMessageDialogService : IMessageDialogService
     {
-        public object Show(string message = "", string title = "Message")
+        public object Show(string message = "", string title = "Title")
         {
             throw new NotImplementedException();
         }
 
-        public async Task<object> ShowAsync(string message, string title = "Message")
+        public async Task<object> ShowAsync(string message, string title = "Title")
         {
             await CrystalApplication.Dispatcher.RunAsync(() =>
             {

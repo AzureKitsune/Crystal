@@ -9,7 +9,7 @@ namespace Crystal3.Core
 {
     public interface IMessageDialogService: IIoCObject
     {
-        object Show(string message = "", string title = "Message");
-        Task<object> ShowAsync(string message, string title = "Message");
+        object Show(string message = "", string title = "Title");
+        Task<object> ShowAsync(string message, string title = "Title");
     }
 }
