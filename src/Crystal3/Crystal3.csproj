@@ -164,6 +164,7 @@
     <Compile Include="UI\Dispatcher\UIDispatcher.cs" />
     <Compile Include="UI\MessageDialog\DefaultMessageDialogService.cs" />
     <Compile Include="UI\PageExtensions.cs" />
+    <Compile Include="UI\Selectors\NullTemplateSelector.cs" />
     <Compile Include="UI\StatusManager\StatusManager.cs" />
     <Compile Include="ViewModelResumeMethod.cs" />
     <Content Include="Properties\Crystal3.rd.xml" />
