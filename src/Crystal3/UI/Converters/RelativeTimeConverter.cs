@@ -39,7 +39,18 @@ namespace Crystal3.UI.Converters
         {
             var time = (DateTime)value;
 
-            var timeDiff = DateTime.Now.Subtract(time);
+            var timeDirection = parameter ?? "past";
+
+            TimeSpan timeDiff;
+
+            if (((string)timeDirection).ToLower() == "future")
+            {
+                timeDiff = time.Subtract(DateTime.Now);
+            }
+            else
+            {
+                timeDiff = DateTime.Now.Subtract(time);
+            }
 
             if (timeDiff.TotalDays > 365) return string.Format(YearStringFormat, Math.Round(timeDiff.TotalDays / 365));
 
@@ -52,9 +63,9 @@ namespace Crystal3.UI.Converters
                     return string.Format(DayAndMonthStringFormat, months, Math.Round(timeDiff.TotalDays));
             }
 
-            if (timeDiff.TotalDays > 0) return string.Format(DayStringFormat, Math.Round(timeDiff.TotalDays));
+            if (timeDiff.TotalDays >= 1) return string.Format(DayStringFormat, Math.Round(timeDiff.TotalDays));
 
-            if (timeDiff.TotalHours > 0) return string.Format(HourFormatString, Math.Round(timeDiff.TotalHours));
+            if (timeDiff.TotalHours >= 1) return string.Format(HourFormatString, Math.Round(timeDiff.TotalHours));
 
             if (timeDiff.TotalMinutes > 0) return string.Format(MinuteFormatString, Math.Round(timeDiff.TotalMinutes));
 
