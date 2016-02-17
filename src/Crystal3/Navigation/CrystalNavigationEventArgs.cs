@@ -27,6 +27,6 @@ namespace Crystal3.Navigation
         }
 
         public CrystalNavigationDirection Direction { get; set; }
-        public object Parameter { get; private set; }
+        public object Parameter { get; internal set; }
     }
 }

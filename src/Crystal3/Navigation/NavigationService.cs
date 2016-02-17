@@ -245,6 +245,14 @@ namespace Crystal3.Navigation
                 await waitForNavigationAsyncTask;
             }
         }
+
+        public void SafeNavigateTo<T>(object parameter = null) where T : ViewModelBase
+        {
+            if (IsNavigatedTo<T>())
+                GetNavigatedViewModel().OnNavigatedTo(this, new CrystalNavigationEventArgs() { Direction = CrystalNavigationDirection.Refresh, Parameter = parameter });
+            else
+                NavigateTo<T>(parameter);
+        }
         /// <summary>
         /// Navigates to the view that corresponds to the view model provided.
         /// </summary>
