@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
@@ -221,7 +222,7 @@ namespace Crystal3
         }
 
         public abstract Task OnFreshLaunchAsync(LaunchActivatedEventArgs args);
-        public virtual Task OnActivationAsync(IActivatedEventArgs args) { return Task.FromResult<object>(null); }
+
 
         public static IUIDispatcher Dispatcher { get { return IOC.IoCManager.Resolve<IUIDispatcher>(); } }
 
@@ -330,5 +331,45 @@ namespace Crystal3
         {
             return null;
         }
+
+        public virtual Task OnActivationAsync(IActivatedEventArgs args)
+        {
+            if (AppViewModelType != null)
+            {
+                NavigateToAppViewModel();
+                var appVm = WindowManager.GetNavigationManagerForCurrentWindow()
+                 .RootNavigationService.GetNavigatedViewModel() as AppViewModelBase;
+
+                if (appVm != null)
+                    appVm.OnActivatedAsync(args);
+            }
+
+            return Task.FromResult<object>(null);
+        }
+
+        #region AppViewModel
+
+        protected Type AppViewModelType { get; private set; }
+
+        protected internal void SetAppViewModel(Type appViewModel)
+        {
+            if (appViewModel == null) throw new ArgumentNullException("appViewModel");
+            if (!appViewModel.GetTypeInfo().IsSubclassOf(typeof(AppViewModelBase))) throw new ArgumentException("AppViewModel should inherit from AppViewModelBase");
+
+            AppViewModelType = appViewModel;
+        }
+
+        protected internal void NavigateToAppViewModel()
+        {
+            if (AppViewModelType == null) return;
+
+            if (!WindowManager.GetNavigationManagerForCurrentWindow()
+                 .RootNavigationService.IsNavigatedTo(AppViewModelType))
+            {
+                WindowManager.GetNavigationManagerForCurrentWindow()
+                    .RootNavigationService.Navigate(AppViewModelType);
+            }
+        }
+        #endregion
     }
 }

@@ -104,6 +104,10 @@ namespace Crystal3.Navigation
         {
             return ((Page)NavigationFrame.Content)?.DataContext is T;
         }
+        public bool IsNavigatedTo(Type viewModelType)
+        {
+            return (((Page)NavigationFrame.Content)?.DataContext)?.GetType() == viewModelType;
+        }
 
         /// <summary>
         /// Returns the current view's view model. Niche usage.
@@ -252,6 +256,22 @@ namespace Crystal3.Navigation
 
             var view = NavigationManager.GetViewType(typeof(T));
 
+            NavigateBase(typeof(T), view, parameter);
+        }
+
+        public void Navigate(Type viewModelType, object parameter = null)
+        {
+            if (viewModelType == null) throw new ArgumentNullException("viewModelType");
+
+            navigationLock.WaitOne();
+
+            var view = NavigationManager.GetViewType(viewModelType);
+
+            NavigateBase(viewModelType, view, parameter);
+        }
+
+        private void NavigateBase(Type viewModelType, Type view, object parameter)
+        {
             if (view == null) throw new Exception("View not found!");
 
             ViewModelBase viewModel = null;
@@ -263,7 +283,7 @@ namespace Crystal3.Navigation
 
                 if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Refresh)
                 {
-                    viewModel = Activator.CreateInstance(typeof(T)) as ViewModelBase;
+                    viewModel = Activator.CreateInstance(viewModelType) as ViewModelBase;
                     viewModel.NavigationService = this;
 
                     if (lastViewModel != null)
@@ -327,8 +347,6 @@ namespace Crystal3.Navigation
             NavigationFrame.Navigating += navigatingHandler;
 
             NavigationFrame.Navigate(view, parameter);
-
-
         }
 
         /// <summary>
