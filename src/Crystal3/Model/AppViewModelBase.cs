@@ -9,7 +9,7 @@ namespace Crystal3.Model
 {
     public class AppViewModelBase : UIViewModelBase
     {
-        internal virtual void OnActivatedAsync(IActivatedEventArgs args)
+        protected internal virtual void OnAppActivated(IActivatedEventArgs args)
         {
             
         }

@@ -341,7 +341,7 @@ namespace Crystal3
                  .RootNavigationService.GetNavigatedViewModel() as AppViewModelBase;
 
                 if (appVm != null)
-                    appVm.OnActivatedAsync(args);
+                    appVm.OnAppActivated(args);
             }
 
             return Task.FromResult<object>(null);
