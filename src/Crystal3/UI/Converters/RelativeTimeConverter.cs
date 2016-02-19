@@ -37,6 +37,8 @@ namespace Crystal3.UI.Converters
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
+            if (value == null) return NegativeTimeDiffErrorStringFormat;
+
             var time = (DateTime)value;
 
             var timeDirection = parameter ?? "past";
