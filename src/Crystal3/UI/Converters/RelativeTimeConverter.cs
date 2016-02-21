@@ -41,7 +41,18 @@ namespace Crystal3.UI.Converters
         {
             if (value == null) return NegativeTimeDiffErrorStringFormat;
 
-            var time = (DateTime)value;
+            DateTime time;
+            if (value is DateTime)
+            {
+                time = (DateTime)value;
+            }
+            else if (value is string && !string.IsNullOrWhiteSpace(value as string))
+            {
+                if (!DateTime.TryParse(value as string, out time))
+                    return NegativeTimeDiffErrorStringFormat;
+            }
+            else
+                return NegativeTimeDiffErrorStringFormat;
 
             var timeDirection = parameter ?? Enum.GetName(typeof(RelativeTimeConverterMode), TimeMode).ToLower();
 
