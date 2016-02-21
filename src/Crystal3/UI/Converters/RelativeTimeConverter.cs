@@ -35,13 +35,15 @@ namespace Crystal3.UI.Converters
 
         public string NegativeTimeDiffErrorStringFormat { get; set; }
 
+        public RelativeTimeConverterMode TimeMode { get; set; }
+
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (value == null) return NegativeTimeDiffErrorStringFormat;
 
             var time = (DateTime)value;
 
-            var timeDirection = parameter ?? "past";
+            var timeDirection = parameter ?? Enum.GetName(typeof(RelativeTimeConverterMode), TimeMode).ToLower();
 
             TimeSpan timeDiff;
 
@@ -82,5 +84,10 @@ namespace Crystal3.UI.Converters
         {
             throw new NotImplementedException();
         }
+    }
+    public enum RelativeTimeConverterMode
+    {
+        Past = 0,
+        Future = 1
     }
 }
