@@ -185,8 +185,12 @@ namespace Crystal3
             }
         }
 
+        public IActivatedEventArgs LastActivationArgs { get; private set; }
+
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
+            LastActivationArgs = args;
+
             if (args.PreviousExecutionState != ApplicationExecutionState.Running && args.PreviousExecutionState != ApplicationExecutionState.Suspended && args.TileId == "App")
             {
                 await InitializeRootFrameAsync(args);
@@ -199,6 +203,12 @@ namespace Crystal3
                 {
                     Window.Current.Activate();
                 }
+
+                var appVm = WindowManager.GetNavigationManagerForCurrentWindow()
+                    .RootNavigationService.GetNavigatedViewModel() as AppViewModelBase;
+
+                if (appVm != null)
+                    appVm.OnAppLaunched(args);
             }
             else
             {
@@ -208,6 +218,8 @@ namespace Crystal3
 
         protected override async void OnActivated(IActivatedEventArgs args)
         {
+            LastActivationArgs = args;
+
             if (args.PreviousExecutionState != ApplicationExecutionState.Running && args.PreviousExecutionState != ApplicationExecutionState.Suspended)
                 await InitializeRootFrameAsync(args);
 
