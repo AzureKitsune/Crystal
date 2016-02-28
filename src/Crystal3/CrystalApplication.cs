@@ -27,7 +27,7 @@ namespace Crystal3
     /// </summary>
     public abstract class CrystalApplication : Application
     {
-        StorageFolder CrystalDataFolder = null;
+        internal static StorageFolder CrystalDataFolder = null;
 
         public CrystalConfiguration Options { get; private set; }
 
@@ -125,9 +125,9 @@ namespace Crystal3
                 {
                     //Resurrection!
 
-                    if (await LoadAppState() == true)
+                    if (await SuspensionManager.RestoreAsync() == true)
                     {
-                        navService.HandleTerminationReload();
+                        //navService.HandleTerminationReload();
 
                         //todo handle multiple windows in this case.
                     }
@@ -239,34 +239,23 @@ namespace Crystal3
 
         public static IUIDispatcher Dispatcher { get { return IOC.IoCManager.Resolve<IUIDispatcher>(); } }
 
-        private const string SuspensionStateFileName = "CrystalSuspensionState.txt";
-
         [DebuggerNonUserCode]
         private async void CrystalApplication_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
-            var suspendingOp = OnSuspendingAsync();
-
-            foreach (var window in WindowManager.GetAllWindowServices())
+            try
             {
-                try
-                {
-                    var rootViewModel = window.GetRootViewModel();
-                    if (rootViewModel != null)
-                    {
-                        await rootViewModel.OnSuspendingAsync(null);
-                    }
-                }
-                catch (Exception)
-                {
-
-                }
+                await SuspensionManager.SuspendAsync(OnSuspendingAsync());
             }
+            catch (Exception)
+            {
 
-            await Task.WhenAll(suspendingOp, SaveAppState());
-
-            deferral.Complete();
+            }
+            finally
+            {
+                deferral.Complete();
+            }
         }
 
         [DebuggerNonUserCode]
@@ -303,37 +292,6 @@ namespace Crystal3
 
         public virtual Task OnSuspendingAsync() { return Task.FromResult<object>(null); }
         public virtual Task OnResumingAsync() { return Task.FromResult<object>(null); }
-
-        #region Loading and Saving AppState
-        private async Task SaveAppState()
-        {
-            //todo allow the top level viewmodels to save and load their state via an IDictionary<string, object> object.
-
-            var navigationState = WindowManager.GetNavigationManagerForCurrentWindow().RootNavigationService.NavigationFrame.GetNavigationState();
-
-            StorageFile file = await CrystalDataFolder.CreateFileAsync(SuspensionStateFileName, CreationCollisionOption.OpenIfExists);
-
-            await FileIO.WriteTextAsync(file, navigationState);
-        }
-        private async Task<bool> LoadAppState()
-        {
-            StorageFile file = await CrystalDataFolder.CreateFileAsync(SuspensionStateFileName, CreationCollisionOption.OpenIfExists);
-
-            string navigationState = await FileIO.ReadTextAsync(file);
-
-            try
-            {
-                WindowManager.GetNavigationManagerForCurrentWindow()
-                    .RootNavigationService.NavigationFrame.SetNavigationState(navigationState);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-        #endregion
 
         public static Platform GetDevicePlatform()
         {

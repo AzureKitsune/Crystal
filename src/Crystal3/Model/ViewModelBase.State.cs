@@ -8,7 +8,12 @@ namespace Crystal3.Model
 {
     public partial class ViewModelBase
     {
-        protected internal virtual Task OnSuspendingAsync(object data)
+        protected internal virtual Task OnSuspendingAsync(IDictionary<string, object> data)
+        {
+            return Task.FromResult<object>(null);
+        }
+
+        protected internal virtual Task OnRestoringAsync(IDictionary<string, object> data)
         {
             return Task.FromResult<object>(null);
         }
