@@ -31,6 +31,8 @@ namespace Crystal3
 
         public CrystalConfiguration Options { get; private set; }
 
+        public event EventHandler Restored;
+
 
         public CrystalApplication() : base()
         {
@@ -130,6 +132,9 @@ namespace Crystal3
                         //navService.HandleTerminationReload();
 
                         //todo handle multiple windows in this case.
+
+                        if (Restored != null)
+                            Restored(this, EventArgs.Empty);
                     }
                 }
             }
