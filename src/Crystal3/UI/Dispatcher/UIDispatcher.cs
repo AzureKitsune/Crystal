@@ -12,6 +12,15 @@ namespace Crystal3.UI.Dispatcher
     internal class UIDispatcher : Crystal3.Core.IUIDispatcher
     {
         private CoreDispatcher dispatcher = null;
+
+        public bool HasThreadAccess
+        {
+            get
+            {
+                return dispatcher.HasThreadAccess;
+            }
+        }
+
         internal UIDispatcher(CoreDispatcher dispatcher)
         {
             this.dispatcher = dispatcher;
