@@ -141,7 +141,7 @@ namespace Crystal3.Navigation
 
         private void NavigationFrame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
-
+            
         }
 
         private void NavigationFrame_Navigated(object sender, NavigationEventArgs e)
@@ -192,7 +192,9 @@ namespace Crystal3.Navigation
         {
             //since the page is going to be created, we need to recreate the viewmodel and inject it.
 
-            if (((Page)NavigationFrame.Content).DataContext == null) //sanity check
+            var currentViewModel = ((Page)NavigationFrame.Content).DataContext;
+
+            if (currentViewModel == null || NavigationManager.GetViewModelType(((Page)NavigationFrame.Content).GetType()) != currentViewModel?.GetType()) //sanity check
             {
                 //gran and create the viewmodel as if we were navigating to it.
                 var viewModelType = NavigationManager.GetViewModelType(((Page)NavigationFrame.Content).GetType());
@@ -206,6 +208,15 @@ namespace Crystal3.Navigation
                 viewModel.OnNavigatingTo(null, new CrystalNavigationEventArgs());
                 viewModel.OnNavigatedTo(null, new CrystalNavigationEventArgs());
                 //viewModel.OnResumingAsync();
+
+                lastViewModel = viewModel;
+
+                try
+                {
+                    if (NavigationServicePreNavigatedSignaled != null)
+                        NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs()));
+                }
+                catch (Exception) { }
             }
         }
 
