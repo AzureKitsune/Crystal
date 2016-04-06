@@ -181,14 +181,14 @@ namespace Crystal3.Navigation
                 }
                 else
                 {
-                    HandleTerminationReload();
+                    HandleTerminationReload(e);
                 }
 
                 navigationLock.Set();
             }
         }
 
-        internal void HandleTerminationReload()
+        internal void HandleTerminationReload(NavigationEventArgs args = null)
         {
             //since the page is going to be created, we need to recreate the viewmodel and inject it.
 
@@ -203,10 +203,16 @@ namespace Crystal3.Navigation
 
                 ((Page)NavigationFrame.Content).DataContext = viewModel; //set the datacontext
 
+                object parameter = null;
+
+                if (args != null)
+                {
+
+                }
 
                 //simulate the navigation events.
-                viewModel.OnNavigatingTo(null, new CrystalNavigationEventArgs());
-                viewModel.OnNavigatedTo(null, new CrystalNavigationEventArgs());
+                viewModel.OnNavigatingTo(null, new CrystalNavigationEventArgs(args));
+                viewModel.OnNavigatedTo(null, new CrystalNavigationEventArgs(args));
                 //viewModel.OnResumingAsync();
 
                 lastViewModel = viewModel;
