@@ -203,13 +203,6 @@ namespace Crystal3.Navigation
 
                 ((Page)NavigationFrame.Content).DataContext = viewModel; //set the datacontext
 
-                object parameter = null;
-
-                if (args != null)
-                {
-
-                }
-
                 //simulate the navigation events.
                 viewModel.OnNavigatingTo(null, new CrystalNavigationEventArgs(args));
                 viewModel.OnNavigatedTo(null, new CrystalNavigationEventArgs(args));
