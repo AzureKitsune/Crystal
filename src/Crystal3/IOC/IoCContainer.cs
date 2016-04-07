@@ -37,7 +37,7 @@ namespace Crystal3.InversionOfControl
 
         public void Unregister<T>(T objectToUnregister) where T : IIoCObject
         {
-            var item = itemsList.Where(x => x is T).FirstOrDefault(x => object.ReferenceEquals((T)x.Value, objectToUnregister));
+            var item = itemsList.Where(x => x.Value is T).FirstOrDefault(x => object.ReferenceEquals((T)x.Value, objectToUnregister));
             try
             {
                 itemsList.Remove(item); //can't null check since switch to List<KeyValuePair<... . todo
