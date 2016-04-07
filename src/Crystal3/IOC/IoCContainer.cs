@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Crystal3.IOC
+namespace Crystal3.InversionOfControl
 {
     /// <summary>
     /// A simple Inverse of Control container.
     /// </summary>
-    public static class IoCManager
+    public class IoCContainer
     {
-        private static List<KeyValuePair<Type, IIoCObject>> itemsList = null;
+        private List<KeyValuePair<Type, IIoCObject>> itemsList = null;
 
-        static IoCManager()
+        internal IoCContainer()
         {
             itemsList = new List<KeyValuePair<Type, IIoCObject>>();
         }
@@ -23,7 +23,7 @@ namespace Crystal3.IOC
         /// </summary>
         /// <typeparam name="T">The type of object (an Interface that implements <see cref="IIoCObject">IIoCObject</see>).)</typeparam>
         /// <param name="objectToRegister">The actual object to be registered.</param>
-        public static void Register<T>(T objectToRegister) where T : IIoCObject
+        public void Register<T>(T objectToRegister) where T : IIoCObject
         {
             //Makes sure the type parameter is an IIoCObject.
             if (typeof(T) == typeof(IIoCObject))
@@ -35,7 +35,7 @@ namespace Crystal3.IOC
             itemsList.Add(new KeyValuePair<Type, IIoCObject>(typeof(T), objectToRegister));
         }
 
-        public static void Unregister<T>(T objectToUnregister) where T : IIoCObject
+        public void Unregister<T>(T objectToUnregister) where T : IIoCObject
         {
             var item = itemsList.Where(x => x is T).FirstOrDefault(x => object.ReferenceEquals((T)x.Value, objectToUnregister));
             try
@@ -53,7 +53,7 @@ namespace Crystal3.IOC
         /// </summary>
         /// <typeparam name="T">The type parameter to resolve against.</typeparam>
         /// <returns></returns>
-        public static T Resolve<T>() where T : IIoCObject
+        public T Resolve<T>() where T : IIoCObject
         {
             var obj = (T)itemsList.FirstOrDefault(x => x.Key == typeof(T)).Value;
 
@@ -61,7 +61,7 @@ namespace Crystal3.IOC
 
             return obj;
         }
-        public static T ResolveDefault<T>(Func<T> defaultObjectCreator) where T : IIoCObject
+        public T ResolveDefault<T>(Func<T> defaultObjectCreator) where T : IIoCObject
         {
             var obj = (T)itemsList.FirstOrDefault(x => x.Key == typeof(T)).Value;
 
@@ -70,7 +70,7 @@ namespace Crystal3.IOC
             return obj;
         }
 
-        public static IEnumerable<T> ResolveAll<T>() where T : IIoCObject
+        public IEnumerable<T> ResolveAll<T>() where T : IIoCObject
         {
             var items = itemsList.Where(x =>
                     x.Key == typeof(T))
@@ -79,7 +79,7 @@ namespace Crystal3.IOC
             return (IEnumerable<T>)items.ToArray().Select(x => (T)x);
         }
 
-        public static bool IsRegistered<T>() where T : IIoCObject
+        public bool IsRegistered<T>() where T : IIoCObject
         {
             return itemsList.Any(x => x.Key == typeof(T));
         }

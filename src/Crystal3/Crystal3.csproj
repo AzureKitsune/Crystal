@@ -124,7 +124,8 @@
     <Compile Include="CrystalApplication.cs" />
     <Compile Include="CrystalConfiguration.cs" />
     <Compile Include="IOC\IIoCObject.cs" />
-    <Compile Include="IOC\IoCManager.cs" />
+    <Compile Include="IOC\IoC.cs" />
+    <Compile Include="IOC\IoCContainer.cs" />
     <Compile Include="Messaging\IMessagingTarget.cs" />
     <Compile Include="Messaging\Message.cs" />
     <Compile Include="Messaging\MessagingTicket.cs" />

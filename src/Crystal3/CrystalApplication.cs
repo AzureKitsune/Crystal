@@ -1,5 +1,5 @@
 ﻿using Crystal3.Core;
-using Crystal3.IOC;
+using Crystal3.InversionOfControl;
 using Crystal3.Model;
 using Crystal3.Navigation;
 using Crystal3.UI.Dispatcher;
@@ -36,6 +36,8 @@ namespace Crystal3
 
         public CrystalApplication() : base()
         {
+            IoC.Current = new IoCContainer();
+
             Options = new CrystalConfiguration();
             OnConfigure();
             InitializeDataFolder();
@@ -82,8 +84,8 @@ namespace Crystal3
 
         private void InitializeIoC()
         {
-            if (!IoCManager.IsRegistered<IUIDispatcher>())
-                IoCManager.Register<IUIDispatcher>(new UIDispatcher(Window.Current.Dispatcher));
+            if (!IoC.Current.IsRegistered<IUIDispatcher>())
+                IoC.Current.Register<IUIDispatcher>(new UIDispatcher(Window.Current.Dispatcher));
         }
 
         private void InitializeNavigation(NavigationManager navManager)
@@ -242,7 +244,7 @@ namespace Crystal3
         public abstract Task OnFreshLaunchAsync(LaunchActivatedEventArgs args);
 
 
-        public static IUIDispatcher Dispatcher { get { return IOC.IoCManager.Resolve<IUIDispatcher>(); } }
+        public static IUIDispatcher Dispatcher { get { return IOC.IoC.Current.Resolve<IUIDispatcher>(); } }
 
         [DebuggerNonUserCode]
         private async void CrystalApplication_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)

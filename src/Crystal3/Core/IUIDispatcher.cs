@@ -1,4 +1,4 @@
-﻿using Crystal3.IOC;
+﻿using Crystal3.InversionOfControl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
