@@ -1,7 +1,10 @@
-﻿using Crystal3.Navigation;
+﻿using Crystal3.InversionOfControl;
+using Crystal3.Model;
+using Crystal3.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +26,35 @@ namespace Crystal3.UI
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
                 FallbackValue = page.GetValue(NavigationAttributes.PageTitleProperty) as string
             });
+        }
+
+        public static Type GetNavigationViewModelType(this Page page)
+        {
+            TypeInfo pageTypeInfo = page.GetType().GetTypeInfo();
+
+            if (pageTypeInfo.CustomAttributes.Any(y => y.AttributeType == typeof(NavigationViewModelAttribute)))
+            {
+                var linkAttribute = pageTypeInfo.CustomAttributes.First(y => y.AttributeType == typeof(NavigationViewModelAttribute));
+
+                var viewModelType = (Type)linkAttribute.ConstructorArguments.FirstOrDefault(x => ((Type)x.Value).GetTypeInfo().IsSubclassOf(typeof(ViewModelBase))).Value;
+                if (viewModelType == null)
+                    viewModelType = (Type)linkAttribute.NamedArguments.First(x => ((Type)x.TypedValue.Value).GetTypeInfo().IsSubclassOf(typeof(ViewModelBase))).TypedValue.Value;
+
+                return viewModelType;
+            }
+
+            return null;
+        }
+
+        public static IoCContainer GetNavigationViewModelIoCContainer(this Page page)
+        {
+            var viewModelType = GetNavigationViewModelType(page);
+            if (viewModelType != null)
+            {
+                return IoC.GetContainerForViewModel(viewModelType);
+            }
+
+            return null;
         }
     }
 }

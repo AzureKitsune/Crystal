@@ -18,14 +18,19 @@ namespace Crystal3.InversionOfControl
 
         public static IoCContainer GetContainerForViewModel<T>() where T : ViewModelBase
         {
-            if (!viewModelContainerList.ContainsKey(typeof(T)))
+            return GetContainerForViewModel(typeof(T));
+        }
+
+        public static IoCContainer GetContainerForViewModel(Type type)
+        {
+            if (!viewModelContainerList.ContainsKey(type))
             {
                 var cont = new IoCContainer();
-                viewModelContainerList.Add(typeof(T), cont);
+                viewModelContainerList.Add(type, cont);
                 return cont;
             }
             else
-                return viewModelContainerList[typeof(T)] as IoCContainer;
+                return viewModelContainerList[type] as IoCContainer;
         }
     }
 }
