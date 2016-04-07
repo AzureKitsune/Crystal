@@ -9,6 +9,9 @@ namespace Crystal3.InversionOfControl
 {
     public static class IoC
     {
+        /// <summary>
+        /// Returns the application-level IoC container.
+        /// </summary>
         public static IoCContainer Current { get; internal set; }
 
         private static Dictionary<Type, IoCContainer> viewModelContainerList = new Dictionary<Type, IoCContainer>();
