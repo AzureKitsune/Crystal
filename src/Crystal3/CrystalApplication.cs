@@ -244,7 +244,7 @@ namespace Crystal3
         public abstract Task OnFreshLaunchAsync(LaunchActivatedEventArgs args);
 
 
-        public static IUIDispatcher Dispatcher { get { return IOC.IoC.Current.Resolve<IUIDispatcher>(); } }
+        public static IUIDispatcher Dispatcher { get { return InversionOfControl.IoC.Current.Resolve<IUIDispatcher>(); } }
 
         [DebuggerNonUserCode]
         private async void CrystalApplication_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
