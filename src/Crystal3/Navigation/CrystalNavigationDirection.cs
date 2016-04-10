@@ -14,6 +14,7 @@ namespace Crystal3.Navigation
         None = 0,
         Forward = 1,
         Backward = 2,
-        Refresh = 3
+        Refresh = 3,
+        Restore = 4
     }
 }

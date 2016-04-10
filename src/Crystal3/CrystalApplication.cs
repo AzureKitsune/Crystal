@@ -202,20 +202,27 @@ namespace Crystal3
             {
                 await InitializeRootFrameAsync(args);
 
+
                 if (args.PreviousExecutionState != ApplicationExecutionState.Terminated)
                 {
                     await AsyncWindowActivate(OnFreshLaunchAsync(args));
+
+                    var appVm = WindowManager.GetNavigationManagerForCurrentWindow()
+                                  .RootNavigationService.GetNavigatedViewModel() as AppViewModelBase;
+                    if (appVm != null)
+                        appVm.OnAppLaunched(args);
                 }
                 else
                 {
                     Window.Current.Activate();
+
+                    var appVm = WindowManager.GetNavigationManagerForCurrentWindow()
+                                .RootNavigationService.GetNavigatedViewModel() as AppViewModelBase;
+                    if (appVm != null)
+                        appVm.OnAppRestoredLaunched(args);
                 }
 
-                var appVm = WindowManager.GetNavigationManagerForCurrentWindow()
-                    .RootNavigationService.GetNavigatedViewModel() as AppViewModelBase;
 
-                if (appVm != null)
-                    appVm.OnAppLaunched(args);
             }
             else
             {
@@ -297,8 +304,12 @@ namespace Crystal3
             }
         }
 
-        public virtual Task OnSuspendingAsync() { return Task.FromResult<object>(null); }
-        public virtual Task OnResumingAsync() { return Task.FromResult<object>(null); }
+        public virtual Task OnSuspendingAsync() { return Task.CompletedTask; }
+        public virtual Task OnResumingAsync() { return Task.CompletedTask; }
+        public virtual Task OnRestoringAsync()
+        {
+            return Task.CompletedTask;
+        }
 
         public static Platform GetDevicePlatform()
         {

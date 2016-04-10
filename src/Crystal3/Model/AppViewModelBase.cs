@@ -24,5 +24,10 @@ namespace Crystal3.Model
         {
             
         }
+
+        protected internal virtual void OnAppRestoredLaunched(ILaunchActivatedEventArgs args)
+        {
+            
+        }
     }
 }

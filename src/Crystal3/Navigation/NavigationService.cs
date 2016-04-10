@@ -204,8 +204,8 @@ namespace Crystal3.Navigation
                 ((Page)NavigationFrame.Content).DataContext = viewModel; //set the datacontext
 
                 //simulate the navigation events.
-                viewModel.OnNavigatingTo(null, new CrystalNavigationEventArgs(args));
-                viewModel.OnNavigatedTo(null, new CrystalNavigationEventArgs(args));
+                viewModel.OnNavigatingTo(null, new CrystalNavigationEventArgs(args) { Direction = CrystalNavigationDirection.Restore });
+                viewModel.OnNavigatedTo(null, new CrystalNavigationEventArgs(args) { Direction = CrystalNavigationDirection.Restore });
                 //viewModel.OnResumingAsync();
 
                 lastViewModel = viewModel;

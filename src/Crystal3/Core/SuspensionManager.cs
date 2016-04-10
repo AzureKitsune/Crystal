@@ -83,6 +83,8 @@ namespace Crystal3.Core
 
             var instance = new CrystalRestoredApplicationInstance();
 
+            await (CrystalApplication.Current as CrystalApplication).OnRestoringAsync();
+
             XDocument suspensionDoc = XDocument.Parse(await FileIO.ReadTextAsync(file));
 
             try
@@ -93,7 +95,7 @@ namespace Crystal3.Core
                 {
                     var window = windows.First();
 
-                    foreach(var navisrvElement in windowElement.Elements("NavigationService")) //todo verifiy that these are in framelevel order
+                    foreach(var navisrvElement in windowElement.Elements("NavigationService")) //todo verify that these are in framelevel order
                     {
                         var navisrv = window.NavigationManager.GetNavigationServiceFromFrameLevel((FrameLevel)Enum.Parse(typeof(FrameLevel), navisrvElement.Attribute("NavigationLevel").Value));
 

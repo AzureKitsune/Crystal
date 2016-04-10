@@ -15,6 +15,8 @@ namespace Crystal3.Model
 
         protected internal virtual Task OnRestoringAsync(IDictionary<string, object> data)
         {
+            data?.Clear();
+
             return Task.FromResult<object>(null);
         }
 
