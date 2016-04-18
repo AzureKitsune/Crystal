@@ -7,10 +7,7 @@ using Crystal3.Navigation;
 
 namespace Crystal3.Model
 {
-    /// <summary>
-    /// A ViewModel that pretends to be a Model. Very niche usage.
-    /// </summary>
-    public class ModelViewModelBase: UIViewModelBase
+    public abstract class ViewModelFragment: UIViewModelBase, IDisposable
     {
         protected internal override sealed bool OnNavigatingFrom(object sender, CrystalNavigationEventArgs e)
         {
@@ -24,9 +21,13 @@ namespace Crystal3.Model
         {
             return base.OnResumingAsync();
         }
-        protected internal override Task OnSuspendingAsync(IDictionary<string, object> data)
+        protected internal override sealed Task OnSuspendingAsync(IDictionary<string, object> data)
         {
             return base.OnSuspendingAsync(data);
         }
+
+        public abstract void Invoke(ViewModelBase viewModel, object data);
+
+        public abstract void Dispose();
     }
 }

@@ -132,7 +132,7 @@
     <Compile Include="Messaging\Messenger.cs" />
     <Compile Include="Model\AppViewModelBase.cs" />
     <Compile Include="Model\ModelBase.cs" />
-    <Compile Include="Model\ModelViewModelBase.cs" />
+    <Compile Include="Model\ViewModelFragment.cs" />
     <Compile Include="Model\UIViewModelBase.cs" />
     <Compile Include="Model\ViewModelBase.cs" />
     <Compile Include="Model\ViewModelBase.Messaging.cs" />
