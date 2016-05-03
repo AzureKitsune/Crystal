@@ -77,10 +77,37 @@ namespace Crystal3.UI.Dispatcher
             return taskCompletionSource.Task;
         }
 
+        private Task<T> RunWhenIdleWithTaskCompletionSource<T>(Func<T> callback, TaskCompletionSource<T> taskCompletionSource)
+        {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            dispatcher.RunIdleAsync(new Windows.UI.Core.IdleDispatchedHandler(args =>
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            {
+                taskCompletionSource.SetResult(callback());
+            }));
+
+            return taskCompletionSource.Task;
+        }
+
         public Task<T> RunAsync<T>(IUIDispatcherPriority priority, Func<T> callback)
         {
             CoreDispatcherPriority dispatcherPriority = ConvertIUIDispatcherPriorityToCoreDispatcherPriority(priority);
 
+            TaskCompletionSource<T> taskCompletionSource = new TaskCompletionSource<T>();
+
+            return RunWithTaskCompletionSource(callback, taskCompletionSource);
+        }
+
+        public Task RunWhenIdleAsync(Action callback)
+        {
+            return dispatcher.RunIdleAsync(new Windows.UI.Core.IdleDispatchedHandler(args =>
+            {
+                callback();
+            })).AsTask();
+        }
+
+        public Task<T> RunWhenIdleAsync<T>(Func<T> callback)
+        {
             TaskCompletionSource<T> taskCompletionSource = new TaskCompletionSource<T>();
 
             return RunWithTaskCompletionSource(callback, taskCompletionSource);
