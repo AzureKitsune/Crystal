@@ -21,9 +21,9 @@ namespace Crystal3.Model
         {
             return base.OnResumingAsync();
         }
-        protected internal override sealed Task OnSuspendingAsync(IDictionary<string, object> data)
+        protected internal override sealed Task OnSuspendingAsync()
         {
-            return base.OnSuspendingAsync(data);
+            return base.OnSuspendingAsync();
         }
 
         public abstract void Invoke(ViewModelBase viewModel, object data);
