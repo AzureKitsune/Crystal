@@ -10,11 +10,11 @@ using Windows.Storage;
 
 namespace Crystal3.Core
 {
-    internal static class SuspensionManager
+    internal static class PreservationManager
     {
         private const string SuspensionStateFileName = "CrystalSuspensionState.xml";
 
-        internal static async Task SuspendAsync(Task suspendingOp)
+        internal static async Task PreserveAsync(Task suspendingOp)
         {
             XDocument document = new XDocument();
             XElement windows = new XElement("Windows");
@@ -44,7 +44,7 @@ namespace Crystal3.Core
 
                             Dictionary<string, object> dataDic = new Dictionary<string, object>();
 
-                            await rootViewModel.OnSuspendingAsync(dataDic);
+                            await rootViewModel.OnPreservingAsync(dataDic);
 
                             foreach (var data in dataDic)
                             {

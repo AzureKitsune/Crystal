@@ -8,21 +8,26 @@ namespace Crystal3.Model
 {
     public partial class ViewModelBase
     {
-        protected internal virtual Task OnSuspendingAsync(IDictionary<string, object> data)
+        protected internal virtual Task OnPreservingAsync(IDictionary<string, object> data)
         {
-            return Task.FromResult<object>(null);
+            return Task.CompletedTask;
+        }
+
+        protected internal virtual Task OnSuspendingAsync()
+        {
+            return Task.CompletedTask;
         }
 
         protected internal virtual Task OnRestoringAsync(IDictionary<string, object> data)
         {
             data?.Clear();
 
-            return Task.FromResult<object>(null);
+            return Task.CompletedTask;
         }
 
         protected internal virtual Task OnResumingAsync()
         {
-            return Task.FromResult<object>(null);
+            return Task.CompletedTask;
         }
     }
 }

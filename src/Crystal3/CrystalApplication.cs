@@ -46,6 +46,8 @@ namespace Crystal3
 
             this.Resuming += CrystalApplication_Resuming;
             this.Suspending += CrystalApplication_Suspending;
+            this.EnteredBackground += CrystalApplication_EnteredBackground;
+            this.LeavingBackground += CrystalApplication_LeavingBackground;
         }
 
         private async void InitializeDataFolder()
@@ -129,7 +131,7 @@ namespace Crystal3
                 {
                     //Resurrection!
 
-                    if (await SuspensionManager.RestoreAsync() == true)
+                    if (await PreservationManager.RestoreAsync() == true)
                     {
                         //navService.HandleTerminationReload();
 
@@ -263,29 +265,11 @@ namespace Crystal3
         public static IUIDispatcher Dispatcher { get { return InversionOfControl.IoC.Current.Resolve<IUIDispatcher>(); } }
 
         [DebuggerNonUserCode]
-        private async void CrystalApplication_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+        private async void CrystalApplication_LeavingBackground(object sender, LeavingBackgroundEventArgs e)
         {
-            var deferral = e.SuspendingOperation.GetDeferral();
-
-            try
-            {
-                await SuspensionManager.SuspendAsync(OnSuspendingAsync());
-            }
-            catch (Exception)
-            {
-
-            }
-            finally
-            {
-                deferral.Complete();
-            }
-        }
-
-        [DebuggerNonUserCode]
-        private async void CrystalApplication_Resuming(object sender, object e)
-        {
+            //https://blogs.windows.com/buildingapps/2016/06/07/background-activity-with-the-single-process-model/
             await OnResumingAsync();
-
+            
             foreach (var window in WindowManager.GetAllWindowServices())
             {
                 List<ViewModelBase> viewModelsInWindow = new List<ViewModelBase>();
@@ -312,7 +296,58 @@ namespace Crystal3
                 }
             }
         }
+        [DebuggerNonUserCode]
+        private async void CrystalApplication_EnteredBackground(object sender, EnteredBackgroundEventArgs e)
+        {
+            /// https://blogs.windows.com/buildingapps/2016/06/07/background-activity-with-the-single-process-model/
+            /// Corresponds to EnteredBackground event. State should now be saved here.
 
+            var deferral = e.GetDeferral();
+
+            try
+            {
+                await PreservationManager.PreserveAsync(OnPreservingAsync());
+            }
+            catch (Exception)
+            {
+
+            }
+            finally
+            {
+                deferral.Complete();
+            }
+        }
+
+        [DebuggerNonUserCode]
+        private async void CrystalApplication_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+        {
+            var deferral = e.SuspendingOperation.GetDeferral();
+
+            try
+            {
+                await OnSuspendingAsync();
+            }
+            catch (Exception)
+            {
+
+            }
+            finally
+            {
+                deferral.Complete();
+            }
+        }
+
+        [DebuggerNonUserCode]
+        private void CrystalApplication_Resuming(object sender, object e)
+        {
+            return; //no longer used...for now... Moved To: CrystalApplication_LeavingBackground
+        }
+
+        /// <summary>
+        /// Corresponds to EnteredBackground event. State should now be saved here.
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task OnPreservingAsync() { return Task.CompletedTask; }
         public virtual Task OnSuspendingAsync() { return Task.CompletedTask; }
         public virtual Task OnResumingAsync() { return Task.CompletedTask; }
         public virtual Task OnRestoringAsync()

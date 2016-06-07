@@ -120,7 +120,7 @@
     <Compile Include="Core\IMessageDialogService.cs" />
     <Compile Include="Core\IUIDispatcher.cs" />
     <Compile Include="Core\Platform.cs" />
-    <Compile Include="Core\SuspensionManager.cs" />
+    <Compile Include="Core\PreservationManager.cs" />
     <Compile Include="CrystalApplication.cs" />
     <Compile Include="CrystalConfiguration.cs" />
     <Compile Include="IoC\IIoCObject.cs" />
