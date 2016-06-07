@@ -240,6 +240,15 @@ namespace Crystal3
             await AsyncWindowActivate(OnActivationAsync(args));
         }
 
+        protected override async void OnBackgroundActivated(BackgroundActivatedEventArgs args)
+        {
+            var deferral = args.TaskInstance.GetDeferral();
+            await OnBackgroundActivatedAsync(args);
+            deferral.Complete();
+        }
+
+        public virtual Task OnBackgroundActivatedAsync(BackgroundActivatedEventArgs args) { return Task.CompletedTask; }
+
         private async Task AsyncWindowActivate(Task activationTask)
         {
             // Ensure the current window is active
