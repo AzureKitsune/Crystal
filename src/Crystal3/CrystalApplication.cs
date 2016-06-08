@@ -68,7 +68,7 @@ namespace Crystal3
             //Options.NavigationRoutingMethod = NavigationRoutingMethod.Dynamic;
         }
 
-        protected override void OnWindowCreated(WindowCreatedEventArgs args)
+        protected sealed override void OnWindowCreated(WindowCreatedEventArgs args)
         {
             var firstWindow = WindowManager.GetAllWindows().FirstOrDefault();
             if (args.Window != firstWindow && firstWindow != null) //make sure it isn't our first window.
@@ -196,7 +196,7 @@ namespace Crystal3
 
         public IActivatedEventArgs LastActivationArgs { get; private set; }
 
-        protected override async void OnLaunched(LaunchActivatedEventArgs args)
+        protected sealed override async void OnLaunched(LaunchActivatedEventArgs args)
         {
             LastActivationArgs = args;
 
@@ -232,7 +232,7 @@ namespace Crystal3
             }
         }
 
-        protected override async void OnActivated(IActivatedEventArgs args)
+        protected sealed override async void OnActivated(IActivatedEventArgs args)
         {
             LastActivationArgs = args;
 
@@ -242,7 +242,7 @@ namespace Crystal3
             await AsyncWindowActivate(OnActivationAsync(args));
         }
 
-        protected override async void OnBackgroundActivated(BackgroundActivatedEventArgs args)
+        protected sealed override async void OnBackgroundActivated(BackgroundActivatedEventArgs args)
         {
             var deferral = args.TaskInstance.GetDeferral();
             await OnBackgroundActivatedAsync(args);
