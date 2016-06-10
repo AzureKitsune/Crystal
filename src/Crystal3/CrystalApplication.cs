@@ -340,6 +340,7 @@ namespace Crystal3
         [DebuggerNonUserCode]
         private void CrystalApplication_Resuming(object sender, object e)
         {
+            OnResumingAsync();
             return; //no longer used...for now... Moved To: CrystalApplication_LeavingBackground
         }
 
