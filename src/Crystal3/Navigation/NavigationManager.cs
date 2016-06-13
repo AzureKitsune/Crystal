@@ -186,5 +186,14 @@ namespace Crystal3.Navigation
         {
             return navigationServices;
         }
+
+        internal IEnumerable<ViewModelBase> GetAllNavigatedViewModels()
+        {
+            List<ViewModelBase> viewModelsInWindow = new List<ViewModelBase>();
+
+            viewModelsInWindow.AddRange(GetAllServices().Select(x => x.GetNavigatedViewModel()).Distinct());
+
+            return viewModelsInWindow;
+        }
     }
 }

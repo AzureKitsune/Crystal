@@ -13,6 +13,11 @@ namespace Crystal3.Model
             return Task.CompletedTask;
         }
 
+        protected internal virtual Task OnRefreshingAsync()
+        {
+            return Task.CompletedTask;
+        }
+
         protected internal virtual Task OnSuspendingAsync()
         {
             return Task.CompletedTask;

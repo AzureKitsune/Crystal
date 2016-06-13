@@ -9,14 +9,14 @@ namespace Crystal3
     {
         internal CrystalConfiguration()
         {
-            ViewModelResumeMethod = ViewModelResumeMethod.ResumingAsync;
+            ViewModelRefreshMethod = ViewModelRefreshMethod.OnRefreshingAsync;
             NavigationRoutingMethod = NavigationRoutingMethod.Dynamic;
             HandleSystemBackNavigation = true;
         }
 
         public bool HandleSystemBackNavigation { get; set; }
         public bool HandleBackButtonForTopLevelNavigation { get; set; }
-        public ViewModelResumeMethod ViewModelResumeMethod { get; set; }
+        public ViewModelRefreshMethod ViewModelRefreshMethod { get; set; }
         public NavigationRoutingMethod NavigationRoutingMethod { get; set; }
     }
 }

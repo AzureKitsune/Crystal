@@ -204,7 +204,6 @@ namespace Crystal3
             {
                 await InitializeRootFrameAsync(args);
 
-
                 if (args.PreviousExecutionState != ApplicationExecutionState.Terminated)
                 {
                     await AsyncWindowActivate(OnFreshLaunchAsync(args));
@@ -264,39 +263,39 @@ namespace Crystal3
 
         public static IUIDispatcher Dispatcher { get { return InversionOfControl.IoC.Current.Resolve<IUIDispatcher>(); } }
 
+#if RELEASE
         [DebuggerNonUserCode]
+#endif
         private async void CrystalApplication_LeavingBackground(object sender, LeavingBackgroundEventArgs e)
         {
             //https://blogs.windows.com/buildingapps/2016/06/07/background-activity-with-the-single-process-model/
-            await OnResumingAsync();
-            
+
             foreach (var window in WindowManager.GetAllWindowServices())
             {
-                List<ViewModelBase> viewModelsInWindow = new List<ViewModelBase>();
-
-                //var rootViewModel = window.GetRootViewModel();
-                //viewModelsInWindow.Add(rootViewModel);
-
-                viewModelsInWindow.AddRange(window.NavigationManager.GetAllServices().Select(x => x.GetNavigatedViewModel()).Distinct());
+                var viewModelsInWindow = window.NavigationManager.GetAllNavigatedViewModels();
 
                 foreach (var viewModel in viewModelsInWindow)
                 {
                     if (viewModel != null)
                     {
-                        switch (Options.ViewModelResumeMethod)
+                        switch(Options.ViewModelRefreshMethod)
                         {
-                            case ViewModelResumeMethod.ResumingAsync:
-                                await viewModel.OnResumingAsync();
+                            case ViewModelRefreshMethod.OnRefreshingAsync:
+                                await viewModel.OnRefreshingAsync();
                                 break;
-                            case ViewModelResumeMethod.OnNavigatedToRefresh:
+                            case ViewModelRefreshMethod.OnNavigatedToRefresh:
                                 viewModel.OnNavigatedTo(sender, new CrystalNavigationEventArgs() { Direction = CrystalNavigationDirection.Refresh });
                                 break;
                         }
+                        
                     }
                 }
             }
         }
+
+#if RELEASE
         [DebuggerNonUserCode]
+#endif
         private async void CrystalApplication_EnteredBackground(object sender, EnteredBackgroundEventArgs e)
         {
             /// https://blogs.windows.com/buildingapps/2016/06/07/background-activity-with-the-single-process-model/
@@ -318,7 +317,9 @@ namespace Crystal3
             }
         }
 
+#if RELEASE
         [DebuggerNonUserCode]
+#endif
         private async void CrystalApplication_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
@@ -337,11 +338,27 @@ namespace Crystal3
             }
         }
 
+#if RELEASE
         [DebuggerNonUserCode]
-        private void CrystalApplication_Resuming(object sender, object e)
+#endif
+        private async void CrystalApplication_Resuming(object sender, object e)
         {
-            OnResumingAsync();
-            return; //no longer used...for now... Moved To: CrystalApplication_LeavingBackground
+            await OnResumingAsync();
+
+            foreach (var window in WindowManager.GetAllWindowServices())
+            {
+                var viewModelsInWindow = window.NavigationManager.GetAllNavigatedViewModels();
+
+                foreach (var viewModel in viewModelsInWindow)
+                {
+                    if (viewModel != null)
+                    {
+                        await viewModel.OnResumingAsync();
+                    }
+                }
+            }
+
+            //Related: CrystalApplication_LeavingBackground
         }
 
         /// <summary>

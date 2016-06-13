@@ -1,8 +1,8 @@
 ﻿namespace Crystal3
 {
-    public enum ViewModelResumeMethod
+    public enum ViewModelRefreshMethod
     {
-        ResumingAsync = 0,
+        OnRefreshingAsync = 0,
         OnNavigatedToRefresh = 1,
     }
 }

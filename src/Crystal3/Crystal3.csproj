@@ -172,7 +172,7 @@
     <Compile Include="UI\Selectors\NullTemplateSelector.cs" />
     <Compile Include="UI\StatusManager\StatusManager.cs" />
     <Compile Include="Utilities\CollectionExtensions.cs" />
-    <Compile Include="ViewModelResumeMethod.cs" />
+    <Compile Include="ViewModelRefreshMethod.cs" />
     <Content Include="Properties\Crystal3.rd.xml" />
   </ItemGroup>
   <ItemGroup>
