@@ -3,22 +3,27 @@ using Crystal3.UI.StatusManager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace Crystal3.Model
 {
     /// <summary>
     /// A view model base class with UI sugar added on top.
     /// </summary>
-    public abstract class UIViewModelBase: ViewModelBase
+    public abstract class UIViewModelBase : ViewModelBase
     {
         /// <summary>
         /// Creates a new UIViewModelBase
         /// </summary>
         public UIViewModelBase()
         {
-           Status = WindowManager.GetStatusManagerForCurrentWindow();
+            Status = WindowManager.GetStatusManagerForCurrentWindow();
+
+            UI = new UIViewModelBaseUIWrapper();
         }
 
         /// <summary>
@@ -36,7 +41,60 @@ namespace Crystal3.Model
             //Clean up!
             Status.RemoveAllControllersForCallingViewModel(this);
 
+            UI.Cleanup();
+
             base.OnNavigatedFrom(sender, e);
+        }
+
+        public UIViewModelBaseUIWrapper UI { get; private set; }
+
+        public class UIViewModelBaseUIWrapper
+        {
+            private FrameworkElement uiElement = null;
+            internal UIViewModelBaseUIWrapper()
+            {
+
+            }
+
+            internal void Cleanup()
+            {
+
+            }
+
+            internal void SetUIElement(FrameworkElement element)
+            {
+                uiElement = element;
+            }
+
+            public Task WaitForUILoadAsync()
+            {
+                if (uiElement == null) return Task.CompletedTask; //todo may have to change this.
+
+                //todo add a check to see if it is loaded via reflection
+
+                var contentLoadedField = uiElement.GetType().GetField("_contentLoaded", BindingFlags.NonPublic);
+                if (contentLoadedField != null)
+                {
+                    if ((bool)contentLoadedField.GetValue(uiElement))
+                    {
+                        return Task.CompletedTask;
+                    }
+                }
+
+                TaskCompletionSource<object> taskSource = new TaskCompletionSource<object>();
+
+                RoutedEventHandler loadedHandler = null;
+                loadedHandler = new RoutedEventHandler((object sender, RoutedEventArgs args) =>
+                {
+                    uiElement.Loaded -= loadedHandler;
+
+                    taskSource.SetResult(null);
+                });
+
+                uiElement.Loaded += loadedHandler;
+
+                return taskSource.Task;
+            }
         }
     }
 }

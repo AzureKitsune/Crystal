@@ -344,6 +344,9 @@ namespace Crystal3.Navigation
 
                     page.DataContext = viewModel;
 
+                    if (viewModel is UIViewModelBase)
+                        ((UIViewModelBase)viewModel).UI.SetUIElement(page);
+
                     //page.SetValue(FrameworkElement.DataContextProperty, viewModel);
 
                     viewModel.OnNavigatedTo(sender, new CrystalNavigationEventArgs(e) { Direction = ConvertToCrystalNavDirections(e.NavigationMode) });
