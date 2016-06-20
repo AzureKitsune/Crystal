@@ -11,5 +11,7 @@ namespace Crystal3.Core
         Unknown = 0,
         Desktop = 1,
         Mobile = 2,
+        Xbox = 3,
+        IoT = 4
     }
 }

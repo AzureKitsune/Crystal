@@ -25,6 +25,10 @@ namespace Crystal3
                     return Platform.Mobile;
                 case "windows.desktop":
                     return Platform.Desktop;
+                case "windows.iot":
+                    return Platform.IoT;
+                case "windows.xbox":
+                    return Platform.Xbox;
                 default:
                     return Platform.Unknown;
             }
