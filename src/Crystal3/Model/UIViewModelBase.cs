@@ -72,7 +72,7 @@ namespace Crystal3.Model
 
                 //todo add a check to see if it is loaded via reflection
 
-                var contentLoadedField = uiElement.GetType().GetField("_contentLoaded", BindingFlags.NonPublic);
+                var contentLoadedField = uiElement.GetType().GetField("_contentLoaded", BindingFlags.NonPublic | BindingFlags.Instance);
                 if (contentLoadedField != null)
                 {
                     if ((bool)contentLoadedField.GetValue(uiElement))
