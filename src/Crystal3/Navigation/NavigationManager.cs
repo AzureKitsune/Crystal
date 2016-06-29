@@ -64,6 +64,8 @@ namespace Crystal3.Navigation
                     if (viewModelType == null)
                         viewModelType = (Type)linkAttribute.NamedArguments.First(x => ((Type)x.TypedValue.Value).GetTypeInfo().IsSubclassOf(typeof(ViewModelBase))).TypedValue.Value;
 
+                    var platformType = (NavigationViewSupportedPlatform)linkAttribute.ConstructorArguments[1].Value;
+
                     //var isHomePageInfo = linkAttribute.NamedArguments.FirstOrDefault(x => x.MemberName == "IsHome");
                     //bool isHomePage = false;
 
@@ -73,7 +75,9 @@ namespace Crystal3.Navigation
                     //if (navigablePages.Any(x => ((Tuple<Type, Uri, bool>)x.Value).Item3 == true) && isHomePage)
                     //    throw new Exception("Only one home page is allowed.");
 
-                    viewModelViewMappings.Add(viewModelType, type.AsType());
+
+                    if (CurrentPlatformSupportsView(platformType))
+                        viewModelViewMappings.Add(viewModelType, type.AsType());
 
                 }
             }
@@ -194,6 +198,35 @@ namespace Crystal3.Navigation
             viewModelsInWindow.AddRange(GetAllServices().Select(x => x.GetNavigatedViewModel()).Distinct());
 
             return viewModelsInWindow;
+        }
+
+
+        private bool CurrentPlatformSupportsView(NavigationViewSupportedPlatform platformType)
+        {
+            var platform = CrystalApplication.GetDevicePlatform();
+
+            NavigationViewSupportedPlatform convertedNavPlatform = NavigationViewSupportedPlatform.All;
+            switch(platform)
+            {
+                case Core.Platform.Desktop:
+                    convertedNavPlatform = NavigationViewSupportedPlatform.Desktop;
+                    break;
+                case Core.Platform.Mobile:
+                    convertedNavPlatform = NavigationViewSupportedPlatform.Mobile;
+                    break;
+                case Core.Platform.IoT:
+                    convertedNavPlatform = NavigationViewSupportedPlatform.IoT;
+                    break;
+                case Core.Platform.Xbox:
+                    convertedNavPlatform = NavigationViewSupportedPlatform.Xbox;
+                    break;
+                default:
+                    throw new Exception();
+            }
+
+            //cool bitwise method http://stackoverflow.com/a/18001375
+
+            return (platformType & convertedNavPlatform) > 0;
         }
     }
 }
