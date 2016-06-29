@@ -278,7 +278,7 @@ namespace Crystal3
                 {
                     if (viewModel != null)
                     {
-                        switch(Options.ViewModelRefreshMethod)
+                        switch (Options.ViewModelRefreshMethod)
                         {
                             case ViewModelRefreshMethod.OnRefreshingAsync:
                                 await viewModel.OnRefreshingAsync();
@@ -287,7 +287,7 @@ namespace Crystal3
                                 viewModel.OnNavigatedTo(sender, new CrystalNavigationEventArgs() { Direction = CrystalNavigationDirection.Refresh });
                                 break;
                         }
-                        
+
                     }
                 }
             }
@@ -375,7 +375,10 @@ namespace Crystal3
 
         public static Platform GetDevicePlatform()
         {
-            return SystemInformation.GetDevicePlatform();
+            if ((CrystalApplication.Current as CrystalApplication).Options.OverridePlatformDetection)
+                return (CrystalApplication.Current as CrystalApplication).Options.OverridePlatformValue;
+            else
+                return SystemInformation.GetDevicePlatform();
         }
 
         protected internal virtual Type ResolveStaticPage(Type viewModelType)

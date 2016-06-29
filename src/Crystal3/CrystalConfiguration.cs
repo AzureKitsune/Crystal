@@ -12,11 +12,16 @@ namespace Crystal3
             ViewModelRefreshMethod = ViewModelRefreshMethod.OnRefreshingAsync;
             NavigationRoutingMethod = NavigationRoutingMethod.Dynamic;
             HandleSystemBackNavigation = true;
+
+            OverridePlatformDetection = false;
         }
 
         public bool HandleSystemBackNavigation { get; set; }
         public bool HandleBackButtonForTopLevelNavigation { get; set; }
         public ViewModelRefreshMethod ViewModelRefreshMethod { get; set; }
         public NavigationRoutingMethod NavigationRoutingMethod { get; set; }
+
+        public bool OverridePlatformDetection { get; set; }
+        public Core.Platform OverridePlatformValue { get; set; }
     }
 }
