@@ -42,11 +42,13 @@ namespace Crystal3.Navigation
 
         private void HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
         {
-            RefreshAppViewBackButtonVisibility(sender);
+            RefreshAppViewBackButtonVisibility(sender as Frame);
         }
 
-        private void RefreshAppViewBackButtonVisibility(object sender)
+        private void RefreshAppViewBackButtonVisibility(Frame sender)
         {
+            if (sender == null) throw new ArgumentNullException("sender");
+
             if (((CrystalApplication)CrystalApplication.Current).Options.HandleBackButtonForTopLevelNavigation)
             {
                 SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = ((Frame)sender).CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
