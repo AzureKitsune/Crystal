@@ -177,6 +177,12 @@
     <Content Include="Properties\Crystal3.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <SDKReference Include="WindowsDesktop, Version=10.0.14383.0">
+      <Name>Windows Desktop Extensions for the UWP</Name>
+    </SDKReference>
+    <SDKReference Include="WindowsIoT, Version=10.0.14383.0">
+      <Name>Windows IoT Extensions for the UWP</Name>
+    </SDKReference>
     <SDKReference Include="WindowsMobile, Version=10.0.14383.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
