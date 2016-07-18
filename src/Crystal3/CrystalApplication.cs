@@ -128,26 +128,23 @@ namespace Crystal3
                 InitializeNavigation(navManager);
             }
 
-            if (e is LaunchActivatedEventArgs)
+
+            if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
             {
-                if (((LaunchActivatedEventArgs)e).PrelaunchActivated == false)
+                //Resurrection!
+
+                if (await PreservationManager.RestoreAsync() == true)
                 {
-                    if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                    {
-                        //Resurrection!
+                    //navService.HandleTerminationReload();
 
-                        if (await PreservationManager.RestoreAsync() == true)
-                        {
-                            //navService.HandleTerminationReload();
+                    //todo handle multiple windows in this case.
 
-                            //todo handle multiple windows in this case.
-
-                            if (Restored != null)
-                                Restored(this, EventArgs.Empty);
-                        }
-                    }
+                    if (Restored != null)
+                        Restored(this, EventArgs.Empty);
                 }
             }
+
+
 
             // Ensure the current window is active
             //Window.Current.Activate();
@@ -212,19 +209,14 @@ namespace Crystal3
 
                 if (args.PreviousExecutionState != ApplicationExecutionState.Terminated)
                 {
-                    if (args.PrelaunchActivated == false)
-                    {
-                        await AsyncWindowActivate(OnFreshLaunchAsync(args));
 
-                        var appVm = WindowManager.GetNavigationManagerForCurrentWindow()
-                                      .RootNavigationService.GetNavigatedViewModel() as AppViewModelBase;
-                        if (appVm != null)
-                            appVm.OnAppLaunched(args);
-                    }
-                    else
-                    {
-                        //todo handle prelaunch
-                    }
+                    await AsyncWindowActivate(OnFreshLaunchAsync(args));
+
+                    var appVm = WindowManager.GetNavigationManagerForCurrentWindow()
+                                  .RootNavigationService.GetNavigatedViewModel() as AppViewModelBase;
+                    if (appVm != null)
+                        appVm.OnAppLaunched(args);
+
                 }
                 else
                 {
