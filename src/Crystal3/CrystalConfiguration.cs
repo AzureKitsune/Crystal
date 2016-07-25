@@ -21,7 +21,13 @@ namespace Crystal3
         public ViewModelRefreshMethod ViewModelRefreshMethod { get; set; }
         public NavigationRoutingMethod NavigationRoutingMethod { get; set; }
 
-        public bool OverridePlatformDetection { get; set; }
-        public Core.Platform OverridePlatformValue { get; set; }
+        public void OverridePlatform(Core.Platform plat)
+        {
+            OverridePlatformDetection = true;
+            OverridePlatformValue = plat;
+        }
+
+        public bool OverridePlatformDetection { get; private set; }
+        public Core.Platform OverridePlatformValue { get; private set; }
     }
 }

@@ -48,6 +48,11 @@ namespace Crystal3.InversionOfControl
             }
         }
 
+        public void UnregisterAll()
+        {
+            itemsList.Clear();
+        }
+
         /// <summary>
         /// Resolves an object based on the type parameter.
         /// </summary>
