@@ -167,6 +167,7 @@
     <Compile Include="UI\Converters\InverseNullToVisibilityConverter.cs" />
     <Compile Include="UI\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="UI\Converters\RelativeTimeConverter.cs" />
+    <Compile Include="UI\Converters\StringToUriConverter.cs" />
     <Compile Include="UI\Dispatcher\UIDispatcher.cs" />
     <Compile Include="UI\MessageDialog\DefaultMessageDialogService.cs" />
     <Compile Include="UI\PageExtensions.cs" />
