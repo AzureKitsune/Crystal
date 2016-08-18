@@ -296,6 +296,8 @@ namespace Crystal3
                     }
                 }
             }
+
+            await OnForegroundingAsync();
         }
 
 #if RELEASE
@@ -310,7 +312,7 @@ namespace Crystal3
 
             try
             {
-                await PreservationManager.PreserveAsync(OnPreservingAsync());
+                await PreservationManager.PreserveAsync(OnBackgroundingAsync());
             }
             catch (Exception)
             {
@@ -370,7 +372,8 @@ namespace Crystal3
         /// Corresponds to EnteredBackground event. State should now be saved here.
         /// </summary>
         /// <returns></returns>
-        public virtual Task OnPreservingAsync() { return Task.CompletedTask; }
+        public virtual Task OnBackgroundingAsync() { return Task.CompletedTask; }
+        public virtual Task OnForegroundingAsync() { return Task.CompletedTask; }
         public virtual Task OnSuspendingAsync() { return Task.CompletedTask; }
         public virtual Task OnResumingAsync() { return Task.CompletedTask; }
         public virtual Task OnRestoringAsync()
