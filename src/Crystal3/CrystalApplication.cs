@@ -248,9 +248,9 @@ namespace Crystal3
 
         protected sealed override async void OnBackgroundActivated(BackgroundActivatedEventArgs args)
         {
-            var deferral = args.TaskInstance.GetDeferral();
+            //var deferral = args.TaskInstance.GetDeferral();
             await OnBackgroundActivatedAsync(args);
-            deferral.Complete();
+            //deferral.Complete();
         }
 
         public virtual Task OnBackgroundActivatedAsync(BackgroundActivatedEventArgs args) { return Task.CompletedTask; }
