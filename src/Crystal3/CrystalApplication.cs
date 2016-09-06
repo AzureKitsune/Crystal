@@ -139,6 +139,16 @@ namespace Crystal3
 
                     //todo handle multiple windows in this case.
 
+                    try
+                    {
+                        StorageFile suspensionStateFile = await CrystalApplication.CrystalDataFolder.CreateFileAsync(PreservationManager.SuspensionStateFileName, CreationCollisionOption.OpenIfExists);
+
+                        await suspensionStateFile.DeleteAsync();
+                    }
+                    catch (Exception)
+                    {
+                    }
+
                     if (Restored != null)
                         Restored(this, EventArgs.Empty);
                 }

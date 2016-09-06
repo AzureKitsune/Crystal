@@ -12,7 +12,7 @@ namespace Crystal3.Core
 {
     internal static class PreservationManager
     {
-        private const string SuspensionStateFileName = "CrystalSuspensionState.xml";
+        internal const string SuspensionStateFileName = "CrystalSuspensionState.xml";
 
         internal static async Task PreserveAsync(Task suspendingOp)
         {
