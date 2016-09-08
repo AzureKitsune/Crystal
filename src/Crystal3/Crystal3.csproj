@@ -173,6 +173,7 @@
     <Compile Include="UI\PageExtensions.cs" />
     <Compile Include="UI\Selectors\NullTemplateSelector.cs" />
     <Compile Include="UI\StatusManager\StatusManager.cs" />
+    <Compile Include="UI\UIViewModelFragmentShim.cs" />
     <Compile Include="Utilities\CollectionExtensions.cs" />
     <Compile Include="ViewModelRefreshMethod.cs" />
     <Content Include="Properties\Crystal3.rd.xml" />

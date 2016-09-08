@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Crystal3.Navigation;
+using Windows.UI.Xaml;
 
 namespace Crystal3.Model
 {
     public abstract class ViewModelFragment: UIViewModelBase, IDisposable
     {
+        #region ViewModelBase
         protected internal override sealed bool OnNavigatingFrom(object sender, CrystalNavigationEventArgs e)
         {
             return base.OnNavigatingFrom(sender, e);
@@ -25,9 +27,30 @@ namespace Crystal3.Model
         {
             return base.OnSuspendingAsync();
         }
+        protected internal override sealed void OnNavigatedFrom(object sender, CrystalNavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(sender, e);
+        }
+        protected internal override sealed void OnNavigatedTo(object sender, CrystalNavigationEventArgs e)
+        {
+            base.OnNavigatedTo(sender, e);
+        }
+        protected internal override sealed Task OnPreservingAsync(IDictionary<string, object> data)
+        {
+            return base.OnPreservingAsync(data);
+        }
+        protected internal override sealed Task OnRestoringAsync(IDictionary<string, object> data)
+        {
+            return base.OnRestoringAsync(data);
+        }
+        protected internal override sealed Task OnRefreshingAsync()
+        {
+            return base.OnRefreshingAsync();
+        }
+        #endregion
 
         public abstract void Invoke(ViewModelBase viewModel, object data);
-
+        public virtual void OnVisibilityChanged(Visibility visibility, object data)  { }
         public abstract void Dispose();
     }
 }
