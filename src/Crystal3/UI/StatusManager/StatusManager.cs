@@ -45,16 +45,11 @@ namespace Crystal3.UI.StatusManager
                 mobileStatusBar = StatusBar.GetForCurrentView();
                 mobileStatusBar.ProgressIndicator.ProgressValue = 0;
 
-                
-
                 await mobileStatusBar.ShowAsync();
             }
 
-            try
-            {
-                NormalStatusText = ApplicationView.GetForCurrentView().Title;
-            }
-            catch (Exception) { }
+            NormalStatusText = ApplicationView.GetForCurrentView().Title;
+
         }
 
         internal bool CanAccessMobileStatusBar()
@@ -99,11 +94,7 @@ namespace Crystal3.UI.StatusManager
                         {
                             mobileStatusBar.ProgressIndicator.ProgressValue = status;
 
-                            try
-                            {
-                                mobileStatusBar.ForegroundColor = StatusBarForegroundColor;
-                            }
-                            catch (Exception) { }
+                            mobileStatusBar.ForegroundColor = StatusBarForegroundColor;
                         }
                     }
                 });

@@ -22,47 +22,42 @@ namespace Crystal3.Core
             foreach (var window in WindowManager.GetAllWindowServices())
             {
                 XElement windowElement = new XElement("Window");
-                try
+
+                foreach (var navsrv in window.NavigationManager.GetAllServices())
                 {
-                    foreach (var navsrv in window.NavigationManager.GetAllServices())
+                    var navsrvElement = new XElement("NavigationService");
+
+                    var navLvlAttr = new XAttribute("NavigationLevel", navsrv.NavigationLevel);
+                    navsrvElement.Add(navLvlAttr);
+
+                    var naviState = new XElement("NavigationState", navsrv.NavigationFrame.GetNavigationState());
+                    navsrvElement.Add(naviState);
+
+                    var rootViewModel = navsrv.GetNavigatedViewModel();
+                    if (rootViewModel != null)
                     {
-                        var navsrvElement = new XElement("NavigationService");
+                        var attr = new XAttribute("ViewModelType", rootViewModel.GetType().FullName);
+                        navsrvElement.Add(attr);
 
-                        var navLvlAttr = new XAttribute("NavigationLevel", navsrv.NavigationLevel);
-                        navsrvElement.Add(navLvlAttr);
+                        XElement viewModelData = new XElement("ViewModelData");
 
-                        var naviState = new XElement("NavigationState", navsrv.NavigationFrame.GetNavigationState());
-                        navsrvElement.Add(naviState);
+                        Dictionary<string, object> dataDic = new Dictionary<string, object>();
 
-                        var rootViewModel = navsrv.GetNavigatedViewModel();
-                        if (rootViewModel != null)
+                        await rootViewModel.OnPreservingAsync(dataDic);
+
+                        foreach (var data in dataDic)
                         {
-                            var attr = new XAttribute("ViewModelType", rootViewModel.GetType().FullName);
-                            navsrvElement.Add(attr);
-
-                            XElement viewModelData = new XElement("ViewModelData");
-
-                            Dictionary<string, object> dataDic = new Dictionary<string, object>();
-
-                            await rootViewModel.OnPreservingAsync(dataDic);
-
-                            foreach (var data in dataDic)
-                            {
-                                var keyValueElement = new XElement(data.Key, data.Value);
-                                viewModelData.Add(keyValueElement);
-                            }
-
-                            navsrvElement.Add(viewModelData);
+                            var keyValueElement = new XElement(data.Key, data.Value);
+                            viewModelData.Add(keyValueElement);
                         }
 
-                        windowElement.Add(navsrvElement);
+                        navsrvElement.Add(viewModelData);
                     }
-                    
-                }
-                catch (Exception)
-                {
 
+                    windowElement.Add(navsrvElement);
                 }
+
+
 
                 windows.Add(windowElement);
             }
@@ -95,7 +90,7 @@ namespace Crystal3.Core
                 {
                     var window = windows.First();
 
-                    foreach(var navisrvElement in windowElement.Elements("NavigationService")) //todo verify that these are in framelevel order
+                    foreach (var navisrvElement in windowElement.Elements("NavigationService")) //todo verify that these are in framelevel order
                     {
                         var navisrv = window.NavigationManager.GetNavigationServiceFromFrameLevel((FrameLevel)Enum.Parse(typeof(FrameLevel), navisrvElement.Attribute("NavigationLevel").Value));
 
@@ -104,13 +99,11 @@ namespace Crystal3.Core
                         var viewModel = navisrv.GetNavigatedViewModel();
                         if (viewModel != null)
                         {
-                            //todo pass restored data
-
                             var viewModelDataEle = navisrvElement.Element("ViewModelData");
 
                             Dictionary<string, object> viewModelData = new Dictionary<string, object>();
 
-                            foreach(var ele in viewModelDataEle.Elements())
+                            foreach (var ele in viewModelDataEle.Elements())
                             {
                                 viewModelData.Add(ele.Name.LocalName, ele.Value);
                             }

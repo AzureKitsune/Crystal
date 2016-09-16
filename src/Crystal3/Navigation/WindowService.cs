@@ -29,11 +29,7 @@ namespace Crystal3.Navigation
 
         private void WindowView_Closed(object sender, CoreWindowEventArgs e)
         {
-            try
-            {
-                NavigationManager.RootNavigationService.NavigationFrame.Navigated -= HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated;
-            }
-            catch (Exception) { }
+            NavigationManager.RootNavigationService.NavigationFrame.Navigated -= HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated;
         }
 
         internal Window WindowView { get; private set; }

@@ -141,7 +141,7 @@ namespace Crystal3.Navigation
 
         private void NavigationFrame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
-            
+
         }
 
         private void NavigationFrame_Navigated(object sender, NavigationEventArgs e)
@@ -164,12 +164,10 @@ namespace Crystal3.Navigation
                 {
                     var viewModel = viewModelBackStack.Pop();
 
-                    try
-                    {
-                        if (NavigationServicePreNavigatedSignaled != null)
-                            NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs(e)));
-                    }
-                    catch (Exception) { }
+
+                    if (NavigationServicePreNavigatedSignaled != null)
+                        NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs(e)));
+
 
                     if (viewModel == null) throw new Exception();
 
@@ -210,12 +208,9 @@ namespace Crystal3.Navigation
 
                 lastViewModel = viewModel;
 
-                try
-                {
-                    if (NavigationServicePreNavigatedSignaled != null)
-                        NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs()));
-                }
-                catch (Exception) { }
+
+                if (NavigationServicePreNavigatedSignaled != null)
+                    NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs()));
             }
         }
 
@@ -247,7 +242,7 @@ namespace Crystal3.Navigation
             await Task.Delay(250);
 
             if (waitForNavigationAsyncTask?.Status == TaskStatus.Running)
-                 await waitForNavigationAsyncTask;
+                await waitForNavigationAsyncTask;
             else
             {
                 waitForNavigationAsyncTask = Task.Run(() => navigationLock.WaitOne());
@@ -320,12 +315,10 @@ namespace Crystal3.Navigation
             {
                 NavigationFrame.Navigated -= navigatedHandler;
 
-                try
-                {
-                    if (NavigationServicePreNavigatedSignaled != null)
-                        NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs(e)));
-                }
-                catch (Exception) { }
+
+                if (NavigationServicePreNavigatedSignaled != null)
+                    NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs(e)));
+
 
                 if (e.NavigationMode == NavigationMode.New)
                 {
@@ -387,3 +380,4 @@ namespace Crystal3.Navigation
         }
     }
 }
+
