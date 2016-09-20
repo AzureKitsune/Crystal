@@ -395,5 +395,10 @@ namespace Crystal3
         {
             return Task.CompletedTask;
         }
+
+        public static CrystalApplication GetCurrentAsCrystalApplication()
+        {
+            return Current as CrystalApplication;
+        }
     }
 }
