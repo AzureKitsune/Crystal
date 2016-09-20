@@ -221,24 +221,11 @@ namespace Crystal3
                 {
 
                     await AsyncWindowActivate(OnFreshLaunchAsync(args));
-
-                    var appVm = WindowManager.GetNavigationManagerForCurrentWindow()
-                                  .RootNavigationService.GetNavigatedViewModel() as AppViewModelBase;
-                    if (appVm != null)
-                        appVm.OnAppLaunched(args);
-
                 }
                 else
                 {
                     Window.Current.Activate();
-
-                    var appVm = WindowManager.GetNavigationManagerForCurrentWindow()
-                                .RootNavigationService.GetNavigatedViewModel() as AppViewModelBase;
-                    if (appVm != null)
-                        appVm.OnAppRestoredLaunched(args);
                 }
-
-
             }
             else
             {
@@ -406,43 +393,7 @@ namespace Crystal3
 
         public virtual Task OnActivationAsync(IActivatedEventArgs args)
         {
-            if (AppViewModelType != null)
-            {
-                NavigateToAppViewModel();
-
-                var appVm = WindowManager.GetNavigationManagerForCurrentWindow()
-                        .RootNavigationService.GetNavigatedViewModel() as AppViewModelBase;
-
-                if (appVm != null)
-                    appVm.OnAppActivated(args);
-            }
-
-            return Task.FromResult<object>(null);
+            return Task.CompletedTask;
         }
-
-        #region AppViewModel
-
-        protected Type AppViewModelType { get; private set; }
-
-        protected internal void SetAppViewModel(Type appViewModel)
-        {
-            if (appViewModel == null) throw new ArgumentNullException("appViewModel");
-            if (!appViewModel.GetTypeInfo().IsSubclassOf(typeof(AppViewModelBase))) throw new ArgumentException("AppViewModel should inherit from AppViewModelBase.");
-
-            AppViewModelType = appViewModel;
-        }
-
-        protected internal void NavigateToAppViewModel(object parameter = null)
-        {
-            if (AppViewModelType == null) throw new InvalidOperationException("AppViewModelType cannot be null.");
-
-            if (!WindowManager.GetNavigationManagerForCurrentWindow()
-                 .RootNavigationService.IsNavigatedTo(AppViewModelType))
-            {
-                WindowManager.GetNavigationManagerForCurrentWindow()
-                    .RootNavigationService.Navigate(AppViewModelType, parameter: parameter);
-            }
-        }
-        #endregion
     }
 }
