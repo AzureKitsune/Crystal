@@ -29,7 +29,6 @@ namespace Crystal3.Model
         /// This is called when your application is getting sent to the background. You should use OnPreservingAsync.
         /// </summary>
         /// <returns></returns>
-        [Obsolete("You should use OnPreservingAsync instead.")]
         protected internal virtual Task OnSuspendingAsync()
         {
             return Task.CompletedTask;
@@ -50,7 +49,6 @@ namespace Crystal3.Model
         /// This is called when your application returns to the foreground to give your viewmodel a chance to refresh its state. You should use OnRefreshingAsync instead.
         /// </summary>
         /// <returns></returns>
-        [Obsolete("You should use OnRefreshingAsync instead.")]
         protected internal virtual Task OnResumingAsync()
         {
             return Task.CompletedTask;
