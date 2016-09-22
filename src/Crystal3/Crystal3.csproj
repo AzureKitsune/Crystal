@@ -141,6 +141,7 @@
     <Compile Include="NavigationRoutingMethod.cs" />
     <Compile Include="Navigation\CrystalNavigationDirection.cs" />
     <Compile Include="Navigation\CrystalNavigationEventArgs.cs" />
+    <Compile Include="Navigation\FragmentManager.cs" />
     <Compile Include="Navigation\FrameLevel.cs" />
     <Compile Include="Navigation\NavigationAttributes.cs" />
     <Compile Include="Navigation\NavigationManager.cs" />
@@ -168,6 +169,9 @@
     <Compile Include="UI\Converters\RelativeTimeConverter.cs" />
     <Compile Include="UI\Converters\StringToUriConverter.cs" />
     <Compile Include="UI\Dispatcher\UIDispatcher.cs" />
+    <Compile Include="UI\FragmentContentViewer.xaml.cs">
+      <DependentUpon>FragmentContentViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\MessageDialog\DefaultMessageDialogService.cs" />
     <Compile Include="UI\PageExtensions.cs" />
     <Compile Include="UI\Selectors\NullTemplateSelector.cs" />
@@ -187,6 +191,12 @@
     <SDKReference Include="WindowsMobile, Version=10.0.14393.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="UI\FragmentContentViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
