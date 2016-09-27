@@ -32,6 +32,7 @@ namespace Crystal3
         public CrystalConfiguration Options { get; private set; }
 
         public event EventHandler Restored;
+        private bool IsRestored { get; set; }
 
 
         public CrystalApplication() : base()
@@ -133,24 +134,34 @@ namespace Crystal3
             {
                 //Resurrection!
 
-                if (await PreservationManager.RestoreAsync() == true)
+                StorageFile suspensionStateFile = await CrystalApplication.CrystalDataFolder.GetFileAsync(PreservationManager.SuspensionStateFileName);
+
+                if (suspensionStateFile != null)
                 {
-                    //navService.HandleTerminationReload();
-
-                    //todo handle multiple windows in this case.
-
-                    try
+                    var eventArgs = new CrystalApplicationShouldRestoreEventArgs();
+                    eventArgs.SuspensionFileDate = suspensionStateFile.DateCreated;
+                    if (OnApplicationShouldRestore(eventArgs))
                     {
-                        StorageFile suspensionStateFile = await CrystalApplication.CrystalDataFolder.CreateFileAsync(PreservationManager.SuspensionStateFileName, CreationCollisionOption.OpenIfExists);
+                        if (await PreservationManager.RestoreAsync() == true)
+                        {
+                            //navService.HandleTerminationReload();
 
-                        await suspensionStateFile.DeleteAsync();
-                    }
-                    catch (Exception)
-                    {
-                    }
+                            //todo handle multiple windows in this case.
 
-                    if (Restored != null)
-                        Restored(this, EventArgs.Empty);
+                            try
+                            {
+                                await suspensionStateFile.DeleteAsync();
+                            }
+                            catch (Exception)
+                            {
+                            }
+
+                            IsRestored = true;
+
+                            if (Restored != null)
+                                Restored(this, EventArgs.Empty);
+                        }
+                    }
                 }
             }
 
@@ -217,7 +228,7 @@ namespace Crystal3
             {
                 await InitializeRootFrameAsync(args);
 
-                if (args.PreviousExecutionState != ApplicationExecutionState.Terminated)
+                if (args.PreviousExecutionState != ApplicationExecutionState.Terminated || (args.PreviousExecutionState == ApplicationExecutionState.Terminated && !IsRestored))
                 {
 
                     await AsyncWindowActivate(OnFreshLaunchAsync(args));
@@ -369,13 +380,19 @@ namespace Crystal3
         /// Corresponds to EnteredBackground event. State should now be saved here.
         /// </summary>
         /// <returns></returns>
-        public virtual Task OnBackgroundingAsync() { return Task.CompletedTask; }
-        public virtual Task OnForegroundingAsync() { return Task.CompletedTask; }
-        public virtual Task OnSuspendingAsync() { return Task.CompletedTask; }
-        public virtual Task OnResumingAsync() { return Task.CompletedTask; }
-        public virtual Task OnRestoringAsync()
+        protected internal virtual Task OnBackgroundingAsync() { return Task.CompletedTask; }
+        protected internal virtual Task OnForegroundingAsync() { return Task.CompletedTask; }
+        protected internal virtual Task OnSuspendingAsync() { return Task.CompletedTask; }
+        protected internal virtual Task OnResumingAsync() { return Task.CompletedTask; }
+        protected internal virtual Task OnRestoringAsync()
         {
             return Task.CompletedTask;
+        }
+
+        protected virtual bool OnApplicationShouldRestore(CrystalApplicationShouldRestoreEventArgs args)
+        {
+            //restore if the suspension file is less than 5 hours old.
+            return (args.SuspensionFileDate != null ? (args.SuspensionFileDate - DateTime.Now) < TimeSpan.FromHours(5) : true);
         }
 
         public static Platform GetDevicePlatform()
