@@ -32,6 +32,7 @@ namespace Crystal3
         public CrystalConfiguration Options { get; private set; }
 
         public event EventHandler Restored;
+        public event EventHandler<CrystalApplicationBackgroundActivationEventArgs> BackgroundActivated;
         private bool IsRestored { get; set; }
 
 
@@ -254,14 +255,20 @@ namespace Crystal3
             await AsyncWindowActivate(OnActivationAsync(args));
         }
 
-        protected sealed override async void OnBackgroundActivated(BackgroundActivatedEventArgs args)
+        private sealed override async void OnBackgroundActivated(BackgroundActivatedEventArgs args)
         {
             //var deferral = args.TaskInstance.GetDeferral();
             await OnBackgroundActivatedAsync(args);
             //deferral.Complete();
         }
 
-        public virtual Task OnBackgroundActivatedAsync(BackgroundActivatedEventArgs args) { return Task.CompletedTask; }
+        public virtual Task OnBackgroundActivatedAsync(BackgroundActivatedEventArgs args)
+        {
+            if (BackgroundActivated != null)
+                BackgroundActivated(this, new CrystalApplicationBackgroundActivationEventArgs() { ActivationEventArgs = args });
+
+            return Task.CompletedTask;
+        }
 
         private async Task AsyncWindowActivate(Task activationTask)
         {
