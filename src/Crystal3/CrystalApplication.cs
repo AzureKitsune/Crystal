@@ -255,7 +255,7 @@ namespace Crystal3
             await AsyncWindowActivate(OnActivationAsync(args));
         }
 
-        private sealed override async void OnBackgroundActivated(BackgroundActivatedEventArgs args)
+        protected sealed override async void OnBackgroundActivated(BackgroundActivatedEventArgs args)
         {
             //var deferral = args.TaskInstance.GetDeferral();
             await OnBackgroundActivatedAsync(args);
