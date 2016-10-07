@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Crystal3.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Core;
+using Crystal3.Utilities;
 
 namespace Crystal3.UI.Dispatcher
 {
@@ -111,6 +112,18 @@ namespace Crystal3.UI.Dispatcher
             TaskCompletionSource<T> taskCompletionSource = new TaskCompletionSource<T>();
 
             return RunWithTaskCompletionSource(callback, taskCompletionSource);
+        }
+
+        public async Task YieldAsync()
+        {
+            await dispatcher.Yield();
+        }
+
+        public async Task YieldAsync(IUIDispatcherPriority priority)
+        {
+            CoreDispatcherPriority dispatcherPriority = ConvertIUIDispatcherPriorityToCoreDispatcherPriority(priority);
+
+            await dispatcher.Yield(dispatcherPriority);
         }
     }
 }

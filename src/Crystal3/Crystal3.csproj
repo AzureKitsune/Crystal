@@ -180,6 +180,7 @@
     <Compile Include="UI\StatusManager\StatusManager.cs" />
     <Compile Include="UI\UIViewModelFragmentShim.cs" />
     <Compile Include="Utilities\CollectionExtensions.cs" />
+    <Compile Include="Utilities\DispatcherExtensions.cs" />
     <Compile Include="ViewModelRefreshMethod.cs" />
     <Content Include="Properties\Crystal3.rd.xml" />
   </ItemGroup>

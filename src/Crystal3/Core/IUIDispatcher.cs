@@ -19,6 +19,9 @@ namespace Crystal3.Core
         Task<T> RunWhenIdleAsync<T>(Func<T> callback);
 
         bool HasThreadAccess { get; }
+
+        Task YieldAsync();
+        Task YieldAsync(IUIDispatcherPriority priority);
     }
     public enum IUIDispatcherPriority
     {
