@@ -26,7 +26,7 @@ namespace Crystal3.UI
             this.InitializeComponent();
         }
 
-        public static readonly DependencyProperty AutoInvokeProperty = DependencyProperty.Register("AutoInvoke", typeof(bool), typeof(FragmentContentViewer), new PropertyMetadata(true));
+        public static readonly DependencyProperty AutoInvokeProperty = DependencyProperty.Register("AutoInvoke", typeof(bool), typeof(FragmentContentViewer), new PropertyMetadata(false));
         public bool AutoInvoke
         {
             get { return (bool)GetValue(AutoInvokeProperty); }
@@ -77,7 +77,8 @@ namespace Crystal3.UI
 
                     viewer.PART_ContentPresenter.Content = view;
 
-                    newFragment.Invoke(viewer.DataContext as ViewModelBase, null);
+                    if (viewer.AutoInvoke)
+                        newFragment.Invoke(viewer.DataContext as ViewModelBase, viewer.InvokeParameter);
                 }
             }
             else
