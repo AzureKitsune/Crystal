@@ -26,6 +26,20 @@ namespace Crystal3.UI
             this.InitializeComponent();
         }
 
+        public static readonly DependencyProperty AutoInvokeProperty = DependencyProperty.Register("AutoInvoke", typeof(bool), typeof(FragmentContentViewer), new PropertyMetadata(true));
+        public bool AutoInvoke
+        {
+            get { return (bool)GetValue(AutoInvokeProperty); }
+            set { SetValue(AutoInvokeProperty, value); }
+        }
+
+        public static readonly DependencyProperty InvokeParameterProperty = DependencyProperty.Register("InvokeParameter", typeof(object), typeof(FragmentContentViewer), new PropertyMetadata(false));
+        public object InvokeParameter
+        {
+            get { return GetValue(InvokeParameterProperty); }
+            set { SetValue(InvokeParameterProperty, value); }
+        }
+
         public static readonly DependencyProperty FragmentProperty = DependencyProperty.Register("Fragment", typeof(ViewModelFragment), typeof(FragmentContentViewer), new PropertyMetadata(null, HandleFragmentPropertyChanged));
 
         public ViewModelFragment Fragment
