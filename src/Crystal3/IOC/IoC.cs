@@ -14,7 +14,7 @@ namespace Crystal3.InversionOfControl
         /// </summary>
         public static IoCContainer Current { get; internal set; }
 
-        private static Dictionary<Type, IoCContainer> viewModelContainerList = new Dictionary<Type, IoCContainer>();
+        private static volatile Dictionary<Type, IoCContainer> viewModelContainerList = new Dictionary<Type, IoCContainer>();
 
         public static IoCContainer GetContainerForViewModel<T>() where T : ViewModelBase
         {
@@ -23,14 +23,20 @@ namespace Crystal3.InversionOfControl
 
         public static IoCContainer GetContainerForViewModel(Type type)
         {
-            if (!viewModelContainerList.ContainsKey(type))
+            lock (viewModelContainerList)
             {
-                var cont = new IoCContainer();
-                viewModelContainerList.Add(type, cont);
-                return cont;
+                if (!viewModelContainerList.ContainsKey(type))
+                {
+                    var cont = new IoCContainer();
+                    viewModelContainerList.Add(type, cont);
+                    return cont;
+                }
+                else
+                {
+                    var cont = viewModelContainerList[type] as IoCContainer;
+                    return cont;
+                }
             }
-            else
-                return viewModelContainerList[type] as IoCContainer;
         }
     }
 }

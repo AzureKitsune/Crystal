@@ -25,31 +25,40 @@ namespace Crystal3.InversionOfControl
         /// <param name="objectToRegister">The actual object to be registered.</param>
         public void Register<T>(T objectToRegister) where T : IIoCObject
         {
-            //Makes sure the type parameter is an IIoCObject.
-            if (typeof(T) == typeof(IIoCObject))
-                throw new ArgumentException("Generic argument cannot be IIoCObject.");
+            lock (itemsList)
+            {
+                //Makes sure the type parameter is an IIoCObject.
+                if (typeof(T) == typeof(IIoCObject))
+                    throw new ArgumentException("Generic argument cannot be IIoCObject.");
 
-            if (!(objectToRegister is T))
-                throw new Exception("Object and type do not match!");
+                if (!(objectToRegister is T))
+                    throw new Exception("Object and type do not match!");
 
-            itemsList.Add(new KeyValuePair<Type, IIoCObject>(typeof(T), objectToRegister));
+                itemsList.Add(new KeyValuePair<Type, IIoCObject>(typeof(T), objectToRegister));
+            }
         }
 
         public void Unregister<T>(T objectToUnregister) where T : IIoCObject
         {
-            var matchingItems = itemsList.Where(x => x.Value is T);
-
-            if (matchingItems.Count() > 0)
+            lock (itemsList)
             {
-                var item = matchingItems.FirstOrDefault(x => object.ReferenceEquals((T)x.Value, objectToUnregister));
-                if (item.Value != null)
-                    itemsList.Remove(item);
+                var matchingItems = itemsList.Where(x => x.Value is T);
+
+                if (matchingItems.Count() > 0)
+                {
+                    var item = matchingItems.FirstOrDefault(x => object.ReferenceEquals((T)x.Value, objectToUnregister));
+                    if (item.Value != null)
+                        itemsList.Remove(item);
+                }
             }
         }
 
         public void UnregisterAll()
         {
-            itemsList.Clear();
+            lock (itemsList)
+            {
+                itemsList.Clear();
+            }
         }
 
         /// <summary>
