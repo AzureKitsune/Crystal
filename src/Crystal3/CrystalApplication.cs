@@ -231,7 +231,11 @@ namespace Crystal3
 
                 if (args.PreviousExecutionState != ApplicationExecutionState.Terminated || (args.PreviousExecutionState == ApplicationExecutionState.Terminated && !IsRestored))
                 {
-
+                    if (Options.HandlePrelaunch && args.PrelaunchActivated)
+                    {
+                        await OnPrelaunchAsync(args);
+                        await WaitForPrelaunchVisibilityChangeAsync();
+                    }
                     await AsyncWindowActivate(OnFreshLaunchAsync(args));
                 }
                 else
