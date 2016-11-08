@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
