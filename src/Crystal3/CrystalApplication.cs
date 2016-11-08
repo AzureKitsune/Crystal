@@ -220,6 +220,27 @@ namespace Crystal3
             }
         }
 
+        private Task WaitForPrelaunchVisibilityChangeAsync()
+        {
+            TaskCompletionSource<object> taskSource = new TaskCompletionSource<object>();
+        
+            WindowVisibilityChangedEventHandler handler = null;
+            handler = new WindowVisibilityChangedEventHandler((sender, args) =>
+            {
+                Window.Current.VisibilityChanged -= handler;
+                
+                taskSource.SetResult(null);
+            });
+            Window.Current.VisibilityChanged += handler;
+            
+            return taskSource.Task;
+        }
+
+        protected virtual Task OnPrelaunchAsync(LaunchedActivatedArgs args)
+        {
+            return Task.CompletedTask;
+        }
+
         public IActivatedEventArgs LastActivationArgs { get; private set; }
 
         protected sealed override async void OnLaunched(LaunchActivatedEventArgs args)
@@ -229,6 +250,9 @@ namespace Crystal3
             if (args.PreviousExecutionState != ApplicationExecutionState.Running && args.PreviousExecutionState != ApplicationExecutionState.Suspended && args.TileId == "App")
             {
                 await InitializeRootFrameAsync(args);
+                
+                if (Options.HandlePrelaunch)
+                    CoreApplication.EnablePrelaunch(true);
 
                 if (args.PreviousExecutionState != ApplicationExecutionState.Terminated || (args.PreviousExecutionState == ApplicationExecutionState.Terminated && !IsRestored))
                 {
