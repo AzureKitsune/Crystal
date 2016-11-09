@@ -236,7 +236,7 @@ namespace Crystal3
             return taskSource.Task;
         }
 
-        protected virtual Task OnPrelaunchAsync(LaunchedActivatedArgs args)
+        protected virtual Task OnPrelaunchAsync(LaunchActivatedEventArgs args)
         {
             return Task.CompletedTask;
         }
