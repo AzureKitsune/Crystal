@@ -1,4 +1,6 @@
-﻿using Crystal3.Navigation;
+﻿using Crystal3.Messaging;
+using Crystal3.Navigation;
+using Crystal3.UI;
 using Crystal3.UI.StatusManager;
 using System;
 using System.Collections.Generic;
@@ -94,6 +96,21 @@ namespace Crystal3.Model
                 uiElement.Loaded += loadedHandler;
 
                 return taskSource.Task;
+            }
+
+            public void SendMessageToUI(string message)
+            {
+                if (string.IsNullOrWhiteSpace(message)) throw new ArgumentNullException(nameof(message));
+
+                if (uiElement is FragmentContentViewer)
+                {
+                    var viewer = uiElement as FragmentContentViewer;
+                    viewer.ReceiveMessageFromUIWrapper(message);
+                }
+                else
+                {
+                    Messenger.SendMessageAsync(new Message(message, null));
+                }
             }
         }
     }

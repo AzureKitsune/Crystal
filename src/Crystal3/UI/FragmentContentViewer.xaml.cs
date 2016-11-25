@@ -86,5 +86,23 @@ namespace Crystal3.UI
                 viewer.PART_ContentPresenter.Content = null;
             }
         }
+
+        internal void ReceiveMessageFromUIWrapper(string message)
+        {
+            if (MessageReceived != null)
+                MessageReceived(this, new FragmentContentViewerUIMessageReceivedEventArgs(e));
+        }
+
+        public class FragmentContentViewerUIMessageReceivedEventArgs: EventArgs
+        {
+            internal FragmentContentViewerUIMessageReceivedEventArgs(string message)
+            {
+                Message = message;
+            }
+
+            public string Message { get; private set; }
+        }
+
+        public event EventHandler<FragmentContentViewerUIMessageReceivedEventArgs> MessageReceived;
     }
 }
