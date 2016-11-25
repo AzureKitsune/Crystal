@@ -90,7 +90,7 @@ namespace Crystal3.UI
         internal void ReceiveMessageFromUIWrapper(string message)
         {
             if (MessageReceived != null)
-                MessageReceived(this, new FragmentContentViewerUIMessageReceivedEventArgs(e));
+                MessageReceived(this, new FragmentContentViewerUIMessageReceivedEventArgs(message));
         }
 
         public class FragmentContentViewerUIMessageReceivedEventArgs: EventArgs
