@@ -74,11 +74,11 @@ namespace Crystal3.InversionOfControl
 
             return obj;
         }
-        public T ResolveDefault<T>(Func<T> defaultObjectCreator) where T : IIoCObject
+        public T ResolveDefault<T>(Func<T> defaultObjectCreator = null) where T : IIoCObject
         {
             var obj = (T)itemsList.FirstOrDefault(x => x.Key == typeof(T)).Value;
 
-            if (obj == null) return defaultObjectCreator();
+            if (obj == null) return defaultObjectCreator != null ? defaultObjectCreator() : default(T);
 
             return obj;
         }
