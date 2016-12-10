@@ -128,5 +128,26 @@ namespace Crystal3.Model
             else
                 propertyCollection.Add(propertyName, value); //Adds the property.
         }
+
+        public Task<T> WaitForPropertyChangeAsync<T>(string propertyName)
+        {
+            if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
+            TaskCompletionSource<T> taskSource = new TaskCompletionSource<T>();
+
+            PropertyChangedEventHandler handler = null;
+            handler = new PropertyChangedEventHandler((object sender, PropertyChangedEventArgs args) =>
+            {
+                if (args.PropertyName == propertyName)
+                {
+                    this.PropertyChanged -= handler;
+
+                    taskSource.SetResult(GetPropertyValue<T>(args.PropertyName));
+                }
+            });
+
+            this.PropertyChanged += handler;
+
+            return taskSource.Task;
+        }
     }
 }

@@ -33,6 +33,11 @@ namespace Crystal3.UI
             return page.DataContext as ViewModelBase;
         }
 
+        public static T GetViewModel<T>(this Page page) where T: ViewModelBase
+        {
+            return page.DataContext as T;
+        }
+
         public static Type GetNavigationViewModelType(this Page page)
         {
             TypeInfo pageTypeInfo = page.GetType().GetTypeInfo();
