@@ -222,6 +222,9 @@ namespace Crystal3
 
         private Task WaitForPrelaunchVisibilityChangeAsync()
         {
+            if (Window.Current.Visible)
+                return Task.CompletedTask;
+
             TaskCompletionSource<object> taskSource = new TaskCompletionSource<object>();
         
             WindowVisibilityChangedEventHandler handler = null;
@@ -259,9 +262,15 @@ namespace Crystal3
                     if (Options.HandlePrelaunch && args.PrelaunchActivated)
                     {
                         await OnPrelaunchAsync(args);
+
+                        Window.Current.Activate();
                         await WaitForPrelaunchVisibilityChangeAsync();
+                        await OnFreshLaunchAsync(args);
                     }
-                    await AsyncWindowActivate(OnFreshLaunchAsync(args));
+                    else
+                    {
+                        await AsyncWindowActivate(OnFreshLaunchAsync(args));
+                    }
                 }
                 else
                 {
