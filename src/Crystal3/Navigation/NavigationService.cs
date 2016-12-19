@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -289,31 +290,39 @@ namespace Crystal3.Navigation
 
             ViewModelBase viewModel = null;
 
-            bool viewModelCachingEnabled = Crystal3.CrystalApplication.GetCurrentAsCrystalApplication().Options.EnableViewModelCaching;
-            if (viewModelCachingEnabled)
-                viewModel = Crystal3.CrystalApplication.GetCurrentAsCrystalApplication().ResolveCachedViewModel(viewModelType);
+            bool useDataContext = view.GetTypeInfo().GetCustomAttribute<NavigationViewModelAttribute>()?.UseDataContextInsteadOfCreating;
+
+            if (!useDataContext)
+            {
+                bool viewModelCachingEnabled = Crystal3.CrystalApplication.GetCurrentAsCrystalApplication().Options.EnableViewModelCaching;
+                if (viewModelCachingEnabled)
+                    viewModel = Crystal3.CrystalApplication.GetCurrentAsCrystalApplication().ResolveCachedViewModel(viewModelType);
+            }
 
             NavigatingCancelEventHandler navigatingHandler = null;
             navigatingHandler = new NavigatingCancelEventHandler((object sender, Windows.UI.Xaml.Navigation.NavigatingCancelEventArgs e) =>
             {
                 NavigationFrame.Navigating -= navigatingHandler;
 
-                if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Refresh)
+                if (!useDataContext) //we can't access the data context in this event so don't even bother
                 {
-                    if (viewModel == null)
-                        viewModel = Activator.CreateInstance(viewModelType) as ViewModelBase;
+                    if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Refresh)
+                    {
+                        if (viewModel == null)
+                            viewModel = Activator.CreateInstance(viewModelType) as ViewModelBase;
 
-                    viewModel.NavigationService = this;
+                        viewModel.NavigationService = this;
 
-                    if (lastViewModel != null)
-                        e.Cancel = lastViewModel.OnNavigatingFrom(sender, new CrystalNavigationEventArgs(e) { Direction = ConvertToCrystalNavDirections(e.NavigationMode) });
+                        if (lastViewModel != null)
+                            e.Cancel = lastViewModel.OnNavigatingFrom(sender, new CrystalNavigationEventArgs(e) { Direction = ConvertToCrystalNavDirections(e.NavigationMode) });
 
-                    viewModel.OnNavigatingTo(sender, new CrystalNavigationEventArgs(e) { Direction = ConvertToCrystalNavDirections(e.NavigationMode) });
+                        viewModel.OnNavigatingTo(sender, new CrystalNavigationEventArgs(e) { Direction = ConvertToCrystalNavDirections(e.NavigationMode) });
+                    }
+                    //else if (e.NavigationMode == NavigationMode.Back)
+                    //{
+                    //    e.Cancel = viewModel.OnNavigatingFrom(sender, e);
+                    //}
                 }
-                //else if (e.NavigationMode == NavigationMode.Back)
-                //{
-                //    e.Cancel = viewModel.OnNavigatingFrom(sender, e);
-                //}
             });
 
             NavigatedEventHandler navigatedHandler = null;
@@ -339,9 +348,16 @@ namespace Crystal3.Navigation
 
                     //page.NavigationCacheMode = NavigationCacheMode.Enabled;
 
-                    if (viewModel == null) throw new Exception();
+                    if (!useDataContext)
+                    {
+                        page.DataContext = viewModel;
+                    }
+                    else
+                    {
+                        viewModel = page.DataContext as ViewModelBase;
+                    }
 
-                    page.DataContext = viewModel;
+                    if (viewModel == null) throw new Exception();
 
                     if (viewModel is UIViewModelBase)
                         ((UIViewModelBase)viewModel).UI.SetUIElement(page);
