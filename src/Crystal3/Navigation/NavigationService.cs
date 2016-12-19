@@ -290,7 +290,7 @@ namespace Crystal3.Navigation
 
             ViewModelBase viewModel = null;
 
-            bool useDataContext = view.GetTypeInfo().GetCustomAttribute<NavigationViewModelAttribute>()?.UseDataContextInsteadOfCreating;
+            bool useDataContext = (bool)view.GetTypeInfo().GetCustomAttribute<NavigationViewModelAttribute>()?.UseDataContextInsteadOfCreating;
 
             if (!useDataContext)
             {
