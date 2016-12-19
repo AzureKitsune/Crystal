@@ -289,6 +289,10 @@ namespace Crystal3.Navigation
 
             ViewModelBase viewModel = null;
 
+            bool viewModelCachingEnabled = Crystal3.CrystalApplication.GetCurrentAsCrystalApplication().Options.EnableViewModelCaching;
+            if (viewModelCachingEnabled)
+                viewModel = Crystal3.CrystalApplication.GetCurrentAsCrystalApplication().ResolveCachedViewModel(viewModelType);
+
             NavigatingCancelEventHandler navigatingHandler = null;
             navigatingHandler = new NavigatingCancelEventHandler((object sender, Windows.UI.Xaml.Navigation.NavigatingCancelEventArgs e) =>
             {
@@ -296,7 +300,9 @@ namespace Crystal3.Navigation
 
                 if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Refresh)
                 {
-                    viewModel = Activator.CreateInstance(viewModelType) as ViewModelBase;
+                    if (viewModel == null)
+                        viewModel = Activator.CreateInstance(viewModelType) as ViewModelBase;
+
                     viewModel.NavigationService = this;
 
                     if (lastViewModel != null)

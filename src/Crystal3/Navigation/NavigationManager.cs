@@ -110,7 +110,7 @@ namespace Crystal3.Navigation
             {
                 //Call a virtual void implemented by the user and have them return the type of view to show.
                 //Override this process if you want to show a different view based on the platform.
-                var pageType = AppInstance.ResolveStaticPage(viewModelType);
+                var pageType = AppInstance.ResolveStaticPageType(viewModelType);
 
                 if (!viewModelViewMappings.ContainsKey(viewModelType))
                     viewModelViewMappings.Add(viewModelType, pageType);

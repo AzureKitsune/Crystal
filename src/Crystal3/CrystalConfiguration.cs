@@ -16,6 +16,7 @@ namespace Crystal3
             OverridePlatformDetection = false;
         }
 
+        public bool EnableViewModelCaching { get; set; }
         public bool HandlePrelaunch { get; set; }
         public bool HandleSystemBackNavigation { get; set; }
         public bool HandleBackButtonForTopLevelNavigation { get; set; }

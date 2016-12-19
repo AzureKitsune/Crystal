@@ -448,7 +448,12 @@ namespace Crystal3
                 return SystemInformation.GetDevicePlatform();
         }
 
-        protected internal virtual Type ResolveStaticPage(Type viewModelType)
+        protected internal virtual Type ResolveStaticPageType(Type viewModelType)
+        {
+            return null;
+        }
+
+        protected internal virtual ViewModelBase ResolveCachedViewModel(Type viewModelType)
         {
             return null;
         }
