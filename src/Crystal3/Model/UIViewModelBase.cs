@@ -53,6 +53,7 @@ namespace Crystal3.Model
         public class UIViewModelBaseUIWrapper
         {
             private FrameworkElement uiElement = null;
+            private FragmentContentViewer uiViewer = null;
             internal UIViewModelBaseUIWrapper()
             {
 
@@ -63,9 +64,10 @@ namespace Crystal3.Model
 
             }
 
-            internal void SetUIElement(FrameworkElement element)
+            internal void SetUIElement(FrameworkElement element, FragmentContentViewer viewer = null)
             {
                 uiElement = element;
+                uiViewer = viewer;
             }
 
             public Task WaitForUILoadAsync()
@@ -102,10 +104,9 @@ namespace Crystal3.Model
             {
                 if (string.IsNullOrWhiteSpace(message)) throw new ArgumentNullException(nameof(message));
 
-                if (uiElement is FragmentContentViewer)
+                if (uiViewer != null)
                 {
-                    var viewer = uiElement as FragmentContentViewer;
-                    viewer.ReceiveMessageFromUIWrapper(message);
+                    uiViewer.ReceiveMessageFromUIWrapper(message);
                 }
                 else
                 {

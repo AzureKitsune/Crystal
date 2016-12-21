@@ -73,7 +73,7 @@ namespace Crystal3.UI
                     var newFragment = newValue as ViewModelFragment;
 
                     view.DataContext = newFragment;
-                    newFragment.UI.SetUIElement(view);
+                    newFragment.UI.SetUIElement(view, viewer);
 
                     viewer.PART_ContentPresenter.Content = view;
 
