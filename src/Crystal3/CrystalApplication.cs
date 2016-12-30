@@ -131,6 +131,7 @@ namespace Crystal3
                 InitializeNavigation(navManager);
             }
 
+            await OnApplicationInitializedAsync();
 
             if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
             {
@@ -226,16 +227,16 @@ namespace Crystal3
                 return Task.CompletedTask;
 
             TaskCompletionSource<object> taskSource = new TaskCompletionSource<object>();
-        
+
             WindowVisibilityChangedEventHandler handler = null;
             handler = new WindowVisibilityChangedEventHandler((sender, args) =>
             {
                 Window.Current.VisibilityChanged -= handler;
-                
+
                 taskSource.SetResult(null);
             });
             Window.Current.VisibilityChanged += handler;
-            
+
             return taskSource.Task;
         }
 
@@ -253,7 +254,7 @@ namespace Crystal3
             if (args.PreviousExecutionState != ApplicationExecutionState.Running && args.PreviousExecutionState != ApplicationExecutionState.Suspended && args.TileId == "App")
             {
                 await InitializeRootFrameAsync(args);
-                
+
                 if (Options.HandlePrelaunch)
                     CoreApplication.EnablePrelaunch(true);
 
@@ -433,6 +434,8 @@ namespace Crystal3
         {
             return Task.CompletedTask;
         }
+
+        protected internal virtual Task OnApplicationInitializedAsync() { return Task.CompletedTask; }
 
         protected virtual bool OnApplicationShouldRestore(CrystalApplicationShouldRestoreEventArgs args)
         {
