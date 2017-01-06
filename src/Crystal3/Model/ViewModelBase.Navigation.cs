@@ -14,7 +14,7 @@ namespace Crystal3.Model
         /// <summary>
         /// Returns this View Model's NavigationService instance.
         /// </summary>
-        protected internal NavigationService NavigationService { get; internal set; }
+        protected internal NavigationServiceBase NavigationService { get; internal set; }
 
         /// <summary>
         /// Returns the FrameLevel of this View Model's NavigationService.

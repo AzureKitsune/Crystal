@@ -21,14 +21,14 @@ namespace Crystal3.Navigation
         /// <ViewModelType, PageType>
         /// </summary>
         private static Dictionary<Type, Type> viewModelViewMappings = new Dictionary<Type, Type>();
-        private List<NavigationService> navigationServices = new List<NavigationService>();
+        private List<NavigationServiceBase> navigationServices = new List<NavigationServiceBase>();
         #endregion
 
         #region properties
         /// <summary>
         /// Returns the NavigationService for this Window that has a FrameLevel of One.
         /// </summary>
-        public NavigationService RootNavigationService { get; internal set; }
+        public NavigationServiceBase RootNavigationService { get; internal set; }
         /// <summary>
         /// Represent the instance of Application (CrystalApplication) that was initialized when the Application started.
         /// </summary>
@@ -123,7 +123,7 @@ namespace Crystal3.Navigation
         /// Registers the NavigationService with the NavigationManager.
         /// </summary>
         /// <param name="service">The NavigationService to be registered.</param>
-        internal void RegisterNavigationService(NavigationService service)
+        internal void RegisterNavigationService(NavigationServiceBase service)
         {
             //Null check.
             if (service == null) throw new ArgumentNullException("service");
@@ -145,7 +145,7 @@ namespace Crystal3.Navigation
         /// <param name="frame">The frame to be used to create the service.</param>
         /// <param name="frameLevel">The frame level of the new service.</param>
         /// <returns></returns>
-        public NavigationService RegisterFrameAsNavigationService(Frame frame, FrameLevel frameLevel = FrameLevel.Two)
+        public FrameNavigationService RegisterFrameAsNavigationService(Frame frame, FrameLevel frameLevel = FrameLevel.Two)
         {
             //Check if the user is trying to register a top-level Navigation Service.
             if (RootNavigationService != null && frameLevel == FrameLevel.One)
@@ -158,7 +158,7 @@ namespace Crystal3.Navigation
                 throw new Exception();
 
             //Creates the new service.
-            var service = new NavigationService(frame, this, frameLevel);
+            var service = new FrameNavigationService(frame, this, frameLevel);
 
             //navigationServices.Add(service);
 
@@ -180,13 +180,13 @@ namespace Crystal3.Navigation
         /// </summary>
         /// <param name="level">The FrameLevel of the service to return.</param>
         /// <returns></returns>
-        public NavigationService GetNavigationServiceFromFrameLevel(FrameLevel level = FrameLevel.One)
+        public NavigationServiceBase GetNavigationServiceFromFrameLevel(FrameLevel level = FrameLevel.One)
         {
-            var service = navigationServices.FirstOrDefault<NavigationService>(x => x.NavigationLevel == level);
+            var service = navigationServices.FirstOrDefault<NavigationServiceBase>(x => x.NavigationLevel == level);
             return service;
         }
 
-        internal IEnumerable<NavigationService> GetAllServices()
+        internal IEnumerable<NavigationServiceBase> GetAllServices()
         {
             return navigationServices;
         }

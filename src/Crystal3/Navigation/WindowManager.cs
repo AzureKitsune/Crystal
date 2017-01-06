@@ -61,11 +61,7 @@ namespace Crystal3.Navigation
         internal static ViewModelBase GetRootViewModelForCurrentWindow()
         {
             var navManager = GetNavigationManagerForCurrentWindow();
-            var frame = navManager.RootNavigationService.NavigationFrame;
-            var page = frame.Content as Page;
-            var viewModel = page.DataContext as ViewModelBase;
-
-            return viewModel;
+            return navManager.RootNavigationService.GetNavigatedViewModel();
         }
 
         /// <summary>
@@ -86,7 +82,7 @@ namespace Crystal3.Navigation
                 var frame = new Frame();
 
                 var navManager = new NavigationManager((CrystalApplication)CrystalApplication.Current);
-                navManager.RootNavigationService = new NavigationService(frame, navManager);
+                navManager.RootNavigationService = new FrameNavigationService(frame, navManager);
 
                 Window.Current.Content = frame;
 

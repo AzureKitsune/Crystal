@@ -22,14 +22,17 @@ namespace Crystal3.Navigation
             NavigationManager = navManager;
             StatusManager = statManager;
 
-            NavigationManager.RootNavigationService.NavigationFrame.Navigated += HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated;
+            //todo figure out a better way to handle this.
+            if (NavigationManager.RootNavigationService is FrameNavigationService)
+                ((FrameNavigationService)NavigationManager.RootNavigationService).NavigationFrame.Navigated += HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated;
 
             WindowView.Closed += WindowView_Closed;
         }
 
         private void WindowView_Closed(object sender, CoreWindowEventArgs e)
         {
-            NavigationManager.RootNavigationService.NavigationFrame.Navigated -= HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated;
+            if (NavigationManager.RootNavigationService is FrameNavigationService)
+                ((FrameNavigationService)NavigationManager.RootNavigationService).NavigationFrame.Navigated -= HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated;
         }
 
         internal Window WindowView { get; private set; }
@@ -38,22 +41,22 @@ namespace Crystal3.Navigation
 
         private void HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
         {
-            RefreshAppViewBackButtonVisibility(sender as Frame);
+            RefreshAppViewBackButtonVisibility(NavigationManager.RootNavigationService);
         }
 
-        private void RefreshAppViewBackButtonVisibility(Frame sender)
+        private void RefreshAppViewBackButtonVisibility(NavigationServiceBase sender)
         {
             if (sender == null) throw new ArgumentNullException("sender");
 
             if (((CrystalApplication)CrystalApplication.Current).Options.HandleBackButtonForTopLevelNavigation)
             {
-                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = ((Frame)sender).CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = sender.CanGoBackward ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
             }
         }
 
         public void RefreshAppViewBackButtonVisibility()
         {
-            RefreshAppViewBackButtonVisibility(NavigationManager.RootNavigationService.NavigationFrame);
+            RefreshAppViewBackButtonVisibility(NavigationManager.RootNavigationService);
         }
 
         //not very mvvm-y
@@ -64,12 +67,7 @@ namespace Crystal3.Navigation
 
         internal ViewModelBase GetRootViewModel()
         {
-            var navManager = NavigationManager;
-            var frame = navManager.RootNavigationService.NavigationFrame;
-            var page = frame.Content as Page;
-            var viewModel = page.DataContext as ViewModelBase;
-
-            return viewModel;
+            return NavigationManager.RootNavigationService.GetNavigatedViewModel();
         }
     }
 }

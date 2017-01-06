@@ -148,7 +148,8 @@
     <Compile Include="Navigation\NavigationAttributes.cs" />
     <Compile Include="Navigation\NavigationManager.cs" />
     <Compile Include="Navigation\NavigationManagerPreBackRequestedEventArgs.cs" />
-    <Compile Include="Navigation\NavigationService.cs" />
+    <Compile Include="Navigation\FrameNavigationService.cs" />
+    <Compile Include="Navigation\NavigationServiceBase.cs" />
     <Compile Include="Navigation\NavigationServicePreNavigatedSignaledEventArgs.cs" />
     <Compile Include="Navigation\NavigationViewModelAttribute.cs" />
     <Compile Include="Navigation\NavigationViewSupportedPlatform.cs" />
@@ -201,6 +202,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

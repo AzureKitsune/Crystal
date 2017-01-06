@@ -16,32 +16,18 @@ namespace Crystal3.Navigation
     /// <summary>
     /// Service for handling navigation on the user-level.
     /// </summary>
-    public class NavigationService
+    public class FrameNavigationService: NavigationServiceBase
     {
-        private ViewModelBase lastViewModel = null;
-        private ManualResetEvent navigationLock = null;
-
         //TODO pass CrystalNavigationEventArgs instead of the built-in WinRT event args
 
         /// <summary>
         /// The frame attached to this service.
         /// </summary>
-        public Frame NavigationFrame { get; private set; }
-        /// <summary>
-        /// The frame level of this service.
-        /// </summary>
-        public FrameLevel NavigationLevel { get; internal set; }
-        internal NavigationManager NavigationManager { get; set; }
+        public Frame NavigationFrame { get; protected set; }
 
-        /// <summary>
-        /// Returns if the frame can go backward in its back stack.
-        /// </summary>
-        public bool CanGoBackward { get { return NavigationFrame.CanGoBack; } }
+        public override bool CanGoBackward { get { return NavigationFrame != null ? NavigationFrame.CanGoBack : false; } }
 
-        private Stack<ViewModelBase> viewModelBackStack = null;
-        private Stack<ViewModelBase> viewModelForwardStack = null;
-
-        internal NavigationService(Frame navFrame, NavigationManager manager)
+        internal FrameNavigationService(Frame navFrame, NavigationManager manager)
         {
             if (navFrame == null) throw new ArgumentNullException("navFrame");
 
@@ -87,7 +73,7 @@ namespace Crystal3.Navigation
         /// <summary>
         /// Goes backward in the back stack.
         /// </summary>
-        public void GoBack()
+        public override void GoBack()
         {
             //Navigation is asynchronous so it had to be synchronized or else it would cause problems with an earlier app I was writing.
             navigationLock.WaitOne();
@@ -101,11 +87,11 @@ namespace Crystal3.Navigation
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public bool IsNavigatedTo<T>() where T : ViewModelBase
+        public override bool IsNavigatedTo<T>()
         {
             return ((Page)NavigationFrame.Content)?.DataContext is T;
         }
-        public bool IsNavigatedTo(Type viewModelType)
+        public override bool IsNavigatedTo(Type viewModelType)
         {
             return (((Page)NavigationFrame.Content)?.DataContext)?.GetType() == viewModelType;
         }
@@ -114,7 +100,7 @@ namespace Crystal3.Navigation
         /// Returns the current view's view model. Niche usage.
         /// </summary>
         /// <returns></returns>
-        public ViewModelBase GetNavigatedViewModel()
+        public override ViewModelBase GetNavigatedViewModel()
         {
             return (ViewModelBase)((Page)NavigationFrame.Content)?.DataContext;
         }
@@ -122,7 +108,7 @@ namespace Crystal3.Navigation
         /// <summary>
         /// Clears the back stack.
         /// </summary>
-        public void ClearBackStack()
+        public override void ClearBackStack()
         {
             viewModelBackStack.Clear();
             NavigationFrame.BackStack.Clear();
@@ -166,8 +152,7 @@ namespace Crystal3.Navigation
                     var viewModel = viewModelBackStack.Pop();
 
 
-                    if (NavigationServicePreNavigatedSignaled != null)
-                        NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs(e)));
+                    InvokePreNavigatedEvent(new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs(e)));
 
 
                     if (viewModel == null) throw new Exception();
@@ -187,7 +172,7 @@ namespace Crystal3.Navigation
             }
         }
 
-        internal void HandleTerminationReload(NavigationEventArgs args = null)
+        internal override void HandleTerminationReload(NavigationEventArgs args = null)
         {
             //since the page is going to be created, we need to recreate the viewmodel and inject it.
 
@@ -210,8 +195,7 @@ namespace Crystal3.Navigation
                 lastViewModel = viewModel;
 
 
-                if (NavigationServicePreNavigatedSignaled != null)
-                    NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs()));
+                InvokePreNavigatedEvent(new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs()));
             }
         }
 
@@ -231,7 +215,7 @@ namespace Crystal3.Navigation
             return CrystalNavigationDirection.None;
         }
 
-        internal NavigationService(Frame navFrame, NavigationManager manager, FrameLevel navigationLevel) : this(navFrame, manager)
+        internal FrameNavigationService(Frame navFrame, NavigationManager manager, FrameLevel navigationLevel) : this(navFrame, manager)
         {
             NavigationLevel = navigationLevel;
         }
@@ -251,20 +235,13 @@ namespace Crystal3.Navigation
                 await waitForNavigationAsyncTask;
             }
         }
-
-        public void SafeNavigateTo<T>(object parameter = null) where T : ViewModelBase
-        {
-            if (IsNavigatedTo<T>())
-                GetNavigatedViewModel().OnNavigatedTo(this, new CrystalNavigationEventArgs() { Direction = CrystalNavigationDirection.Refresh, Parameter = parameter });
-            else
-                NavigateTo<T>(parameter);
-        }
+      
         /// <summary>
         /// Navigates to the view that corresponds to the view model provided.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="parameter"></param>
-        public void NavigateTo<T>(object parameter = null) where T : ViewModelBase
+        public override void NavigateTo<T>(object parameter = null)
         {
             navigationLock.WaitOne();
 
@@ -331,8 +308,7 @@ namespace Crystal3.Navigation
                 NavigationFrame.Navigated -= navigatedHandler;
 
 
-                if (NavigationServicePreNavigatedSignaled != null)
-                    NavigationServicePreNavigatedSignaled(this, new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs(e)));
+                InvokePreNavigatedEvent(new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs(e)));
 
 
                 if (e.NavigationMode == NavigationMode.New)
@@ -383,22 +359,6 @@ namespace Crystal3.Navigation
             NavigationFrame.Navigating += navigatingHandler;
 
             NavigationFrame.Navigate(view, parameter);
-        }
-
-        /// <summary>
-        /// A workaround for .NET event's first-subscribe, last-fire approach.
-        /// </summary>
-        public event EventHandler<NavigationServicePreNavigatedSignaledEventArgs> NavigationServicePreNavigatedSignaled;
-
-        public event EventHandler<NavigationManagerPreBackRequestedEventArgs> PreBackRequested;
-        internal bool SignalPreBackRequested()
-        {
-            NavigationManagerPreBackRequestedEventArgs eventArgs = new NavigationManagerPreBackRequestedEventArgs();
-
-            if (PreBackRequested != null)
-                PreBackRequested(this, eventArgs);
-
-            return eventArgs.Handled;
         }
     }
 }

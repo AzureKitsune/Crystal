@@ -30,7 +30,7 @@ namespace Crystal3.Core
                     var navLvlAttr = new XAttribute("NavigationLevel", navsrv.NavigationLevel);
                     navsrvElement.Add(navLvlAttr);
 
-                    var naviState = new XElement("NavigationState", navsrv.NavigationFrame.GetNavigationState());
+                    var naviState = new XElement("NavigationState", (navsrv is FrameNavigationService ? ((FrameNavigationService)navsrv).NavigationFrame.GetNavigationState() : ""));
                     navsrvElement.Add(naviState);
 
                     var rootViewModel = navsrv.GetNavigatedViewModel();
@@ -94,8 +94,12 @@ namespace Crystal3.Core
                     {
                         var navisrv = window.NavigationManager.GetNavigationServiceFromFrameLevel((FrameLevel)Enum.Parse(typeof(FrameLevel), navisrvElement.Attribute("NavigationLevel").Value));
 
-                        navisrv.NavigationFrame.SetNavigationState(navisrvElement.Element("NavigationState").Value);
-                        navisrv.HandleTerminationReload();
+                        if (navisrv is FrameNavigationService)
+                        {
+                            ((FrameNavigationService)navisrv).NavigationFrame.SetNavigationState(navisrvElement.Element("NavigationState").Value);
+                            ((FrameNavigationService)navisrv).HandleTerminationReload();
+                        }
+
                         var viewModel = navisrv.GetNavigatedViewModel();
                         if (viewModel != null)
                         {
