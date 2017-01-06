@@ -31,6 +31,16 @@ namespace Crystal3.Navigation
         {
             if (navFrame == null) throw new ArgumentNullException("navFrame");
 
+            CoreInitialize(navFrame, manager);
+
+            CrystalApplication.Current.Resuming += Current_Resuming;
+            CrystalApplication.Current.Suspending += Current_Suspending;
+
+            NavigationManager.RegisterNavigationService(this);
+        }
+
+        private void CoreInitialize(Frame navFrame, NavigationManager manager)
+        {
             navigationLock = new ManualResetEvent(true);
 
             NavigationManager = manager;
@@ -40,15 +50,20 @@ namespace Crystal3.Navigation
             viewModelBackStack = new Stack<ViewModelBase>();
             viewModelForwardStack = new Stack<ViewModelBase>();
 
-            NavigationManager.RegisterNavigationService(this);
-
             NavigationFrame.Navigating += NavigationFrame_Navigating;
             NavigationFrame.Navigated += NavigationFrame_Navigated;
             NavigationFrame.NavigationFailed += NavigationFrame_NavigationFailed;
             NavigationFrame.NavigationStopped += NavigationFrame_NavigationStopped;
+        }
 
-            CrystalApplication.Current.Resuming += Current_Resuming;
-            CrystalApplication.Current.Suspending += Current_Suspending;
+        internal FrameNavigationService(Frame navFrame, NavigationManager manager, FrameLevel navigationLevel) : this(navFrame, manager)
+        {
+            NavigationLevel = navigationLevel;
+        }
+
+        public FrameNavigationService(Frame navFrame)
+        {
+            CoreInitialize(navFrame, WindowManager.GetNavigationManagerForCurrentWindow());
         }
 
         private void Current_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
@@ -215,11 +230,6 @@ namespace Crystal3.Navigation
             return CrystalNavigationDirection.None;
         }
 
-        internal FrameNavigationService(Frame navFrame, NavigationManager manager, FrameLevel navigationLevel) : this(navFrame, manager)
-        {
-            NavigationLevel = navigationLevel;
-        }
-
 
         private Task waitForNavigationAsyncTask = null;
         private async Task WaitForNavigationLockAsync()
@@ -245,7 +255,7 @@ namespace Crystal3.Navigation
         {
             navigationLock.WaitOne();
 
-            var view = NavigationManager.GetViewType(typeof(T));
+            var view = GetViewType(typeof(T));
 
             NavigateBase(typeof(T), view, parameter);
         }
@@ -256,7 +266,7 @@ namespace Crystal3.Navigation
 
             navigationLock.WaitOne();
 
-            var view = NavigationManager.GetViewType(viewModelType);
+            var view = GetViewType(viewModelType);
 
             NavigateBase(viewModelType, view, parameter);
         }

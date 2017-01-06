@@ -139,6 +139,27 @@ namespace Crystal3.Navigation
                 navigationServices.Add(service);
         }
 
+        public void RegisterCustomNavigationService(NavigationServiceBase service, FrameLevel frameLevel = FrameLevel.Two)
+        {
+            //Check if the user is trying to register a top-level Navigation Service.
+            if (RootNavigationService != null && frameLevel == FrameLevel.One)
+            {
+                throw new Exception("There can only be one level-one navigation service.");
+            }
+
+            //If it isn't already in the list, add it.
+            if (navigationServices.Any(x => x.NavigationLevel == frameLevel))
+                throw new Exception();
+
+            if (service == null)
+                throw new ArgumentNullException(nameof(service));
+
+            service.NavigationLevel = frameLevel;
+            service.NavigationManager = this;
+
+            navigationServices.Add(service);
+        }
+
         /// <summary>
         /// Registers a Frame object as a NavigationService and returns the instance of the new service.
         /// </summary>

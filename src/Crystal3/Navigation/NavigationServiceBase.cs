@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -18,7 +19,7 @@ namespace Crystal3.Navigation
         /// <summary>
         /// The frame level of this service.
         /// </summary>
-        public FrameLevel NavigationLevel { get; internal set; }
+        public FrameLevel NavigationLevel { get; internal set; } = FrameLevel.None;
         internal NavigationManager NavigationManager { get; set; }
 
         /// <summary>
@@ -77,5 +78,24 @@ namespace Crystal3.Navigation
             return eventArgs.Handled;
         }
 
+        protected void SetViewModelUIElement(UIViewModelBase viewModel, FrameworkElement element)
+        {
+            viewModel?.UI.SetUIElement(element);
+        }
+
+        protected void FireViewModelNavigatedToEvent(ViewModelBase viewModel, CrystalNavigationEventArgs args)
+        {
+            viewModel?.OnNavigatedTo(this, args);
+        }
+
+        protected void FireViewModelNavigatedFromEvent(ViewModelBase viewModel, CrystalNavigationEventArgs args)
+        {
+            viewModel?.OnNavigatedFrom(viewModel, args);
+        }
+
+        protected Type GetViewType(Type viewModelType)
+        {
+            return NavigationManager.GetViewType(viewModelType);
+        }
     }
 }

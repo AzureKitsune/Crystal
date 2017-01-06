@@ -79,7 +79,8 @@ namespace Crystal3
                 var frame = new Frame();
 
                 var navManager = new NavigationManager(this);
-                navManager.RootNavigationService = new FrameNavigationService(frame, navManager);
+                var navService = new FrameNavigationService(frame, navManager);
+                navManager.RootNavigationService = navService;
 
                 args.Window.Content = frame;
 
