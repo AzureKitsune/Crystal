@@ -137,8 +137,10 @@ namespace Crystal3.Navigation
 
         private void NavigationFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
         {
-            navigationLock.Set();
-            e.Handled = true;
+            throw new Exception("Navigation failed", e.Exception);
+
+            //navigationLock.Set();
+            //e.Handled = true;
         }
 
         private void NavigationFrame_Navigating(object sender, NavigatingCancelEventArgs e)
