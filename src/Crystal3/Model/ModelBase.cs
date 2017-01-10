@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Crystal3.Core;
+using Crystal3.InversionOfControl;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -38,8 +40,16 @@ namespace Crystal3.Model
         {
             if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentNullException("propertyName");
 
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            var dispatcher = IoC.Current.Resolve<IUIDispatcher>();
+            if (dispatcher.HasThreadAccess)
+            {
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+            else
+            {
+                dispatcher.RunAsync(() => RaisePropertyChanged(propertyName)).Wait();
+            }
         }
 
         /// <summary>
