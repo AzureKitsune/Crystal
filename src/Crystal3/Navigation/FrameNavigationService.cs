@@ -16,7 +16,7 @@ namespace Crystal3.Navigation
     /// <summary>
     /// Service for handling navigation on the user-level.
     /// </summary>
-    public class FrameNavigationService: NavigationServiceBase
+    public class FrameNavigationService : NavigationServiceBase
     {
         //TODO pass CrystalNavigationEventArgs instead of the built-in WinRT event args
 
@@ -64,6 +64,29 @@ namespace Crystal3.Navigation
         public FrameNavigationService(Frame navFrame)
         {
             CoreInitialize(navFrame, WindowManager.GetNavigationManagerForCurrentWindow());
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            Reset();
+
+            NavigationFrame.Navigating -= NavigationFrame_Navigating;
+            NavigationFrame.Navigated -= NavigationFrame_Navigated;
+            NavigationFrame.NavigationFailed -= NavigationFrame_NavigationFailed;
+            NavigationFrame.NavigationStopped -= NavigationFrame_NavigationStopped;
+
+            navigationLock.Dispose();
+        }
+
+        public override void Reset()
+        {
+            ClearBackStack();
+            NavigationFrame?.ForwardStack.Clear();
+            viewModelForwardStack?.Clear();
+            NavigationFrame.Content = null;
+            lastViewModel = null;
         }
 
         private void Current_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
@@ -125,8 +148,8 @@ namespace Crystal3.Navigation
         /// </summary>
         public override void ClearBackStack()
         {
-            viewModelBackStack.Clear();
-            NavigationFrame.BackStack.Clear();
+            viewModelBackStack?.Clear();
+            NavigationFrame?.BackStack.Clear();
         }
 
 
@@ -247,7 +270,7 @@ namespace Crystal3.Navigation
                 await waitForNavigationAsyncTask;
             }
         }
-      
+
         /// <summary>
         /// Navigates to the view that corresponds to the view model provided.
         /// </summary>
