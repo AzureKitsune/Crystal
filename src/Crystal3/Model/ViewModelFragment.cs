@@ -47,10 +47,17 @@ namespace Crystal3.Model
         {
             return base.OnRefreshingAsync();
         }
+
         #endregion
 
-        public abstract void Invoke(ViewModelBase viewModel, object data);
+        public virtual void Invoke(ViewModelBase viewModel, object data)
+        {
+            return;
+        }
         public virtual void OnVisibilityChanged(Visibility visibility, object data)  { }
-        public abstract void Dispose();
+        public virtual void Dispose()
+        {
+            return;
+        }
     }
 }

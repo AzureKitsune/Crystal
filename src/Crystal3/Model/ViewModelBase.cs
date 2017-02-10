@@ -33,6 +33,11 @@ namespace Crystal3.Model
             propertyCollection = new Dictionary<string, object>();
         }
 
+        protected IoCContainer GetViewModelIoCContainer()
+        {
+            return IoC.GetContainerForViewModel(this.GetType());
+        }
+
         /// <summary>
         /// Raises the PropertyChanged event for the specified property.
         /// </summary>
