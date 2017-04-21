@@ -53,12 +53,23 @@ namespace Crystal3.Navigation
 
         public virtual void SafeNavigateTo<T>(object parameter = null) where T : ViewModelBase
         {
-            if (IsNavigatedTo<T>())
-                GetNavigatedViewModel().OnNavigatedTo(this, new CrystalNavigationEventArgs() { Direction = CrystalNavigationDirection.Refresh, Parameter = parameter });
-            else
-                NavigateTo<T>(parameter);
+            SafeNavigate(typeof(T), parameter);
         }
 
+        public virtual void SafeNavigate(Type navigationViewModel, object parameter = null)
+        {
+            if (IsNavigatedTo(navigationViewModel))
+            {
+                GetNavigatedViewModel().OnNavigatedTo(this,
+                    new CrystalNavigationEventArgs() { Direction = CrystalNavigationDirection.Refresh, Parameter = parameter });
+            }
+            else
+            {
+                Navigate(navigationViewModel, parameter);
+            }
+        }
+
+        public abstract void Navigate(Type viewModelType, object parameter = null);
         public abstract void NavigateTo<T>(object parameter = null) where T : ViewModelBase;
 
         internal virtual void HandleTerminationReload(NavigationEventArgs args = null) { }

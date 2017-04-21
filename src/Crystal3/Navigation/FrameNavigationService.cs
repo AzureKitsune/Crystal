@@ -285,7 +285,7 @@ namespace Crystal3.Navigation
             NavigateBase(typeof(T), view, parameter);
         }
 
-        public void Navigate(Type viewModelType, object parameter = null)
+        public override void Navigate(Type viewModelType, object parameter = null)
         {
             if (viewModelType == null) throw new ArgumentNullException("viewModelType");
 
