@@ -208,6 +208,8 @@ namespace Crystal3.Navigation
                     HandleTerminationReload(e);
                 }
 
+                InvokeNavigatedEvent(new CrystalNavigationEventArgs(e) { Direction = ConvertToCrystalNavDirections(e.NavigationMode) });
+
                 navigationLock.Set();
             }
         }
@@ -342,9 +344,7 @@ namespace Crystal3.Navigation
             {
                 NavigationFrame.Navigated -= navigatedHandler;
 
-
                 InvokePreNavigatedEvent(new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs(e)));
-
 
                 if (e.NavigationMode == NavigationMode.New)
                 {
@@ -384,6 +384,8 @@ namespace Crystal3.Navigation
                 //{
                 //    viewModel.OnNavigatedFrom(sender, e);
                 //}
+
+                InvokeNavigatedEvent(new CrystalNavigationEventArgs(e) { Direction = ConvertToCrystalNavDirections(e.NavigationMode), Parameter = e.Parameter });
 
                 navigationLock.Set();
             });

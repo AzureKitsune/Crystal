@@ -83,6 +83,11 @@ namespace Crystal3.Navigation
             NavigationServicePreNavigatedSignaled?.Invoke(this, args);
         }
 
+        public event EventHandler<CrystalNavigationEventArgs> Navigated;
+        protected void InvokeNavigatedEvent(CrystalNavigationEventArgs args)
+        {
+            Navigated?.Invoke(this, args);
+        }
         public event EventHandler<NavigationManagerPreBackRequestedEventArgs> PreBackRequested;
         internal bool SignalPreBackRequested()
         {
