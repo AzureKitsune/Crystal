@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -117,6 +118,28 @@ namespace Crystal3.Navigation
         protected Type GetViewType(Type viewModelType)
         {
             return NavigationManager.GetViewType(viewModelType);
+        }
+
+        protected virtual ViewModelBase CreateViewModelFromType<T>(T viewModelType) where T : ViewModelBase
+        {
+            return CreateViewModelFromType(typeof(T));
+        }
+
+        protected virtual ViewModelBase CreateViewModelFromType(Type viewModelType)
+        {
+            if (viewModelType == null) throw new ArgumentNullException(nameof(viewModelType));
+            if (!viewModelType.GetTypeInfo().IsSubclassOf(typeof(ViewModelBase)))
+                throw new ArgumentException("Type isn't a subclass of ViewModelBase.", nameof(viewModelType));
+
+            //todo use cache?
+
+            ViewModelBase viewModel = Activator.CreateInstance(viewModelType) as ViewModelBase;
+
+            if (viewModel == null) throw new Exception("View model could not be instantiated.");
+
+            viewModel.NavigationService = this;
+
+            return viewModel;
         }
 
         #region IDisposable Support

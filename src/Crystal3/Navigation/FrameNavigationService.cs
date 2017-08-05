@@ -224,8 +224,7 @@ namespace Crystal3.Navigation
             {
                 //gran and create the viewmodel as if we were navigating to it.
                 var viewModelType = NavigationManager.GetViewModelType(((Page)NavigationFrame.Content).GetType());
-                var viewModel = Activator.CreateInstance(viewModelType) as ViewModelBase;
-                viewModel.NavigationService = this;
+                var viewModel = CreateViewModelFromType(viewModelType);
 
                 ((Page)NavigationFrame.Content).DataContext = viewModel; //set the datacontext
 
@@ -323,7 +322,7 @@ namespace Crystal3.Navigation
                     if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Refresh)
                     {
                         if (viewModel == null)
-                            viewModel = Activator.CreateInstance(viewModelType) as ViewModelBase;
+                            viewModel = CreateViewModelFromType(viewModelType) as ViewModelBase;
 
                         viewModel.NavigationService = this;
 
