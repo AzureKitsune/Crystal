@@ -115,7 +115,7 @@ namespace Crystal3.Navigation
             viewModel?.OnNavigatedFrom(viewModel, args);
         }
 
-        protected Type GetViewType(Type viewModelType)
+        protected virtual Type GetViewType(Type viewModelType)
         {
             return NavigationManager.GetViewType(viewModelType);
         }
