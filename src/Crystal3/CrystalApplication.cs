@@ -81,10 +81,13 @@ namespace Crystal3
                 var navManager = new NavigationManager(this);
                 var navService = new FrameNavigationService(frame, navManager);
                 navManager.RootNavigationService = navService;
+                navService.NavigationLevel = FrameLevel.One;
 
                 args.Window.Content = frame;
 
                 WindowManager.HandleNewWindow(args.Window, navManager);
+
+                args.Window.Activate();
             }
         }
 

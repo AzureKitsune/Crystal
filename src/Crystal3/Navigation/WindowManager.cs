@@ -77,24 +77,13 @@ namespace Crystal3.Navigation
             var view = CoreApplication.CreateNewView();
             //and here, the above HandleNewWindow method should be called.
 
-            await view.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, new Windows.UI.Core.DispatchedHandler(() =>
+            var bundle = WindowNavigationServices.First(x => x.WindowView.Dispatcher == view.Dispatcher);
+
+            await bundle.WindowView.Dispatcher.RunIdleAsync(new IdleDispatchedHandler(x =>
             {
-                var frame = new Frame();
-
-                var navManager = new NavigationManager((CrystalApplication)CrystalApplication.Current);
-                var navService = new FrameNavigationService(frame, navManager);
-                navManager.RootNavigationService = navService;
-
-                Window.Current.Content = frame;
-
-                WindowManager.HandleNewWindow(Window.Current, navManager);
-
-                navManager.RootNavigationService.NavigateTo<T>(parameter);
+                bundle.NavigationManager.RootNavigationService.NavigateTo<T>(parameter);
             }));
-
-
-            var bundle = WindowNavigationServices.First(x =>
-                x.WindowView.Dispatcher == view.Dispatcher);
+            
 
             return bundle;
         }
