@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -21,6 +23,8 @@ namespace Crystal3.Navigation
             WindowView = view;
             NavigationManager = navManager;
             StatusManager = statManager;
+
+            WindowViewId = ApplicationView.GetApplicationViewIdForWindow(view.CoreWindow);
 
             //todo figure out a better way to handle this.
             if (NavigationManager.RootNavigationService is FrameNavigationService)
@@ -38,6 +42,7 @@ namespace Crystal3.Navigation
         internal Window WindowView { get; private set; }
         internal NavigationManager NavigationManager { get; private set; }
         internal StatusManager StatusManager { get; private set; }
+        public int WindowViewId { get; private set; }
 
         private void HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
         {

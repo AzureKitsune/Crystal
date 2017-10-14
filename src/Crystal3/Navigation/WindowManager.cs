@@ -53,7 +53,7 @@ namespace Crystal3.Navigation
             return WindowNavigationServices.Select(x => x.WindowView);
         }
 
-        internal static IEnumerable<WindowService> GetAllWindowServices()
+        public static IEnumerable<WindowService> GetAllWindowServices()
         {
             return WindowNavigationServices.AsReadOnly();
         }
