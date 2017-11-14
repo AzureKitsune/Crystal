@@ -92,12 +92,21 @@ namespace Crystal3.Navigation
         public event EventHandler<NavigationManagerPreBackRequestedEventArgs> PreBackRequested;
         internal bool SignalPreBackRequested()
         {
-            NavigationManagerPreBackRequestedEventArgs eventArgs = new NavigationManagerPreBackRequestedEventArgs();
-
             if (PreBackRequested != null)
-                PreBackRequested(this, eventArgs);
+            {
+                var eventInvocationList = PreBackRequested.GetInvocationList();
+                foreach(var eventDelegate in eventInvocationList)
+                {
+                    NavigationManagerPreBackRequestedEventArgs eventArgs = new NavigationManagerPreBackRequestedEventArgs();
+                    eventDelegate.DynamicInvoke(this, eventArgs);
 
-            return eventArgs.Handled;
+                    if (eventArgs.Handled) return true;
+                }
+
+                //PreBackRequested(this, eventArgs);
+            }
+
+            return false;
         }
 
         protected void SetViewModelUIElement(UIViewModelBase viewModel, FrameworkElement element)
