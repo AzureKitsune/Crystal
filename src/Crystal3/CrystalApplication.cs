@@ -197,6 +197,8 @@ namespace Crystal3
                                                 .GetAllServices()
                                                 .OrderByDescending(x => x.NavigationLevel))
                         {
+                            if (args.Handled) return;
+
                             if (service.SignalPreBackRequested())
                             {
                                 args.Handled = true;
