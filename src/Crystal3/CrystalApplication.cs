@@ -141,10 +141,12 @@ namespace Crystal3
             {
                 //Resurrection!
 
-                StorageFile suspensionStateFile = await CrystalApplication.CrystalDataFolder.GetFileAsync(PreservationManager.SuspensionStateFileName);
+                IStorageItem suspensionStateFileItem = await CrystalApplication.CrystalDataFolder.TryGetItemAsync(PreservationManager.SuspensionStateFileName);
 
-                if (suspensionStateFile != null)
+                if (suspensionStateFileItem != null)
                 {
+                    StorageFile suspensionStateFile = (StorageFile)suspensionStateFileItem;
+
                     var eventArgs = new CrystalApplicationShouldRestoreEventArgs();
                     eventArgs.SuspensionFileDate = suspensionStateFile.DateCreated;
                     if (OnApplicationShouldRestore(eventArgs))
