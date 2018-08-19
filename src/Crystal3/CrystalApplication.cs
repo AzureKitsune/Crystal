@@ -16,6 +16,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -31,6 +32,7 @@ namespace Crystal3
         internal static StorageFolder CrystalDataFolder = null;
 
         public CrystalConfiguration Options { get; private set; }
+        public User CurrentUser { get; private set; }
 
         public event EventHandler Restored;
         public event EventHandler<CrystalApplicationBackgroundActivationEventArgs> BackgroundActivated;
@@ -258,6 +260,7 @@ namespace Crystal3
         protected sealed override async void OnLaunched(LaunchActivatedEventArgs args)
         {
             LastActivationArgs = args;
+            CurrentUser = args.User;
 
             if (args.PreviousExecutionState != ApplicationExecutionState.Running && args.PreviousExecutionState != ApplicationExecutionState.Suspended && args.TileId == "App")
             {
