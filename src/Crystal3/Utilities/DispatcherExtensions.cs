@@ -73,7 +73,9 @@ namespace Crystal3.Utilities
 
         public void OnCompleted(Action continuation)
         {
-            this.dispatcher.RunAsync(this.priority, new DispatchedHandler(continuation));
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            dispatcher.RunAsync(priority, new DispatchedHandler(continuation));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
     }
