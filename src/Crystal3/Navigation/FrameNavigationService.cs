@@ -222,7 +222,7 @@ namespace Crystal3.Navigation
 
             if (currentViewModel == null || NavigationManager.GetViewModelType(((Page)NavigationFrame.Content).GetType()) != currentViewModel?.GetType()) //sanity check
             {
-                //gran and create the viewmodel as if we were navigating to it.
+                //create the viewmodel as if we were navigating to it.
                 var viewModelType = NavigationManager.GetViewModelType(((Page)NavigationFrame.Content).GetType());
                 var viewModel = CreateViewModelFromType(viewModelType);
 
@@ -303,7 +303,7 @@ namespace Crystal3.Navigation
 
             ViewModelBase viewModel = null;
 
-            bool useDataContext = (bool)view.GetTypeInfo().GetCustomAttribute<NavigationViewModelAttribute>()?.UseDataContextInsteadOfCreating;
+            bool useDataContext = NavigationManager.GetViewModelInfo(viewModelType).UseDataContextInsteadOfCreating; //(bool)view.GetTypeInfo().GetCustomAttribute<NavigationViewModelAttribute>()?.UseDataContextInsteadOfCreating;
 
             if (!useDataContext)
             {

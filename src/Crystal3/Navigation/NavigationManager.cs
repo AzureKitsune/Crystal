@@ -20,7 +20,7 @@ namespace Crystal3.Navigation
         /// <summary>
         /// <ViewModelType, PageType>
         /// </summary>
-        private static Dictionary<Type, Type> viewModelViewMappings = new Dictionary<Type, Type>();
+        private static List<NavigationManagerViewMapping> viewModelViewMappings = new List<NavigationManagerViewMapping>();
         private List<NavigationServiceBase> navigationServices = new List<NavigationServiceBase>();
         #endregion
 
@@ -35,6 +35,13 @@ namespace Crystal3.Navigation
         internal CrystalApplication AppInstance { get; set; }
 
         #endregion
+
+        public class NavigationManagerViewMapping
+        {
+            public Type ViewType { get; internal set; }
+            public bool UseDataContextInsteadOfCreating { get; internal set; }
+            public Type ViewModelType { get; internal set; }
+        }
 
         internal NavigationManager(CrystalApplication appInstance)
         {
@@ -65,6 +72,7 @@ namespace Crystal3.Navigation
                         viewModelType = (Type)linkAttribute.NamedArguments.First(x => ((Type)x.TypedValue.Value).GetTypeInfo().IsSubclassOf(typeof(ViewModelBase))).TypedValue.Value;
 
                     var platformType = (NavigationViewSupportedPlatform)linkAttribute.ConstructorArguments[1].Value;
+                    var useDataContextInsteadOfCreating = (bool)linkAttribute.ConstructorArguments[2].Value;
 
                     //var isHomePageInfo = linkAttribute.NamedArguments.FirstOrDefault(x => x.MemberName == "IsHome");
                     //bool isHomePage = false;
@@ -77,10 +85,29 @@ namespace Crystal3.Navigation
 
 
                     if (CurrentPlatformSupportsView(platformType))
-                        viewModelViewMappings.Add(viewModelType, type.AsType());
+                    {
+                        viewModelViewMappings.Add(new NavigationManagerViewMapping()
+                        {
+                            ViewModelType = viewModelType,
+                            ViewType = type.AsType(),
+                            UseDataContextInsteadOfCreating = useDataContextInsteadOfCreating
+                        });
+                    }
 
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns an object containing information relating a view model to its corresponding view.
+        /// </summary>
+        /// <param name="viewModelType">The type of the view model.</param>
+        /// <returns></returns>
+        internal NavigationManagerViewMapping GetViewModelInfo(Type viewModelType)
+        {
+            if (viewModelType == null) throw new ArgumentNullException(nameof(viewModelType));
+
+            return viewModelViewMappings.FirstOrDefault(x => x.ViewModelType == viewModelType);
         }
 
         /// <summary>
@@ -90,7 +117,7 @@ namespace Crystal3.Navigation
         /// <returns></returns>
         internal Type GetViewModelType(Type viewType)
         {
-            return (Type)viewModelViewMappings.First(x => x.Value == viewType).Key;
+            return (Type)viewModelViewMappings.First(x => x.ViewType == viewType).ViewModelType;
         }
         /// <summary>
         /// Returns the type of View associated with a View Model.
@@ -101,10 +128,10 @@ namespace Crystal3.Navigation
         {
             //Depending on what the user chose, handle resolving the view type accordingly.
 
-            if (AppInstance.Options.NavigationRoutingMethod == NavigationRoutingMethod.Dynamic || viewModelViewMappings.ContainsKey(viewModelType))
+            if (AppInstance.Options.NavigationRoutingMethod == NavigationRoutingMethod.Dynamic || viewModelViewMappings.Any(x=> x.ViewModelType == viewModelType))
             {
                 //Return the type that we got from probing.
-                return (Type)viewModelViewMappings[viewModelType];
+                return (Type)viewModelViewMappings.FirstOrDefault(x => x.ViewModelType == viewModelType)?.ViewType;
             }
             else
             {
@@ -112,8 +139,14 @@ namespace Crystal3.Navigation
                 //Override this process if you want to show a different view based on the platform.
                 var pageType = AppInstance.ResolveStaticPageType(viewModelType);
 
-                if (!viewModelViewMappings.ContainsKey(viewModelType))
-                    viewModelViewMappings.Add(viewModelType, pageType);
+                if (!viewModelViewMappings.Any(x=> x.ViewModelType == viewModelType))
+                {
+                    viewModelViewMappings.Add(new NavigationManagerViewMapping()
+                    {
+                        ViewModelType = viewModelType,
+                        ViewType = pageType
+                    });
+                }
 
                 return pageType;
             }
