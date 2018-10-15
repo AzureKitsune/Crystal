@@ -236,7 +236,7 @@ namespace Crystal3.Navigation
                 lastViewModel = viewModel;
 
 
-                InvokePreNavigatedEvent(new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs()));
+                InvokePreNavigatedEvent(new NavigationServicePreNavigatedSignaledEventArgs(viewModel, new CrystalNavigationEventArgs() { Direction = CrystalNavigationDirection.Restore }));
             }
         }
 

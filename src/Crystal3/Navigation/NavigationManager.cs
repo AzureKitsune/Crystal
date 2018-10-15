@@ -103,7 +103,7 @@ namespace Crystal3.Navigation
         /// </summary>
         /// <param name="viewModelType">The type of the view model.</param>
         /// <returns></returns>
-        internal NavigationManagerViewMapping GetViewModelInfo(Type viewModelType)
+        public NavigationManagerViewMapping GetViewModelInfo(Type viewModelType)
         {
             if (viewModelType == null) throw new ArgumentNullException(nameof(viewModelType));
 
