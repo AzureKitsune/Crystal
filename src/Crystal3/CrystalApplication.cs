@@ -197,8 +197,9 @@ namespace Crystal3
                     {
                         //walk down the navigation tree (by FrameLevel) and check if each service wants to handle it
 
-                        foreach (var service in WindowManager.GetNavigationManagerForCurrentWindow()
-                                                .GetAllServices()
+                        var windowManager = WindowManager.GetWindowServiceForCurrentWindow();
+                        var navigationManager = windowManager.NavigationManager;
+                        foreach (var service in navigationManager.GetAllServices()
                                                 .OrderByDescending(x => x.NavigationLevel))
                         {
                             if (args.Handled) return;
@@ -207,8 +208,7 @@ namespace Crystal3
                             {
                                 args.Handled = true;
 
-                                WindowManager.GetWindowServiceForCurrentWindow()
-                                .RefreshAppViewBackButtonVisibility();
+                                windowManager.RefreshAppViewBackButtonVisibility();
 
                                 return;
                             }
@@ -217,8 +217,7 @@ namespace Crystal3
                             {
                                 service.GoBack();
 
-                                WindowManager.GetWindowServiceForCurrentWindow()
-                                .RefreshAppViewBackButtonVisibility();
+                                windowManager.RefreshAppViewBackButtonVisibility();
 
                                 args.Handled = true;
 
