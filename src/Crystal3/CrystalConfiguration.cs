@@ -14,6 +14,7 @@ namespace Crystal3
             HandleSystemBackNavigation = true;
             HandlePrelaunch = true;
             OverridePlatformDetection = false;
+            HandleForwardNavigationStack = false;
         }
 
         public bool EnableViewModelCaching { get; set; }
@@ -31,5 +32,6 @@ namespace Crystal3
 
         public bool OverridePlatformDetection { get; private set; }
         public Core.Platform OverridePlatformValue { get; private set; }
+        public bool HandleForwardNavigationStack { get; internal set; }
     }
 }

@@ -45,6 +45,14 @@ namespace Crystal3.Navigation
         /// </summary>
         public abstract void GoBack();
 
+        public virtual void GoForward()
+        {
+            if (!CrystalApplication.GetCurrentAsCrystalApplication().Options.HandleForwardNavigationStack)
+            {
+                throw new InvalidOperationException("HandleForwardNavigationStack is set to false.");
+            }
+        }
+
         public abstract void ClearBackStack();
 
         public virtual void Reset()

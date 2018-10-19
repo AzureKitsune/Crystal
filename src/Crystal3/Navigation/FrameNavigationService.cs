@@ -184,7 +184,10 @@ namespace Crystal3.Navigation
                 {
                     lastViewModel.OnNavigatedFrom(sender, new CrystalNavigationEventArgs(e) { Direction = ConvertToCrystalNavDirections(e.NavigationMode) });
 
-                    viewModelForwardStack.Push(lastViewModel);
+                    if (CrystalApplication.GetCurrentAsCrystalApplication().Options.HandleForwardNavigationStack)
+                    {
+                        viewModelForwardStack.Push(lastViewModel);
+                    }
                 }
 
                 if (viewModelBackStack.Count > 0)
