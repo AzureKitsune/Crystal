@@ -28,6 +28,8 @@ namespace Crystal3.Navigation
         /// </summary>
         public abstract bool CanGoBackward { get; }
 
+        public virtual bool CanGoForward { get; } = false;
+
         protected Stack<ViewModelBase> viewModelBackStack = null;
         protected Stack<ViewModelBase> viewModelForwardStack = null;
 
