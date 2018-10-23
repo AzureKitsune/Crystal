@@ -53,6 +53,8 @@ namespace Crystal3.Model
         public class UIViewModelBaseUIWrapper
         {
             private FrameworkElement uiElement = null;
+            private Type uiElementType = null;
+            private FieldInfo uiElementContentLoadedField = null;
             private FragmentContentViewer uiViewer = null;
             internal UIViewModelBaseUIWrapper()
             {
@@ -67,6 +69,8 @@ namespace Crystal3.Model
             internal void SetUIElement(FrameworkElement element, FragmentContentViewer viewer = null)
             {
                 uiElement = element;
+                uiElementType = uiElement.GetType();
+                uiElementContentLoadedField = uiElementType.GetField("_contentLoaded", BindingFlags.NonPublic | BindingFlags.Instance);
                 uiViewer = viewer;
             }
 
@@ -74,12 +78,9 @@ namespace Crystal3.Model
             {
                 if (uiElement == null) return Task.CompletedTask; //todo may have to change this.
 
-                //todo add a check to see if it is loaded via reflection
-
-                var contentLoadedField = uiElement.GetType().GetField("_contentLoaded", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (contentLoadedField != null)
+                if (uiElementContentLoadedField != null)
                 {
-                    if ((bool)contentLoadedField.GetValue(uiElement))
+                    if ((bool)uiElementContentLoadedField.GetValue(uiElement))
                     {
                         return Task.CompletedTask;
                     }
