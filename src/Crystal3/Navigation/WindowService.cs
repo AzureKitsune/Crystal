@@ -67,7 +67,10 @@ namespace Crystal3.Navigation
         //not very mvvm-y
         public void SetAppViewBackButtonVisibility(bool visible)
         {
-            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = visible ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+            if (((CrystalApplication)CrystalApplication.Current).Options.HandleBackButtonForTopLevelNavigation)
+            {
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = visible ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+            }
         }
 
         internal ViewModelBase GetRootViewModel()
