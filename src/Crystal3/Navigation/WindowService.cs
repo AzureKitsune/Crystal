@@ -36,6 +36,7 @@ namespace Crystal3.Navigation
 
         private void WindowView_SizeChanged(object sender, WindowSizeChangedEventArgs e)
         {
+            //This is for detecting tablet-mode status.
             DeviceInformation.RefreshSubplatform(null);
         }
 
