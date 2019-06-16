@@ -38,6 +38,21 @@ namespace Crystal3
             return ApiInformation.IsTypePresent("Windows.ApplicationModel.Preview.Holographic.HolographicApplicationPreview");
         }
 
+        internal static bool QueryForTabletMode()
+        {
+            Crystal3.Core.Subplatform lastSubplatform = currentSubplatform;
+
+            if (IsInTabletMode() && GetDevicePlatform() == Core.Platform.Desktop && lastSubplatform != Subplatform.TabletMode)
+            {
+                //Tablet mode is specific to desktop sku at this point.
+                currentSubplatform = Subplatform.TabletMode;
+                RaiseSubplatformChangeEvent(lastSubplatform, currentSubplatform);
+                return true;
+            }
+
+            return false;
+        }
+
         public static Crystal3.Core.Platform GetDevicePlatform()
         {
             if ((CrystalApplication.Current as CrystalApplication).Options.OverridePlatformDetection)
@@ -85,11 +100,8 @@ namespace Crystal3
             }
 
             //Check for tablet mode.
-            if (IsInTabletMode() && GetDevicePlatform() == Core.Platform.Desktop && lastSubplatform != Subplatform.TabletMode)
+            if (QueryForTabletMode())
             {
-                //Tablet mode is specific to desktop sku at this point.
-                currentSubplatform = Subplatform.TabletMode;
-                RaiseSubplatformChangeEvent(lastSubplatform, currentSubplatform);
                 return;
             }
 

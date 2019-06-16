@@ -263,19 +263,9 @@ namespace Crystal3.Navigation
             switch(platform)
             {
                 case Core.Platform.Desktop:
-                    if (platformType == NavigationViewSupportedPlatform.MixedRealityHolographic)
-                    {
-                        return true;
-                    }
-
                     convertedNavPlatform = NavigationViewSupportedPlatform.Desktop;
                     break;
                 case Core.Platform.Holographic:
-                    if (platformType == NavigationViewSupportedPlatform.MixedRealityHolographic)
-                    {
-                        return true;
-                    }
-
                     convertedNavPlatform = NavigationViewSupportedPlatform.Holographic;
                     break;
                 case Core.Platform.Mobile:

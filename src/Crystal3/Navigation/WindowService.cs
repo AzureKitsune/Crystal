@@ -30,11 +30,20 @@ namespace Crystal3.Navigation
             if (NavigationManager.RootNavigationService is FrameNavigationService)
                 ((FrameNavigationService)NavigationManager.RootNavigationService).NavigationFrame.Navigated += HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated;
 
+            WindowView.SizeChanged += WindowView_SizeChanged;
             WindowView.Closed += WindowView_Closed;
+        }
+
+        private void WindowView_SizeChanged(object sender, WindowSizeChangedEventArgs e)
+        {
+            DeviceInformation.QueryForTabletMode();
         }
 
         private void WindowView_Closed(object sender, CoreWindowEventArgs e)
         {
+            WindowView.SizeChanged -= WindowView_SizeChanged;
+            WindowView.Closed -= WindowView_Closed;
+
             if (NavigationManager.RootNavigationService is FrameNavigationService)
                 ((FrameNavigationService)NavigationManager.RootNavigationService).NavigationFrame.Navigated -= HandleTopLevelNavigationForBackButton_NavigationFrame_Navigated;
         }
