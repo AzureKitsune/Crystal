@@ -5,7 +5,7 @@ Crystal is a UWP application development framework I use for my own projects. It
 Don't use Crystal! Seriously, don't do it!
 
 ### Seriously. Why? (Backstory)
-I first wrote Crystal back during my days of WPF (Windows Presentation Foundation) as a way to jump into MVVM. I was a little too impatient to tutorials for the major libraries at the time so I decided to write my own. It would be fast and easy to, at least, for myself. Eventually, a [friend](https://github.com/XAMPP) of mine decided to use it in his application. From that point on, I began to use Crystal in all of my applications. You can view the beginning of this library if you look at the very beginning of the commit log from 2012.
+I first wrote Crystal back during my days of WPF (Windows Presentation Foundation) as a way to jump into MVVM. I was a little too impatient to tutorials for the major libraries at the time so I decided to write my own. It would be fast and easy to, at least, for myself. Eventually, a [friend](https://github.com/lethalbit) of mine decided to use it in his application. From that point on, I began to use Crystal in all of my applications. You can view the beginning of this library if you look at the very beginning of the commit log from 2012.
 
 Eventually I stumbled upon WP7 and Silverlight. From that point on, I rewrote Crystal as Crystal 2 and added support for both of those platforms. Unfortunately at the time, I didn't do very much with those platforms. I rewrote an old application named Hanasu to use it but thats it. Crystal 2 eventually supported WP8, then W8/W8.1 (WinRT) and by extension, WP8.1 (WinPRT). I created a few apps with this new support but never released them to the public.
 
@@ -36,6 +36,7 @@ Crystal provides support for MVVM, Navigation, Suspension/Resurrection (as per t
 
 ### Tested Platforms
 - Desktop - Works!
+    - Mixed Reality headsets as well!
 - Mobile - Works!
 - Xbox - Works!
 - Hololens (Holographic) - Not Tested
