@@ -38,20 +38,7 @@ namespace Crystal3
             return ApiInformation.IsTypePresent("Windows.ApplicationModel.Preview.Holographic.HolographicApplicationPreview");
         }
 
-        internal static bool QueryForTabletMode()
-        {
-            Crystal3.Core.Subplatform lastSubplatform = currentSubplatform;
 
-            if (IsInTabletMode() && GetDevicePlatform() == Core.Platform.Desktop && lastSubplatform != Subplatform.TabletMode)
-            {
-                //Tablet mode is specific to desktop sku at this point.
-                currentSubplatform = Subplatform.TabletMode;
-                RaiseSubplatformChangeEvent(lastSubplatform, currentSubplatform);
-                return true;
-            }
-
-            return false;
-        }
 
         public static Crystal3.Core.Platform GetDevicePlatform()
         {
@@ -86,12 +73,21 @@ namespace Crystal3
             {
                 //mixed reality and holographic supported.
 
-                //https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.preview.holographic.holographicapplicationpreview.isholographicactivation
-                //HoloLens will always return true for this.
-                //On other platforms, determines if the app was activated in holographic/mixed reality.
-                bool holographicActivation = Windows.ApplicationModel.Preview.Holographic.HolographicApplicationPreview.IsHolographicActivation(args);
+                if (args != null)
+                {
+                    //https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.preview.holographic.holographicapplicationpreview.isholographicactivation
+                    //HoloLens will always return true for this.
+                    //On other platforms, determines if the app was activated in holographic/mixed reality.
+                    bool holographicActivation = Windows.ApplicationModel.Preview.Holographic.HolographicApplicationPreview.IsHolographicActivation(args);
 
-                if (holographicActivation && lastSubplatform != Subplatform.MixedReality)
+                    if (holographicActivation && lastSubplatform != Subplatform.MixedReality)
+                    {
+                        currentSubplatform = Subplatform.MixedReality;
+                        RaiseSubplatformChangeEvent(lastSubplatform, currentSubplatform);
+                        return;
+                    }
+                }
+                else if (IsCurrentViewInMixedReality())
                 {
                     currentSubplatform = Subplatform.MixedReality;
                     RaiseSubplatformChangeEvent(lastSubplatform, currentSubplatform);
@@ -100,10 +96,14 @@ namespace Crystal3
             }
 
             //Check for tablet mode.
-            if (QueryForTabletMode())
+            if (IsInTabletMode() && GetDevicePlatform() == Core.Platform.Desktop && lastSubplatform != Subplatform.TabletMode)
             {
+                //Tablet mode is specific to desktop sku at this point.
+                currentSubplatform = Subplatform.TabletMode;
+                RaiseSubplatformChangeEvent(lastSubplatform, currentSubplatform);
                 return;
             }
+
 
             //Resets the subplatform back to none if it gets here.
             currentSubplatform = Subplatform.None;

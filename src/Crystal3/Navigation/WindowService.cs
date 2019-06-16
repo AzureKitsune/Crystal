@@ -36,7 +36,7 @@ namespace Crystal3.Navigation
 
         private void WindowView_SizeChanged(object sender, WindowSizeChangedEventArgs e)
         {
-            DeviceInformation.QueryForTabletMode();
+            DeviceInformation.RefreshSubplatform(null);
         }
 
         private void WindowView_Closed(object sender, CoreWindowEventArgs e)
