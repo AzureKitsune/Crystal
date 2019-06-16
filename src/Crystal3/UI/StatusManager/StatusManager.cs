@@ -116,8 +116,8 @@ namespace Crystal3.UI.StatusManager
 
                 UpdateNormalStatus();
 
-                if (PropertyChanged != null) //makes this property binding-friendly.
-                    PropertyChanged(this, new PropertyChangedEventArgs("NormalStatusText"));
+                //makes this property binding-friendly.
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NormalStatusText)));
             }
         }
 
@@ -128,8 +128,8 @@ namespace Crystal3.UI.StatusManager
             {
                 isBusyValue = value;
 
-                if (PropertyChanged != null) //makes this property binding-friendly.
-                    PropertyChanged(this, new PropertyChangedEventArgs("IsBusy"));
+                //makes this property binding-friendly.
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsBusy)));
             }
         }
 
