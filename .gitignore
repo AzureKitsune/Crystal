@@ -132,7 +132,6 @@ UpgradeLog*.XML
 *.py[co]
 
 # Packages
-*.egg
 *.egg-info
 dist
 build
@@ -157,3 +156,4 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 sh.exe.stackdump
+/.vs/

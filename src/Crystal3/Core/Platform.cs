@@ -12,6 +12,8 @@ namespace Crystal3.Core
         Desktop = 1,
         Mobile = 2,
         Xbox = 3,
-        IoT = 4
+        IoT = 4,
+        Holographic = 5,
+        Team = 6
     }
 }

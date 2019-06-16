@@ -257,13 +257,26 @@ namespace Crystal3.Navigation
 
         private bool CurrentPlatformSupportsView(NavigationViewSupportedPlatform platformType)
         {
-            var platform = CrystalApplication.GetDevicePlatform();
+            var platform = DeviceInformation.GetDevicePlatform();
 
             NavigationViewSupportedPlatform convertedNavPlatform = NavigationViewSupportedPlatform.All;
             switch(platform)
             {
                 case Core.Platform.Desktop:
+                    if (platformType == NavigationViewSupportedPlatform.MixedRealityHolographic)
+                    {
+                        return true;
+                    }
+
                     convertedNavPlatform = NavigationViewSupportedPlatform.Desktop;
+                    break;
+                case Core.Platform.Holographic:
+                    if (platformType == NavigationViewSupportedPlatform.MixedRealityHolographic)
+                    {
+                        return true;
+                    }
+
+                    convertedNavPlatform = NavigationViewSupportedPlatform.Holographic;
                     break;
                 case Core.Platform.Mobile:
                     convertedNavPlatform = NavigationViewSupportedPlatform.Mobile;
@@ -273,6 +286,9 @@ namespace Crystal3.Navigation
                     break;
                 case Core.Platform.Xbox:
                     convertedNavPlatform = NavigationViewSupportedPlatform.Xbox;
+                    break;
+                case Core.Platform.Team:
+                    convertedNavPlatform = NavigationViewSupportedPlatform.Team;
                     break;
                 default:
                     throw new Exception();

@@ -29,7 +29,7 @@ namespace Crystal3.UI.StatusManager
 
         internal StatusManager(Window window)
         {
-            currentPlatform = CrystalApplication.GetDevicePlatform();
+            currentPlatform = DeviceInformation.GetDevicePlatform();
 
             boundWindow = window;
 

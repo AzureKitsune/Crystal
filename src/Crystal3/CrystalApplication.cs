@@ -261,6 +261,8 @@ namespace Crystal3
             LastActivationArgs = args;
             CurrentUser = args.User;
 
+            DeviceInformation.RefreshSubplatform(args);
+
             if (args.PreviousExecutionState != ApplicationExecutionState.Running && args.PreviousExecutionState != ApplicationExecutionState.Suspended && args.TileId == "App")
             {
                 await InitializeRootFrameAsync(args);
@@ -297,6 +299,8 @@ namespace Crystal3
         protected sealed override async void OnActivated(IActivatedEventArgs args)
         {
             LastActivationArgs = args;
+
+            DeviceInformation.RefreshSubplatform(args);
 
             if (args.PreviousExecutionState != ApplicationExecutionState.Running && args.PreviousExecutionState != ApplicationExecutionState.Suspended)
                 await InitializeRootFrameAsync(args);
@@ -451,14 +455,6 @@ namespace Crystal3
         {
             //restore if the suspension file is less than 5 hours old.
             return (args.SuspensionFileDate != null ? (args.SuspensionFileDate - DateTime.Now) < TimeSpan.FromHours(5) : true);
-        }
-
-        public static Platform GetDevicePlatform()
-        {
-            if ((CrystalApplication.Current as CrystalApplication).Options.OverridePlatformDetection)
-                return (CrystalApplication.Current as CrystalApplication).Options.OverridePlatformValue;
-            else
-                return SystemInformation.GetDevicePlatform();
         }
 
         protected internal virtual Type ResolveStaticPageType(Type viewModelType)
