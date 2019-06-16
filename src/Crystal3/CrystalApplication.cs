@@ -220,7 +220,6 @@ namespace Crystal3
                                 windowManager.RefreshAppViewBackButtonVisibility();
 
                                 args.Handled = true;
-
                                 return;
                             }
                         }

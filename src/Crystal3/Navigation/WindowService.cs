@@ -55,13 +55,18 @@ namespace Crystal3.Navigation
 
             if (((CrystalApplication)CrystalApplication.Current).Options.HandleBackButtonForTopLevelNavigation)
             {
-                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = sender.CanGoBackward ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = 
+                    sender.CanGoBackward ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
             }
         }
 
         public void RefreshAppViewBackButtonVisibility()
         {
-            RefreshAppViewBackButtonVisibility(NavigationManager.RootNavigationService);
+            if (((CrystalApplication)CrystalApplication.Current).Options.HandleBackButtonForTopLevelNavigation)
+            {
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = 
+                    NavigationManager.GetAllServices().Any(x => x.CanGoBackward) ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+            }
         }
 
         //not very mvvm-y
@@ -69,7 +74,8 @@ namespace Crystal3.Navigation
         {
             if (((CrystalApplication)CrystalApplication.Current).Options.HandleBackButtonForTopLevelNavigation)
             {
-                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = visible ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = 
+                    visible ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
             }
         }
 

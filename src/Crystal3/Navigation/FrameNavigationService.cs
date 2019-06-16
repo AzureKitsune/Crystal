@@ -115,8 +115,8 @@ namespace Crystal3.Navigation
         {
             //Navigation is asynchronous so it had to be synchronized or else it would cause problems with an earlier app I was writing.
             navigationLock.WaitOne();
-
             navigationLock.Reset();
+            //This is intentional(?)
             NavigationFrame.GoBack();
         }
 
@@ -168,7 +168,6 @@ namespace Crystal3.Navigation
 
         private void NavigationFrame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
-
         }
 
         private void NavigationFrame_Navigated(object sender, NavigationEventArgs e)
