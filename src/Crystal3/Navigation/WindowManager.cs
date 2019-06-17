@@ -31,21 +31,22 @@ namespace Crystal3.Navigation
             WindowNavigationServices.Add(service);
         }
 
-        public static WindowService GetWindowServiceForCurrentWindow()
+        public static WindowService GetWindowServiceForCurrentView()
         {
-            if (Window.Current == null & CoreApplication.MainView.CoreWindow.Dispatcher.HasThreadAccess) throw new Exception("Cannot perform this operation unless we're on the UI thread.");
+            if (Window.Current == null & CoreApplication.MainView.CoreWindow.Dispatcher.HasThreadAccess)
+                throw new Exception("Cannot perform this operation unless we're on the UI thread.");
 
             return WindowNavigationServices.First(x => x.WindowView == Window.Current);
         }
 
-        public static NavigationManager GetNavigationManagerForCurrentWindow()
+        public static NavigationManager GetNavigationManagerForCurrentView()
         {
-            return GetWindowServiceForCurrentWindow()?.NavigationManager;
+            return GetWindowServiceForCurrentView()?.NavigationManager;
         }
 
-        public static StatusManager GetStatusManagerForCurrentWindow()
+        public static StatusManager GetStatusManagerForCurrentView()
         {
-            return GetWindowServiceForCurrentWindow()?.StatusManager;
+            return GetWindowServiceForCurrentView()?.StatusManager;
         }
 
         internal static IEnumerable<Window> GetAllWindows()
@@ -58,11 +59,12 @@ namespace Crystal3.Navigation
             return WindowNavigationServices.AsReadOnly();
         }
 
-        internal static ViewModelBase GetRootViewModelForCurrentWindow()
+        internal static ViewModelBase GetRootViewModelForCurrentView()
         {
-            var navManager = GetNavigationManagerForCurrentWindow();
+            var navManager = GetNavigationManagerForCurrentView();
             return navManager.RootNavigationService.GetNavigatedViewModel();
         }
+        
 
         /// <summary>
         /// Experimental!

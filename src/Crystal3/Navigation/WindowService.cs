@@ -93,5 +93,37 @@ namespace Crystal3.Navigation
         {
             return NavigationManager.RootNavigationService.GetNavigatedViewModel();
         }
+
+        /// <summary>
+        /// Queries if the window paired with this window service is currently in tablet mode.
+        /// </summary>
+        /// <returns></returns>
+        public Task<bool> IsViewInTabletModeAsync()
+        {
+            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
+
+            WindowView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() =>
+            {
+                taskCompletionSource.SetResult(DeviceInformation.IsCurrentViewInTabletMode());
+            })).AsTask().Forget();
+
+            return taskCompletionSource.Task;
+        }
+
+        /// <summary>
+        /// Queries if the window paired with this window service is currently in mixed reality.
+        /// </summary>
+        /// <returns></returns>
+        public Task<bool> IsViewInMixedRealityAsync()
+        {
+            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
+
+            WindowView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() =>
+            {
+                taskCompletionSource.SetResult(DeviceInformation.IsCurrentViewInTabletMode());
+            })).AsTask().Forget();
+
+            return taskCompletionSource.Task;
+        }
     }
 }

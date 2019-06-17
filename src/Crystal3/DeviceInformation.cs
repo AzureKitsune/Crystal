@@ -15,7 +15,7 @@ namespace Crystal3
 
         private static Subplatform currentSubplatform = Subplatform.None;
 
-        public static bool IsInTabletMode()
+        public static bool IsCurrentViewInTabletMode()
         {
             // https://social.msdn.microsoft.com/Forums/windowsapps/en-US/8781bc40-ae4c-43f2-846c-63f3859bc972/uwphow-to-detect-tablet-mode?forum=wpdevelop
             // https://msdn.microsoft.com/en-us/library/windows/apps/Windows.UI.ViewManagement.UIViewSettings.UserInteractionMode.aspx
@@ -37,8 +37,6 @@ namespace Crystal3
         {
             return ApiInformation.IsTypePresent("Windows.ApplicationModel.Preview.Holographic.HolographicApplicationPreview");
         }
-
-
 
         public static Crystal3.Core.Platform GetDevicePlatform()
         {
@@ -96,7 +94,7 @@ namespace Crystal3
             }
 
             //Check for tablet mode.
-            if (IsInTabletMode() && GetDevicePlatform() == Core.Platform.Desktop && lastSubplatform != Subplatform.TabletMode)
+            if (IsCurrentViewInTabletMode() && GetDevicePlatform() == Core.Platform.Desktop && lastSubplatform != Subplatform.TabletMode)
             {
                 //Tablet mode is specific to desktop sku at this point.
                 currentSubplatform = Subplatform.TabletMode;
