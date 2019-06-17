@@ -106,7 +106,7 @@ namespace Crystal3
             WindowManager.HandleNewWindow(Window.Current, navManager);
 
             if (Options.NavigationRoutingMethod == NavigationRoutingMethod.Dynamic)
-                WindowManager.GetNavigationManagerForCurrentWindow().ProbeForViewViewModelPairs();
+                WindowManager.GetNavigationManagerForCurrentView().ProbeForViewViewModelPairs();
         }
 
         private async Task InitializeRootFrameAsync(IActivatedEventArgs e)
@@ -183,7 +183,7 @@ namespace Crystal3
 
             HandleBackNavigation();
 
-            WindowManager.GetStatusManagerForCurrentWindow().Initialize();
+            WindowManager.GetStatusManagerForCurrentView().Initialize();
         }
 
         private void HandleBackNavigation()
@@ -197,7 +197,7 @@ namespace Crystal3
                     {
                         //walk down the navigation tree (by FrameLevel) and check if each service wants to handle it
 
-                        var windowManager = WindowManager.GetWindowServiceForCurrentWindow();
+                        var windowManager = WindowManager.GetWindowServiceForCurrentView();
                         var navigationManager = windowManager.NavigationManager;
                         foreach (var service in navigationManager.GetAllServices()
                                                 .OrderByDescending(x => x.NavigationLevel))

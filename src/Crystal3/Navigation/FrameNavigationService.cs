@@ -63,7 +63,7 @@ namespace Crystal3.Navigation
 
         public FrameNavigationService(Frame navFrame)
         {
-            CoreInitialize(navFrame, WindowManager.GetNavigationManagerForCurrentWindow());
+            CoreInitialize(navFrame, WindowManager.GetNavigationManagerForCurrentView());
         }
 
         protected override void Dispose(bool disposing)

@@ -23,7 +23,7 @@ namespace Crystal3.Model
         /// </summary>
         public UIViewModelBase()
         {
-            Status = WindowManager.GetStatusManagerForCurrentWindow();
+            Status = WindowManager.GetStatusManagerForCurrentView();
 
             UI = new UIViewModelBaseUIWrapper();
         }
