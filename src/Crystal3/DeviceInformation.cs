@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Crystal3.Core;
 using Windows.ApplicationModel.Activation;
@@ -14,6 +15,7 @@ namespace Crystal3
         public static event EventHandler<DeviceInformationSubplatformChangedEventArgs> SubplatformChanged;
 
         private static Subplatform currentSubplatform = Subplatform.None;
+        private static SemaphoreSlim subplatformRefreshLock = new SemaphoreSlim(1, 1);
 
         public static bool IsCurrentViewInTabletMode()
         {
@@ -62,8 +64,10 @@ namespace Crystal3
             }
         }
 
-        internal static void RefreshSubplatform(IActivatedEventArgs args = null)
+        internal static async void RefreshSubplatform(IActivatedEventArgs args = null)
         {
+            await subplatformRefreshLock.WaitAsync();
+
             Crystal3.Core.Subplatform lastSubplatform = currentSubplatform;
 
             //First check for mixed reality.
@@ -78,10 +82,11 @@ namespace Crystal3
                     //On other platforms, determines if the app was activated in holographic/mixed reality.
                     bool holographicActivation = Windows.ApplicationModel.Preview.Holographic.HolographicApplicationPreview.IsHolographicActivation(args);
 
-                    if (holographicActivation && lastSubplatform != Subplatform.MixedReality)
+                    if (holographicActivation)
                     {
                         currentSubplatform = Subplatform.MixedReality;
                         RaiseSubplatformChangeEvent(lastSubplatform, currentSubplatform);
+                        subplatformRefreshLock.Release();
                         return;
                     }
                 }
@@ -89,16 +94,18 @@ namespace Crystal3
                 {
                     currentSubplatform = Subplatform.MixedReality;
                     RaiseSubplatformChangeEvent(lastSubplatform, currentSubplatform);
+                    subplatformRefreshLock.Release();
                     return;
                 }
             }
 
             //Check for tablet mode.
-            if (IsCurrentViewInTabletMode() && GetDevicePlatform() == Core.Platform.Desktop && lastSubplatform != Subplatform.TabletMode)
+            if (IsCurrentViewInTabletMode() && GetDevicePlatform() == Core.Platform.Desktop)
             {
                 //Tablet mode is specific to desktop sku at this point.
                 currentSubplatform = Subplatform.TabletMode;
                 RaiseSubplatformChangeEvent(lastSubplatform, currentSubplatform);
+                subplatformRefreshLock.Release();
                 return;
             }
 
@@ -106,6 +113,7 @@ namespace Crystal3
             //Resets the subplatform back to none if it gets here.
             currentSubplatform = Subplatform.None;
             RaiseSubplatformChangeEvent(lastSubplatform, currentSubplatform);
+            subplatformRefreshLock.Release();
         }
 
         private static void RaiseSubplatformChangeEvent(Subplatform lastSubPlatform, Subplatform newSubPlatform)
