@@ -14,8 +14,12 @@ namespace Crystal3.Core
         /// </summary>
         MixedReality,
         /// <summary>
-        /// Desktop mode only
+        /// Desktop sku only
         /// </summary>
         TabletMode,
+        /// <summary>
+        /// Mobile sku only
+        /// </summary>
+        ContinuumForPhoneMode,
     }
 }

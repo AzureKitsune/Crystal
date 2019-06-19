@@ -22,7 +22,14 @@ namespace Crystal3
             // https://social.msdn.microsoft.com/Forums/windowsapps/en-US/8781bc40-ae4c-43f2-846c-63f3859bc972/uwphow-to-detect-tablet-mode?forum=wpdevelop
             // https://msdn.microsoft.com/en-us/library/windows/apps/Windows.UI.ViewManagement.UIViewSettings.UserInteractionMode.aspx
 
-            return Windows.UI.ViewManagement.UIViewSettings.GetForCurrentView().UserInteractionMode == Windows.UI.ViewManagement.UserInteractionMode.Touch;
+            return GetDevicePlatform() == Crystal3.Core.Platform.Desktop &&
+                Windows.UI.ViewManagement.UIViewSettings.GetForCurrentView().UserInteractionMode == Windows.UI.ViewManagement.UserInteractionMode.Touch;
+        }
+
+        public static bool IsCurrentViewInPhoneContinuumMode()
+        {
+            return GetDevicePlatform() == Crystal3.Core.Platform.Mobile &&
+                Windows.UI.ViewManagement.UIViewSettings.GetForCurrentView().UserInteractionMode == Windows.UI.ViewManagement.UserInteractionMode.Mouse;
         }
 
         public static bool IsCurrentViewInMixedReality()
@@ -100,7 +107,7 @@ namespace Crystal3
             }
 
             //Check for tablet mode.
-            if (IsCurrentViewInTabletMode() && GetDevicePlatform() == Core.Platform.Desktop)
+            if (IsCurrentViewInTabletMode())
             {
                 //Tablet mode is specific to desktop sku at this point.
                 currentSubplatform = Subplatform.TabletMode;
@@ -109,6 +116,15 @@ namespace Crystal3
                 return;
             }
 
+            //Check for continuum for mobile/phone mode.
+            if (IsCurrentViewInPhoneContinuumMode())
+            {
+                //Continuum For Phone mode is specific to mobile sku at this point.
+                currentSubplatform = Subplatform.ContinuumForPhoneMode;
+                RaiseSubplatformChangeEvent(lastSubplatform, currentSubplatform);
+                subplatformRefreshLock.Release();
+                return;
+            }
 
             //Resets the subplatform back to none if it gets here.
             currentSubplatform = Subplatform.None;
