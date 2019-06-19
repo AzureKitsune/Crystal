@@ -74,7 +74,6 @@ namespace Crystal3
             if (IsMixedRealitySupported())
             {
                 //mixed reality and holographic supported.
-
                 if (args != null)
                 {
                     //https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.preview.holographic.holographicapplicationpreview.isholographicactivation
@@ -90,7 +89,8 @@ namespace Crystal3
                         return;
                     }
                 }
-                else if (IsCurrentViewInMixedReality())
+
+                if (IsCurrentViewInMixedReality())
                 {
                     currentSubplatform = Subplatform.MixedReality;
                     RaiseSubplatformChangeEvent(lastSubplatform, currentSubplatform);
