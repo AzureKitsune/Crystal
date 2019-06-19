@@ -125,5 +125,21 @@ namespace Crystal3.Navigation
 
             return taskCompletionSource.Task;
         }
+
+        /// <summary>
+        /// Queries if the window paired with this window service is currently in Continuum for Phone mode.
+        /// </summary>
+        /// <returns></returns>
+        public Task<bool> IsViewInPhoneContinuumModeAsync()
+        {
+            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
+
+            WindowView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() =>
+            {
+                taskCompletionSource.SetResult(DeviceInformation.IsCurrentViewInPhoneContinuumMode());
+            })).AsTask().Forget();
+
+            return taskCompletionSource.Task;
+        }
     }
 }
