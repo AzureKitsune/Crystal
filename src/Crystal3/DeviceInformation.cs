@@ -49,7 +49,7 @@ namespace Crystal3
 
         public static Crystal3.Core.Platform GetDevicePlatform()
         {
-            if ((CrystalApplication.Current as CrystalApplication).Options.OverridePlatformDetection)
+            if (IsPlatformOverriden())
                 return (CrystalApplication.Current as CrystalApplication).Options.OverridePlatformValue;
 
             switch (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToLower())
@@ -69,6 +69,11 @@ namespace Crystal3
                 default:
                     return Crystal3.Core.Platform.Unknown;
             }
+        }
+
+        public static bool IsPlatformOverriden()
+        {
+            return (CrystalApplication.Current as CrystalApplication).Options.OverridePlatformDetection;
         }
 
         internal static async void RefreshSubplatform(IActivatedEventArgs args = null)
