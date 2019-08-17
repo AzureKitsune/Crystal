@@ -74,7 +74,7 @@ namespace Crystal3.Core
         }
         internal static async Task<bool> RestoreAsync()
         {
-            if (DeviceInformation.IsPlatformOverriden()) return false; //to prevent ressurection for a different platform when overriding.
+            if (DeviceInformation.IsPlatformOverridden()) return false; //to prevent ressurection for a different platform when overriding.
 
             StorageFile file = await CrystalApplication.CrystalDataFolder.CreateFileAsync(SuspensionStateFileName, CreationCollisionOption.OpenIfExists);
 
